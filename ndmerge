@@ -1,0 +1,58 @@
+#!/usr/bin/env perl
+
+my $ABOUT = "Merge nested data";
+my $VERSION = '0.01';
+
+use strict;
+use warnings FATAL => 'all';
+use File::Basename qw(basename);
+use Getopt::Long qw(:config bundling);
+use Hash::Merge qw(merge);
+use Log::Log4Cli;
+use Struct::Diff qw(diff);
+
+# defaults
+my $OPTS = {
+    'verbose' => 0,
+};
+
+my $e_code = 0;
+my $prog_name = basename($0);
+
+sub usage() {
+    print STDERR <<USAGE_TEXT;
+$prog_name -- $ABOUT
+
+Usage:
+    $prog_name [OPTIONS] <arguments>
+
+Options:
+    --help
+        print this message
+    --verbose
+        increase verbosity, max level - 5
+    --version
+        as is
+
+Examples:
+    Show this message
+        $prog_name --help
+
+USAGE_TEXT
+}
+
+Getopt::Long::Configure ("bundling");
+if (not GetOptions (
+    'help|h' => sub { usage; exit 1; },
+    'verbose|v+' => \$OPTS->{'verbose'},
+    'version' => sub { print "$VERSION"; exit 0; },
+)) { usage(); exit 1; }
+
+$Log::Log4Cli::L = $OPTS->{'verbose'};
+
+while (<>) {
+    # main code
+}
+
+log_info { "All done, exit '$e_code'" };
+exit $e_code;
