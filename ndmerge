@@ -5,11 +5,15 @@ my $VERSION = '0.01';
 
 use strict;
 use warnings FATAL => 'all';
+
 use File::Basename qw(basename);
+use File::Slurp qw(read_file write_file);
 use Getopt::Long qw(:config bundling);
 use Hash::Merge qw(merge);
+use JSON qw(from_json to_json);
 use Log::Log4Cli;
-use Struct::Diff qw(diff);
+use NDTools::HMBehs qw(HM_OVERRIDE);
+use Struct::Diff qw(diff dsplit);
 
 # defaults
 my $OPTS = {
@@ -30,7 +34,7 @@ Options:
     --help
         print this message
     --verbose
-        increase verbosity, max level - 5
+        increase verbosity, max level: 4
     --version
         as is
 
@@ -41,7 +45,6 @@ Examples:
 USAGE_TEXT
 }
 
-Getopt::Long::Configure ("bundling");
 if (not GetOptions (
     'help|h' => sub { usage; exit 1; },
     'verbose|v+' => \$OPTS->{'verbose'},
@@ -50,9 +53,24 @@ if (not GetOptions (
 
 $Log::Log4Cli::L = $OPTS->{'verbose'};
 
-while (<>) {
-    # main code
+my @diffset;
+my $result;
+
+Hash::Merge::specify_behavior(HM_OVERRIDE);
+
+for my $file (@ARGV) {
+    log_debug { "Loading file '$file'" };
+    my $loaded = from_json(read_file($file), {relaxed => 1});
+    log_trace { "Merge it to previous" };
+    my $merged = merge($result, $loaded);
+    my $diff = dsplit(diff($result, $merged, noO => 1, noU => 1));
+    $diff->{src} = $file;
+    push @diffset, $diff;
+    $result = $merged;
 }
+
+print to_json(\@diffset, {allow_nonref => 1, canonical => 1, pretty => 1});
+print to_json($result, {allow_nonref => 1, canonical => 1, pretty => 1});
 
 log_info { "All done, exit '$e_code'" };
 exit $e_code;
