@@ -1,24 +1,20 @@
 
-# tests and such stuff
+# tests, depends and so on..
 
-EMODS = Log-Log4Cli.pm Struct-Diff.pm Struct-Path.pm
-LPATH = ./ext
-TOOLS =
+TOOLS = ndmerge
 
-.PHONY: all always clean depends test
+.PHONY: all clean depends test veryclean
 
 all: depends test
 
 clean:
+	rm -rf tmp
 
-depends: $(MODS)
+depends:
+	make -C $@
 
 test:
-	echo $@ not implemented yet
+	@echo $@ not implemented yet
 
 veryclean: clean
-	rm -rf $(MODS)
-
-%.pm: always
-	test -d $@ && git -C $@ pull || \
-		git clone git@github.com:mr-mixas/$@.git
+	make -C depends clean

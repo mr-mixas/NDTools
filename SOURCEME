@@ -1,0 +1,1 @@
+export PERL5LIB=lib:depends/Struct-Diff.pm/lib:depends/Struct-Path.pm/lib:depends/Log-Log4Cli.pm/lib
