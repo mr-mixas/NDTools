@@ -33,27 +33,30 @@ Usage:
 Options:
     --help
         print this message
+    --mergeset|mset <file>
+        write mergeset to specified file
     --verbose
         increase verbosity, max level: 4
     --version
         as is
 
 Examples:
-    Show this message
-        $prog_name --help
+    Merge files:
+        $prog_name a.json b.json c.json
 
 USAGE_TEXT
 }
 
 if (not GetOptions (
     'help|h' => sub { usage; exit 1; },
+    'mergeset|mset=s' => \$OPTS->{'mergeset'},
     'verbose|v+' => \$OPTS->{'verbose'},
     'version' => sub { print "$VERSION"; exit 0; },
 )) { usage(); exit 1; }
 
 $Log::Log4Cli::L = $OPTS->{'verbose'};
 
-my @diffset;
+my @mset; # merge set, i.e. blame
 my $result;
 
 Hash::Merge::specify_behavior(HM_OVERRIDE);
@@ -61,15 +64,18 @@ Hash::Merge::specify_behavior(HM_OVERRIDE);
 for my $file (@ARGV) {
     log_debug { "Loading file '$file'" };
     my $loaded = from_json(read_file($file), {relaxed => 1});
-    log_trace { "Merge it to previous" };
+    log_trace { "Merge it, overriding previous" };
     my $merged = merge($result, $loaded);
-    my $diff = dsplit(diff($result, $merged, noO => 1, noU => 1));
-    $diff->{src} = $file;
-    push @diffset, $diff;
+    if ($OPTS->{'mergeset'}) {
+        push @mset, dsplit(diff($result, $merged, noO => 1, noU => 1));
+        $mset[-1]->{src} = $file;
+    }
     $result = $merged;
 }
 
-print to_json(\@diffset, {allow_nonref => 1, canonical => 1, pretty => 1});
+write_file($OPTS->{'mergeset'}, to_json(\@mset, {allow_nonref => 1, canonical => 1, pretty => 1}))
+    if ($OPTS->{'mergeset'});
+
 print to_json($result, {allow_nonref => 1, canonical => 1, pretty => 1});
 
 log_info { "All done, exit '$e_code'" };
