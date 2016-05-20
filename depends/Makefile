@@ -1,7 +1,7 @@
 
 # fetch and update dependent modules
 
-MODS = Log-Log4Cli.pm Struct-Diff.pm Struct-Path.pm
+MODS = Log-Log4Cli.pm Struct-Diff.pm Struct-Path.pm Struct-Path-PerlStyle.pm
 
 .PHONY: all always clean pull test
 
