@@ -31,6 +31,8 @@ Usage:
     $prog_name [OPTIONS] <arguments>
 
 Options:
+    --file|f <file>
+        file to merge
     --help
         print this message
     --mergeset|mset <file>
@@ -47,10 +49,13 @@ Examples:
 USAGE_TEXT
 }
 
+my @rules;
+
 if (not GetOptions (
+    'file|f=s' => sub { push @rules, { src => $_[1] }},
     'help|h' => sub { usage; exit 1; },
     'mergeset|mset=s' => \$OPTS->{'mergeset'},
-    'verbose|v+' => \$OPTS->{'verbose'},
+    'verbose|v:+' => \$OPTS->{'verbose'},
     'version' => sub { print "$VERSION"; exit 0; },
 )) { usage(); exit 1; }
 
@@ -61,7 +66,11 @@ my $result;
 
 Hash::Merge::specify_behavior(HM_OVERRIDE);
 
-for my $file (@ARGV) {
+while (my $f = shift @ARGV) { push @rules, { src => $f }}; # files may also be defined via args
+
+for (my $r = 0; $r < @rules; $r++) {
+    die_fatal "Undefined source in $r rule" unless (defined $rules[$r]{src});
+    my $file = $rules[$r]{src};
     log_debug { "Loading file '$file'" };
     my $loaded = from_json(read_file($file), {relaxed => 1});
     log_trace { "Merge it, overriding previous" };
@@ -78,5 +87,4 @@ write_file($OPTS->{'mergeset'}, to_json(\@mset, {allow_nonref => 1, canonical =>
 
 print to_json($result, {allow_nonref => 1, canonical => 1, pretty => 1});
 
-log_info { "All done, exit '$e_code'" };
-exit $e_code;
+die_info "All done", $e_code;
