@@ -4,8 +4,9 @@
 MODS = Log-Log4Cli.pm Struct-Diff.pm Struct-Path.pm Struct-Path-PerlStyle.pm
 
 .PHONY: all always clean pull test
+.PRECIOUS: $(MODS)
 
-all: $(MODS)
+all: pull
 
 clean:
 	rm -rf $(addsuffix *, $(MODS))
