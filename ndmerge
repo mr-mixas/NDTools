@@ -12,7 +12,7 @@ use Getopt::Long qw(:config bundling);
 use Hash::Merge qw(merge);
 use JSON qw(from_json to_json);
 use Log::Log4Cli;
-use NDTools::HMBehs qw(HM_OVERRIDE);
+use NDTools::HMBehs qw(R_OVERRIDE);
 use Struct::Diff qw(diff dsplit);
 
 # defaults
@@ -64,7 +64,7 @@ $Log::Log4Cli::L = $OPTS->{'verbose'};
 my @mset; # merge set, i.e. blame
 my $result;
 
-Hash::Merge::specify_behavior(HM_OVERRIDE);
+Hash::Merge::specify_behavior(R_OVERRIDE);
 
 while (my $f = shift @ARGV) { push @rules, { src => $f }}; # files may also be defined via args
 
