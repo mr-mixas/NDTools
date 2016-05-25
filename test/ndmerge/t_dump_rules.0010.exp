@@ -1,0 +1,25 @@
+[
+   {
+      "ignore" : [
+         "{a}[0]{b}"
+      ],
+      "src" : "a.json"
+   },
+   {
+      "merge" : [
+         {
+            "path" : "{}"
+         },
+         {
+            "path" : "[1]{}",
+            "style" : "R_OVERRIDE"
+         }
+      ],
+      "src" : "b.json",
+      "style" : "L_OVERRIDE"
+   },
+   {
+      "src" : "c.json",
+      "style" : "L_OVERRIDE"
+   }
+]

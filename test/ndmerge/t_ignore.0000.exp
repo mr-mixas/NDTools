@@ -1,0 +1,8 @@
+{
+   "files" : {
+      "/etc/hostname" : "alpha",
+      "/etc/hosts" : "127.0.0.1    localhost"
+   },
+   "fqdn" : "alpha.example.org",
+   "mtime" : 1462431001
+}

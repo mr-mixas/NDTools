@@ -14,7 +14,7 @@ depends:
 	make -C $@
 
 test:
-	@echo $@ not implemented yet
+	make -C test/ndmerge
 
 veryclean: clean
 	make -C depends clean
