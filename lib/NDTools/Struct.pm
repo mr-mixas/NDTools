@@ -8,12 +8,14 @@ use warnings FATAL => 'all';
 use parent 'Exporter';
 
 use Hash::Merge qw(merge);
+use NDTools::HMBehs;
 use Storable qw(dclone);
 use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 
 our @EXPORT_OK = qw(
     cp_struct
+    st_merge
 );
 
 # copy whole struct or it's substruct defined by path
@@ -31,6 +33,18 @@ sub cp_struct($;$) {
     $out = $out->{'a'};
 
     return $out;
+}
+
+# merge structures with desired options
+sub st_merge($$;@) {
+    my ($a, $b, %opts) = @_;
+    my %behs = (
+        'L_OVERRIDE' => L_OVERRIDE,
+        'R_OVERRIDE' => R_OVERRIDE
+    );
+    my $m = Hash::Merge->new();
+    $m->specify_behavior($behs{$opts{'style'}}, $opts{'style'});
+    return $m->merge($a, $b);
 }
 
 1;
