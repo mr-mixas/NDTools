@@ -1,19 +1,22 @@
 #!/usr/bin/env perl
 
 my $ABOUT = "Merge nested data";
-my $VERSION = '0.01';
+my $VERSION = '0.02';
 
 use strict;
 use warnings FATAL => 'all';
 
+use Data::Dumper; # debug purposes only
 use File::Basename qw(basename);
 use File::Slurp qw(read_file write_file);
 use Getopt::Long qw(:config bundling);
-use Hash::Merge qw(merge);
 use JSON qw(from_json to_json);
 use Log::Log4Cli;
-use NDTools::HMBehs qw(R_OVERRIDE);
+use NDTools::Struct qw(cp_struct st_merge);
+use Storable qw(dclone);
 use Struct::Diff qw(diff dsplit);
+use Struct::Path qw(spath);
+use Struct::Path::PerlStyle qw(ps_parse);
 
 # defaults
 my $OPTS = {
@@ -31,12 +34,23 @@ Usage:
     $prog_name [OPTIONS] <arguments>
 
 Options:
+    --dump-blame [<file>]
+        dump blame
+    --dump-rules [<file>]
+        dump merge rules
     --file|f <file>
-        file to merge
+        file to merge, also is a rule delimiter (all other opts affect only cpecified file)
     --help
         print this message
-    --mergeset|mset <file>
-        write mergeset to specified file
+    --ignore <path>
+        skip specified parts. may be used several times
+    --merge <path>
+        don't merge whole document, only specified parts. may be used several times
+        '{}'/'[]' means "whole" struct. use it for first merge if whole struct must be merged and some parts merged with specific options
+    --style <L_OVERRIDE|R_OVERRIDE>
+        L_OVERRIDE, R_OVERRIDE
+            objects merged, lists overrided, left and right precedence
+        default merge style is R_OVERRIDE
     --verbose
         increase verbosity, max level: 4
     --version
@@ -45,6 +59,8 @@ Options:
 Examples:
     Merge files:
         $prog_name a.json b.json c.json
+    Merge using rules, defined via opts:
+        $prog_name --file a.json --ignore '{path}{in}{struct}' --file b.json --merge '{in_list}[2]' --file c.json
 
 USAGE_TEXT
 }
@@ -52,38 +68,74 @@ USAGE_TEXT
 my @rules;
 
 if (not GetOptions (
+    'dump-blame:s' => \$OPTS->{'dump-blame'},
+    'dump-rules:s' => \$OPTS->{'dump-rules'},
     'file|f=s' => sub { push @rules, { src => $_[1] }},
     'help|h' => sub { usage; exit 1; },
-    'mergeset|mset=s' => \$OPTS->{'mergeset'},
+    'ignore=s' => sub { push @{$rules[-1]->{'ignore'}}, $_[1] },
+    'merge=s' => sub { push @{$rules[-1]->{'merge'}}, { path => $_[1] } },
+    'style=s' => sub {
+        if (exists $rules[-1]->{'merge'} and @{$rules[-1]->{'merge'}}) {
+            $rules[-1]->{'merge'}->[-1]->{'style'} = $_[1]; # merge wide
+        } else {
+            $rules[-1]->{'style'} = $_[1]; # src wide
+        };
+    },
     'verbose|v:+' => \$OPTS->{'verbose'},
     'version' => sub { print "$VERSION"; exit 0; },
 )) { usage(); exit 1; }
 
 $Log::Log4Cli::L = $OPTS->{'verbose'};
 
-my @mset; # merge set, i.e. blame
+my @blame;
 my $result;
 
-Hash::Merge::specify_behavior(R_OVERRIDE);
-
 while (my $f = shift @ARGV) { push @rules, { src => $f }}; # files may also be defined via args
+
+if (defined $OPTS->{'dump-rules'}) {
+    print to_json(\@rules, {canonical => 1, pretty => 1});
+    die_info "All done", 0;
+}
 
 for (my $r = 0; $r < @rules; $r++) {
     die_fatal "Undefined source in $r rule" unless (defined $rules[$r]{src});
     my $file = $rules[$r]{src};
     log_debug { "Loading file '$file'" };
     my $loaded = from_json(read_file($file), {relaxed => 1});
-    log_trace { "Merge it, overriding previous" };
-    my $merged = merge($result, $loaded);
-    if ($OPTS->{'mergeset'}) {
-        push @mset, dsplit(diff($result, $merged, noO => 1, noU => 1));
-        $mset[-1]->{src} = $file;
+
+    if (exists $rules[$r]{ignore}) {
+        for my $path (@{$rules[$r]{ignore}}) {
+            log_debug { "Ignore '$rules[$r]{src}::$path'" };
+            spath($loaded, ps_parse($path), delete => 1);
+        }
     }
+
+    my $style = exists $rules[$r]{style} ? $rules[$r]{style} : 'R_OVERRIDE';
+    my $merged;
+
+    if (exists $rules[$r]{merge}) {
+        $merged = dclone($result);
+        for my $m (@{$rules[$r]{merge}}) {
+            my $subst = cp_struct($loaded, ps_parse($m->{path}));
+            my $rstyle = exists $m->{style} ? $m->{style} : $style; # per merge redefinable
+            log_debug { "Merge ($rstyle) '$rules[$r]{src}::$m->{path}'" };
+            $merged = st_merge($merged, $subst, style => $rstyle);
+        }
+    } else {
+        log_debug { "Merge ($style) '$rules[$r]{src}'" };
+        $merged = st_merge($result, $loaded, style => $style);
+    }
+
+    if ($OPTS->{'dump-blame'}) {
+        push @blame, dsplit(diff($result, $merged, noO => 1, noU => 1));
+        $blame[-1]{src} = $file;
+    }
+
     $result = $merged;
 }
 
-write_file($OPTS->{'mergeset'}, to_json(\@mset, {allow_nonref => 1, canonical => 1, pretty => 1}))
-    if ($OPTS->{'mergeset'});
+write_file($OPTS->{'dump-blame'}, to_json(\@blame, {allow_nonref => 1, canonical => 1, pretty => 1}))
+    if ($OPTS->{'dump-blame'});
 
 print to_json($result, {allow_nonref => 1, canonical => 1, pretty => 1});
 
