@@ -1,9 +1,6 @@
 [
    {
-      "ignore" : [
-         "{a}[0]{b}"
-      ],
-      "src" : "a.json"
+      "src" : "../alpha.json"
    },
    {
       "merge" : [
@@ -11,15 +8,15 @@
             "path" : "{}"
          },
          {
-            "path" : "[1]{}",
+            "path" : "{\"fqdn\"}",
+            "style" : "R_OVERRIDE"
+         },
+         {
+            "path" : "{\"mtime\"}",
             "style" : "R_OVERRIDE"
          }
       ],
-      "src" : "b.json",
-      "style" : "L_OVERRIDE"
-   },
-   {
-      "src" : "c.json",
+      "src" : "../beta.json",
       "style" : "L_OVERRIDE"
    }
 ]
