@@ -65,6 +65,10 @@ Examples:
 USAGE_TEXT
 }
 
+sub load_rules($) {
+    return @{ from_json(read_file(shift), {relaxed => 1}) };
+}
+
 my @rules;
 
 if (not GetOptions (
@@ -73,6 +77,7 @@ if (not GetOptions (
     'file|f=s' => sub { push @rules, { src => $_[1] }},
     'help|h' => sub { usage; exit 1; },
     'ignore=s' => sub { push @{$rules[-1]->{'ignore'}}, $_[1] },
+    'load-rules|rules=s' => sub { push @rules, load_rules($_[1]) },
     'merge=s' => sub { push @{$rules[-1]->{'merge'}}, { path => $_[1] } },
     'style=s' => sub {
         if (exists $rules[-1]->{'merge'} and @{$rules[-1]->{'merge'}}) {
