@@ -12,7 +12,7 @@ use File::Slurp qw(read_file write_file);
 use Getopt::Long qw(:config bundling);
 use JSON qw(from_json to_json);
 use Log::Log4Cli;
-use NDTools::Struct qw(cp_struct st_merge);
+use NDTools::Struct qw(st_copy st_merge);
 use Storable qw(dclone);
 use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
@@ -121,7 +121,7 @@ for (my $r = 0; $r < @rules; $r++) {
     if (exists $rules[$r]{merge}) {
         $merged = dclone($result);
         for my $m (@{$rules[$r]{merge}}) {
-            my $subst = cp_struct($loaded, ps_parse($m->{path}));
+            my $subst = st_copy($loaded, ps_parse($m->{path}));
             my $rstyle = exists $m->{style} ? $m->{style} : $style; # per merge redefinable
             log_debug { "Merge ($rstyle) '$rules[$r]{src}::$m->{path}'" };
             $merged = st_merge($merged, $subst, style => $rstyle);
