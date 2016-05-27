@@ -1,0 +1,22 @@
+[
+   {
+      "src" : "../alpha.json"
+   },
+   {
+      "merge" : [
+         {
+            "path" : "{}"
+         },
+         {
+            "path" : "{\"fqdn\"}",
+            "style" : "R_OVERRIDE"
+         },
+         {
+            "path" : "{\"mtime\"}",
+            "style" : "R_OVERRIDE"
+         }
+      ],
+      "src" : "../beta.json",
+      "style" : "L_OVERRIDE"
+   }
+]
