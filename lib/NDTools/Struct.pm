@@ -5,7 +5,7 @@ package NDTools::Struct;
 use 5.006;
 use strict;
 use warnings FATAL => 'all';
-use parent 'Exporter';
+use parent qw(Exporter);
 
 use Hash::Merge qw(merge);
 use NDTools::HMBehs;

@@ -3,11 +3,12 @@ package NDTools::HMBehs;
 use 5.006;
 use strict;
 use warnings FATAL => 'all';
-use parent 'Exporter';
+use parent qw(Exporter);
 
 use Hash::Merge qw(_merge_hashes);
 
 our $VERSION = '0.02'; # Don't forget to change in pod below
+
 our @EXPORT = qw(
     L_OVERRIDE
     R_OVERRIDE
