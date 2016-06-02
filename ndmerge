@@ -19,6 +19,12 @@ use Struct::Path::PerlStyle qw(ps_parse);
 
 # defaults
 my $OPTS = {
+    'json' => {
+        allow_nonref => 1,
+        canonical => 1,
+        pretty => 1,
+        relaxed => 1,
+    },
     'verbose' => 0,
 };
 
@@ -55,7 +61,7 @@ my $result;
 while (my $f = shift @ARGV) { push @rules, { src => $f }}; # files may also be defined via args
 
 if (defined $OPTS->{'dump-rules'}) {
-    print to_json(\@rules, {canonical => 1, pretty => 1});
+    print to_json(\@rules, $OPTS->{'json'});
     die_info "All done", 0;
 }
 
@@ -96,10 +102,9 @@ for (my $r = 0; $r < @rules; $r++) {
     $result = $merged;
 }
 
-write_file($OPTS->{'dump-blame'}, to_json(\@blame, {allow_nonref => 1, canonical => 1, pretty => 1}))
-    if ($OPTS->{'dump-blame'});
+write_file($OPTS->{'dump-blame'}, to_json(\@blame, $OPTS->{'json'})) if ($OPTS->{'dump-blame'});
 
-print to_json($result, {allow_nonref => 1, canonical => 1, pretty => 1});
+print to_json($result, $OPTS->{'json'});
 
 die_info "All done", 0;
 
