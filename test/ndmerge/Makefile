@@ -57,7 +57,7 @@ t_merge_args_files: always
 	@echo === $@ PASS ===
 
 t_merge_loaded_rules: always
-	$(COMPLEX_MERGE_01) --dump-blame $@.0000.blame.got --load-rules t_dump_rules.0010.got > $@.0000.got
+	ndmerge --dump-blame $@.0000.blame.got --load-rules t_dump_rules.0010.got > $@.0000.got
 	diff $@.0000.exp $@.0000.got
 	diff t_merge_args_files.0010.exp $@.0000.got # opts or rules - result must be the same
 	diff $@.0000.blame.exp $@.0000.blame.got
