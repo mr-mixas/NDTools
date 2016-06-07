@@ -38,7 +38,10 @@ GetOptions (
     'dump-blame:s' => \$OPTS->{'dump-blame'},
     'dump-rules:s' => \$OPTS->{'dump-rules'},
     'file|f=s' => sub { push @rules, { src => $_[1] }},
-    'help|h' => sub { pod2usage( -exitval => 1, -output  => \*STDERR, -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99) },
+    'help|h' => sub {
+        pod2usage(-exitval => 1, -output => \*STDERR,
+        -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
+    },
     'ignore=s' => sub { push @{$rules[-1]->{'ignore'}}, $_[1] },
     'load-rules|rules=s' => sub { push @rules, load_rules($_[1]) },
     'merge=s' => sub { push @{$rules[-1]->{'merge'}}, { path => $_[1] } },
