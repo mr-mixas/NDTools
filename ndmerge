@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.02';
+my $VERSION = '0.03';
 
 use strict;
 use warnings FATAL => 'all';
@@ -25,6 +25,7 @@ my $OPTS = {
         pretty => 1,
         relaxed => 1,
     },
+    'style' => 'R_OVERRIDE',
     'verbose' => 0,
 };
 
@@ -46,11 +47,15 @@ GetOptions (
     'load-rules|rules=s' => sub { push @rules, load_rules($_[1]) },
     'merge=s' => sub { push @{$rules[-1]->{'merge'}}, { path => $_[1] } },
     'style=s' => sub {
-        if (exists $rules[-1]->{'merge'} and @{$rules[-1]->{'merge'}}) {
-            $rules[-1]->{'merge'}->[-1]->{'style'} = $_[1]; # merge wide
+        if (@rules) {
+            if (exists $rules[-1]->{'merge'} and @{$rules[-1]->{'merge'}}) {
+                $rules[-1]->{'merge'}->[-1]->{'style'} = $_[1]; # merge wide
+            } else {
+                $rules[-1]->{'style'} = $_[1]; # src wide
+            }
         } else {
-            $rules[-1]->{'style'} = $_[1]; # src wide
-        };
+            $OPTS->{'style'} = $_[1]; # process wide
+        }
     },
     'verbose|v:+' => \$OPTS->{'verbose'},
     'version' => sub { print "$VERSION"; exit 0; },
@@ -81,11 +86,11 @@ for (my $r = 0; $r < @rules; $r++) {
         }
     }
 
-    my $style = exists $rules[$r]{style} ? $rules[$r]{style} : 'R_OVERRIDE';
+    my $style = exists $rules[$r]{style} ? $rules[$r]{style} : $OPTS->{'style'};
     my $merged;
 
     if (exists $rules[$r]{merge}) {
-        $merged = dclone($result);
+        $merged = dclone($result) if (defined $result);
         for my $m (@{$rules[$r]{merge}}) {
             my $subst = st_copy($loaded, ps_parse($m->{path}));
             my $rstyle = exists $m->{style} ? $m->{style} : $style; # per merge redefinable
