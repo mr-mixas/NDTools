@@ -8,14 +8,15 @@ use warnings FATAL => 'all';
 use Data::Dumper; # debug purposes only
 use File::Slurp qw(read_file write_file);
 use Getopt::Long qw(:config bundling);
-use JSON qw(from_json to_json);
 use Log::Log4Cli;
-use NDTools::Struct qw(st_copy st_merge);
 use Pod::Usage;
 use Storable qw(dclone);
 use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
+
+use NDTools::Format qw(dec_json enc_json);
+use NDTools::Struct qw(st_copy st_merge);
 
 # defaults
 my $OPTS = {
@@ -30,7 +31,7 @@ my $OPTS = {
 };
 
 sub load_rules($) {
-    return @{ from_json(read_file(shift), {relaxed => 1}) };
+    return @{ dec_json(read_file(shift), %{$OPTS->{'json'}}) };
 }
 
 my @rules;
@@ -69,7 +70,7 @@ my $result;
 while (my $f = shift @ARGV) { push @rules, { src => $f }}; # files may also be defined via args
 
 if (defined $OPTS->{'dump-rules'}) {
-    print to_json(\@rules, $OPTS->{'json'});
+    print enc_json(\@rules, %{$OPTS->{'json'}});
     die_info "All done", 0;
 }
 
@@ -77,7 +78,7 @@ for (my $r = 0; $r < @rules; $r++) {
     die_fatal "Undefined source in $r rule" unless (defined $rules[$r]{src});
     my $file = $rules[$r]{src};
     log_debug { "Loading file '$file'" };
-    my $loaded = from_json(read_file($file), {relaxed => 1});
+    my $loaded = dec_json(read_file($file), %{$OPTS->{'json'}});
 
     if (exists $rules[$r]{ignore}) {
         for my $path (@{$rules[$r]{ignore}}) {
@@ -110,9 +111,9 @@ for (my $r = 0; $r < @rules; $r++) {
     $result = $merged;
 }
 
-write_file($OPTS->{'dump-blame'}, to_json(\@blame, $OPTS->{'json'})) if ($OPTS->{'dump-blame'});
+write_file($OPTS->{'dump-blame'}, enc_json(\@blame, %{$OPTS->{'json'}})) if ($OPTS->{'dump-blame'});
 
-print to_json($result, $OPTS->{'json'});
+print enc_json($result, %{$OPTS->{'json'}});
 
 die_info "All done", 0;
 
