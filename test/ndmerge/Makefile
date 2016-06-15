@@ -20,12 +20,17 @@ ndmerge $(VERBOSE) \
 endef
 
 test: \
+	t_dump_prereqs \
 	t_dump_rules \
 	t_ignore \
 	t_load_rules \
 	t_merge_loaded_rules \
 	t_merge_args_files
 	@echo === ALL NDMERGE TESTS PASSED ===
+
+t_dump_prereqs: always
+	ndmerge $(VERBOSE) --dump-prereqs --load-rules t_dump_rules.0010.exp > $@.0000.got
+	diff $@.0000.exp $@.0000.got
 
 t_dump_rules: always
 	# simple rules by opt
@@ -36,7 +41,7 @@ t_dump_rules: always
 	diff $@.0010.exp $@.0010.got
 	@echo === $@ PASS ===
 
-t_ignore:
+t_ignore: always
 	ndmerge $(VERBOSE) > $@.0000.got \
 		--file ../alpha.json \
 			--ignore '{"files"}{"/etc/resolv.conf"}'
