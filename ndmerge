@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.03';
+my $VERSION = '0.04';
 
 use strict;
 use warnings FATAL => 'all';
@@ -38,6 +38,7 @@ my @rules;
 GetOptions (
     'dump-blame:s' => \$OPTS->{'dump-blame'},
     'dump-rules:s' => \$OPTS->{'dump-rules'},
+    'dump-prereqs' => \$OPTS->{'dump-prereqs'},
     'file|f=s' => sub { push @rules, { src => $_[1] }},
     'help|h' => sub {
         pod2usage(-exitval => 1, -output => \*STDERR,
@@ -70,6 +71,9 @@ while (my $f = shift @ARGV) { push @rules, { src => $f }}; # files may also be d
 
 if (defined $OPTS->{'dump-rules'}) {
     print enc_json(\@rules, %{$OPTS->{'json'}});
+    die_info "All done", 0;
+} elsif (defined $OPTS->{'dump-prereqs'}) {
+    print enc_json([ map { $_->{src} } @rules ], %{$OPTS->{'json'}});
     die_info "All done", 0;
 }
 
@@ -141,6 +145,10 @@ Dump blame.
 =item B<--dump-rules> [<file>]
 
 Dump rules.
+
+=item B<--dump-prereqs>
+
+Dump list of prerequisites from merge rules.
 
 =item B<--file|-f> <file>
 
