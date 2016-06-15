@@ -10,7 +10,6 @@ use File::Slurp qw(read_file write_file);
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
 use Pod::Usage;
-use Storable qw(dclone);
 use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
@@ -88,10 +87,9 @@ for (my $r = 0; $r < @rules; $r++) {
     }
 
     my $style = exists $rules[$r]{style} ? $rules[$r]{style} : $OPTS->{'style'};
-    my $merged;
+    my $merged = $result;
 
     if (exists $rules[$r]{merge}) {
-        $merged = dclone($result) if (defined $result);
         for my $m (@{$rules[$r]{merge}}) {
             my $subst = st_copy($loaded, ps_parse($m->{path}));
             my $rstyle = exists $m->{style} ? $m->{style} : $style; # per merge redefinable
