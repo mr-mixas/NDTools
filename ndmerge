@@ -201,6 +201,6 @@ Merge using rules, defined via opts:
             --style 'L_OVERRIDE'             # with non default style
         --file c.json                        # here merge style again will be default (ie R_OVERRIDE)
 
-Merge using rules deined as file:
+Merge using rules deined in file:
 
-    ndmerge --rules rules.json               # rules may be saved to file adding --dump-rules for prev example
+    ndmerge --rules rules.json               # rules may be saved to file by --dump-rules option
