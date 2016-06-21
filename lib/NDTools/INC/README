@@ -1,0 +1,2 @@
+This directory will be added to the begining of @INC by NDTools::INC module.
+Modules placed here (respecting namespaces) will be available for NDTools::INC users.
