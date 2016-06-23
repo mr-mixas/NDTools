@@ -3,10 +3,4 @@
 CWD=`pwd -P`
 
 export PATH=${CWD}:$PATH
-
-PERL5LIB=${CWD}/lib
-PERL5LIB=${PERL5LIB}:${CWD}/depends/Struct-Diff.pm/lib
-PERL5LIB=${PERL5LIB}:${CWD}/depends/Struct-Path.pm/lib:
-PERL5LIB=${PERL5LIB}:${CWD}/depends/Struct-Path-PerlStyle.pm/lib:
-PERL5LIB=${PERL5LIB}:${CWD}/depends/Log-Log4Cli.pm/lib
-export PERL5LIB
+export PERL5LIB=${CWD}

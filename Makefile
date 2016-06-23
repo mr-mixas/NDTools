@@ -1,5 +1,8 @@
-
 # tests, depends and so on..
+
+CWD := $(shell pwd -P)
+export PATH := $(CWD):$(PATH)
+export PERL5LIB := $(CWD)
 
 TOOLS = ndmerge
 
@@ -14,6 +17,7 @@ depends:
 	make -C $@
 
 test:
+	echo $$PATH
 	make -C test/ndmerge
 
 veryclean: clean

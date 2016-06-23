@@ -21,3 +21,4 @@ nytprof.out
 *.swp
 /depends/
 /tmp/
+/NDTools/INC/
