@@ -5,8 +5,9 @@ my $VERSION = '0.04';
 use strict;
 use warnings FATAL => 'all';
 
+use NDTools::INC;
+
 use Data::Dumper; # debug purposes only
-use File::Slurp qw(read_file write_file);
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
 use Pod::Usage;
@@ -14,24 +15,14 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-use NDTools::Format qw(dec_json enc_json);
+use NDTools::Slurp qw(st_dump st_load);
 use NDTools::Struct qw(st_copy st_merge);
 
 # defaults
 my $OPTS = {
-    'json' => {
-        allow_nonref => 1,
-        canonical => 1,
-        pretty => 1,
-        relaxed => 1,
-    },
     'style' => 'R_OVERRIDE',
     'verbose' => 0,
 };
-
-sub load_rules($) {
-    return @{ dec_json(read_file(shift), %{$OPTS->{'json'}}) };
-}
 
 my @rules;
 
@@ -45,7 +36,7 @@ GetOptions (
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
     },
     'ignore=s' => sub { push @{$rules[-1]->{'ignore'}}, $_[1] },
-    'load-rules|rules=s' => sub { push @rules, load_rules($_[1]) },
+    'load-rules|rules=s' => sub { push @rules, @{st_load($_[1], undef)} },
     'merge=s' => sub { push @{$rules[-1]->{'merge'}}, { path => $_[1] } },
     'style=s' => sub {
         if (@rules) {
@@ -70,10 +61,10 @@ my $result;
 while (my $f = shift @ARGV) { push @rules, { src => $f }}; # files may also be defined via args
 
 if (defined $OPTS->{'dump-rules'}) {
-    print enc_json(\@rules, %{$OPTS->{'json'}});
+    st_dump(\*STDOUT, \@rules, undef);
     die_info "All done", 0;
 } elsif (defined $OPTS->{'dump-prereqs'}) {
-    print enc_json([ map { $_->{src} } @rules ], %{$OPTS->{'json'}});
+    st_dump(\*STDOUT, [ map { $_->{src} } @rules ], undef);
     die_info "All done", 0;
 }
 
@@ -81,7 +72,7 @@ for (my $r = 0; $r < @rules; $r++) {
     die_fatal "Undefined source in $r rule" unless (defined $rules[$r]{src});
     my $file = $rules[$r]{src};
     log_debug { "Loading file '$file'" };
-    my $loaded = dec_json(read_file($file), %{$OPTS->{'json'}});
+    my $loaded = st_load($file, undef);
 
     if (exists $rules[$r]{ignore}) {
         for my $path (@{$rules[$r]{ignore}}) {
@@ -113,9 +104,11 @@ for (my $r = 0; $r < @rules; $r++) {
     $result = $merged;
 }
 
-write_file($OPTS->{'dump-blame'}, enc_json(\@blame, %{$OPTS->{'json'}})) if ($OPTS->{'dump-blame'});
+if ($OPTS->{'dump-blame'}) {
+    st_dump($OPTS->{'dump-blame'} ? $OPTS->{'dump-blame'} : \*STDERR, \@blame, undef);
+}
 
-print enc_json($result, %{$OPTS->{'json'}});
+st_dump(\*STDOUT, $result, undef);
 
 die_info "All done", 0;
 
