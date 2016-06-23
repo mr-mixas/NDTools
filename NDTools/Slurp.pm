@@ -6,10 +6,10 @@ use strict;
 use warnings FATAL => 'all';
 use parent qw(Exporter);
 
-use Carp qw(croak);
 use File::Basename qw(basename);
 use File::Slurp qw(read_file write_file);
 use JSON qw();
+use Log::Log4Cli;
 
 our @EXPORT_OK = qw(
     guess_fmt_by_uri
@@ -39,22 +39,26 @@ sub st_dump($$$;@) {
     my ($uri, $data, $fmt, %opts) = @_;
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
     if ($fmt eq 'JSON') {
-        $data = JSON::to_json($data, {%{$FORMATS{JSON}}, %opts});
+        $data = eval { JSON::to_json($data, {%{$FORMATS{JSON}}, %opts}) };
     } else {
-        croak "$fmt not supported yet";
+        die_fatal "$fmt not supported yet", 4;
     }
-    write_file($uri, $data);
+    die_fatal $@, 4 if $@; # convert related
+    eval { write_file($uri, $data) };
+    die_fatal $@, 2 if $@;
 }
 
 sub st_load($$;@) {
     my ($uri, $fmt, %opts) = @_;
-    my $data = read_file($uri);
+    my $data = eval { read_file($uri) };
+    die_fatal $@, 2 if $@;
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
     if ($fmt eq 'JSON') {
-        $data = JSON::from_json($data, {%{$FORMATS{JSON}}, %opts});
+        $data = eval { JSON::from_json($data, {%{$FORMATS{JSON}}, %opts}) };
     } else {
-         croak "$fmt not supported yet";
+         die_fatal "$fmt not supported yet", 4;
     }
+    die_fatal $@, 4 if $@; # convert related
     return $data;
 }
 
