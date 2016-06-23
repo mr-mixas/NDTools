@@ -17,7 +17,6 @@ depends:
 	make -C $@
 
 test:
-	echo $$PATH
 	make -C test/ndmerge
 
 veryclean: clean
