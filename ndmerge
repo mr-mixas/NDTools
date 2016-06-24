@@ -125,7 +125,7 @@ ndmerge - Merge nested data structures according provided rules
 
 =head1 DESCRIPTION
 
-Easy way to get prototype inheritance for arbitrary JSON files (or others converted to it).
+Easy way to get prototypal inheritance for arbitrary JSON structures (or others converted to it).
 
 =head1 OPTIONS
 
@@ -200,8 +200,8 @@ Simply merge three files:
 Merge using rules, defined via opts:
 
     ndmerge \
-        --file a.json \                      # define a sorce file to merge with
-            --ignore '{some}[0,3]{path}' \   # matched subsrtuctures will not be merged from a.json
+        --file a.json \                      # define a file to merge with
+            --ignore '{some}[0,3]{path}' \   # matched subsrtuctures in a.json will not be merged
         --file b.json \                      # new file name is also set a 'namespace' for other opts
             --merge '{in_list}[2]' \         # merge only specified parts
             --style 'L_OVERRIDE'             # with non default style
