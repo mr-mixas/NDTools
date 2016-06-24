@@ -154,17 +154,22 @@ Print a help message and exit.
 
 =item B<--ignore> <path>
 
-Skip specified structure parts. May be used several times.
+Skip specified structure parts. Positional: per-source. May be used several times.
+
+=item B<--load-rules> <file> B<--rules> <file>
+
+Load merge rules from specified file. May be used several times.
 
 =item B<--merge> <path>
 
 Don't merge whole document, only specified parts.
 Paths '' or '{}' or '[]' means "whole" struct, use it as first merge target if whole struct must be merged
-and some parts merged with specific options. May be used several times.
+and some parts merged with specific options. Positional: per-source. May be used several times.
 
 =item B<--style> <L_OVERRIDE|R_OVERRIDE>
 
-Merge style.
+Merge style. Positional: defines merge style per-process, per-source or per-merge according it's porition
+relatively to B<--file> and B<--merge> options.
 
 =over 8
 
@@ -176,7 +181,7 @@ Objects merged, lists overrided, left and right precedence.
 
 Default is B<R_OVERRIDE>
 
-=item B<--verbose>
+=item B<--verbose> [int] B<-v> [int]
 
 Increase verbosity, max level - 4.
 
