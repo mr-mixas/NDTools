@@ -52,7 +52,7 @@ GetOptions (
     'version' => sub { print "$VERSION"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
-$Log::Log4Cli::L = $OPTS->{'verbose'};
+$Log::Log4Cli::LEVEL = $OPTS->{'verbose'};
 
 my (@blame, $result);
 
