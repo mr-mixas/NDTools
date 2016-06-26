@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.04';
+my $VERSION = '0.05';
 
 use strict;
 use warnings FATAL => 'all';
@@ -26,9 +26,9 @@ my $OPTS = {
 my @rules;
 
 GetOptions (
-    'dump-blame:s' => \$OPTS->{'dump-blame'},
-    'dump-rules' => \$OPTS->{'dump-rules'},
-    'dump-prereqs' => \$OPTS->{'dump-prereqs'},
+    'dump-blame=s' => \$OPTS->{'dump-blame'},
+    'dump-rules=s' => \$OPTS->{'dump-rules'},
+    'dump-prereqs=s' => \$OPTS->{'dump-prereqs'},
     'file|f=s' => sub { push @rules, { src => $_[1] }},
     'help|h' => sub {
         pod2usage(-exitval => 1, -output => \*STDERR,
@@ -49,7 +49,7 @@ GetOptions (
         }
     },
     'verbose|v:+' => \$OPTS->{'verbose'},
-    'version' => sub { print "$VERSION"; exit 0; },
+    'version|ver' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
 $Log::Log4Cli::LEVEL = $OPTS->{'verbose'};
@@ -58,11 +58,13 @@ my (@blame, $result);
 
 while (my $f = shift @ARGV) { push @rules, { src => $f }}; # files may also be defined via args
 
+die_fatal "At least one rule must be specified, see --help for details", 1 unless (@rules);
+
 if (defined $OPTS->{'dump-rules'}) {
-    st_dump(\*STDOUT, \@rules, undef);
+    st_dump($OPTS->{'dump-rules'}, \@rules, undef);
     die_info "All done", 0;
 } elsif (defined $OPTS->{'dump-prereqs'}) {
-    st_dump(\*STDOUT, [ map { $_->{src} } @rules ], undef);
+    st_dump($OPTS->{'dump-prereqs'}, [ map { $_->{src} } @rules ], undef);
     die_info "All done", 0;
 }
 
@@ -102,10 +104,7 @@ for (my $r = 0; $r < @rules; $r++) {
     $result = $merged;
 }
 
-if ($OPTS->{'dump-blame'}) {
-    st_dump($OPTS->{'dump-blame'} ? $OPTS->{'dump-blame'} : \*STDOUT, \@blame, undef);
-}
-
+st_dump($OPTS->{'dump-blame'}, \@blame, undef) if ($OPTS->{'dump-blame'});
 st_dump(\*STDOUT, $result, undef);
 
 die_info "All done", 0;
@@ -183,9 +182,9 @@ Default is B<R_OVERRIDE>
 
 Increase verbosity, max level - 4.
 
-=item B<--version>
+=item B<--version> B<--ver>
 
-Prints version and exits.
+Print version and exit.
 
 =back
 
