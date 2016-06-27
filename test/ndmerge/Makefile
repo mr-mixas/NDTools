@@ -21,6 +21,7 @@ $(BIN) $(VERB) \
 endef
 
 test: \
+	t_common \
 	t_dump_prereqs \
 	t_dump_rules \
 	t_ignore \
@@ -68,3 +69,5 @@ t_merge_loaded_rules: always
 	diff t_merge_args_files.0010.exp $@.0000.got # opts or rules - result must be the same
 	diff $@.0000.blame.exp $@.0000.blame.got
 	@echo === $@ PASS ===
+
+include ../_common.mk
