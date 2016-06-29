@@ -43,22 +43,22 @@ sub st_dump($$$;@) {
     } else {
         die_fatal "$fmt not supported yet", 4;
     }
-    die_fatal $@, 4 if $@; # convert related
+    die_fatal "Failed to serialize structure: " . $@, 4 if $@; # convert related
     eval { write_file($uri, $data) };
-    die_fatal $@, 2 if $@;
+    die_fatal "Failed to dump structure: " . $@, 2 if $@;
 }
 
 sub st_load($$;@) {
     my ($uri, $fmt, %opts) = @_;
     my $data = eval { read_file($uri) };
-    die_fatal $@, 2 if $@;
+    die_fatal "Failed to load file: " . $@, 2 if $@;
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
     if ($fmt eq 'JSON') {
         $data = eval { JSON::from_json($data, {%{$FORMATS{JSON}}, %opts}) };
     } else {
          die_fatal "$fmt not supported yet", 4;
     }
-    die_fatal $@, 4 if $@; # convert related
+    die_fatal "Failed to parse $fmt: " . $@, 4 if $@; # convert related
     return $data;
 }
 
