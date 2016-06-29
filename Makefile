@@ -4,20 +4,19 @@ CWD := $(shell pwd -P)
 export PATH := $(CWD):$(PATH)
 export PERL5LIB := $(CWD)
 
-TOOLS = ndmerge
-
 .PHONY: all clean depends test veryclean
 
 all: depends test
 
 clean:
-	rm -rf tmp
+	make -C test clean
 
 depends:
 	make -C $@
 
-test: depends
-	make -C test/ndmerge
+test:
+	make -C test
+	@echo ===== ALL TESTS PASSED =====
 
 veryclean: clean
 	make -C depends clean
