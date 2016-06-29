@@ -16,7 +16,7 @@ clean:
 depends:
 	make -C $@
 
-test:
+test: depends
 	make -C test/ndmerge
 
 veryclean: clean
