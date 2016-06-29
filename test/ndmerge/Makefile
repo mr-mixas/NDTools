@@ -5,9 +5,6 @@ VERB=-vvvv
 
 all: test clean
 
-clean:
-	rm *.got
-
 define COMPLEX_MERGE_01
 $(BIN) $(VERB) \
 	--file ../alpha.json \
