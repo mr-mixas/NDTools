@@ -1,0 +1,26 @@
+Usage:
+        ndquery [OPTIONS]
+        ndquery [OPTIONS] <arguments>
+
+Options:
+    --help
+        Print a help message and exit.
+
+    --path <string>
+        Specify path in structure to deal with.
+
+    --verbose [int] -v [int]
+        Increase verbosity, max level - 4.
+
+    --version --ver
+        Print version and exit.
+
+Examples:
+    Convert to pretty-printed canonical JSON:
+
+        ndquery struct.json
+
+    Get specified path from document:
+
+        ndquery --path '{some}{path}[2]' struct.json
+
