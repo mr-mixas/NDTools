@@ -75,7 +75,7 @@ Print a help message and exit.
 
 =item B<--path> <string>
 
-Specify path in structure to deal with.
+Path in the structure to deal with.
 
 =item B<--verbose> [int] B<-v> [int]
 
@@ -89,7 +89,7 @@ Print version and exit.
 
 =head1 EXAMPLES
 
-Convert to pretty-printed canonical JSON:
+Show as pretty printed canonical JSON:
 
     ndquery struct.json
 

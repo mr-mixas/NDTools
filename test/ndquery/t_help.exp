@@ -7,7 +7,7 @@ Options:
         Print a help message and exit.
 
     --path <string>
-        Specify path in structure to deal with.
+        Path in the structure to deal with.
 
     --verbose [int] -v [int]
         Increase verbosity, max level - 4.
@@ -16,7 +16,7 @@ Options:
         Print version and exit.
 
 Examples:
-    Convert to pretty-printed canonical JSON:
+    Show as pretty printed canonical JSON:
 
         ndquery struct.json
 
