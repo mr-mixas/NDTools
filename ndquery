@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.01';
+my $VERSION = '0.02';
 
 use strict;
 use warnings FATAL => 'all';
@@ -45,7 +45,7 @@ for my $file (@files) {
     my $data = st_load($file->{src}, undef);
     my $path = ps_parse($OPTS->{path});
     my ($out) = spath($data, $path, deref => 1);
-    st_dump(\*STDOUT, $out, undef);
+    st_dump(\*STDOUT, $out, undef, allow_nonref => 1);
 }
 
 die_info "All done", 0;
