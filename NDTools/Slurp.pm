@@ -38,7 +38,7 @@ sub guess_fmt_by_uri($) {
 sub st_dump($$$;@) {
     my ($uri, $data, $fmt, %opts) = @_;
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
-    if ($fmt eq 'JSON') {
+    if (uc($fmt) eq 'JSON') {
         $data = eval { JSON::to_json($data, {%{$FORMATS{JSON}}, %opts}) };
     } else {
         die_fatal "$fmt not supported yet", 4;
@@ -53,7 +53,7 @@ sub st_load($$;@) {
     my $data = eval { read_file($uri) };
     die_fatal "Failed to load file: " . $@, 2 if $@;
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
-    if ($fmt eq 'JSON') {
+    if (uc($fmt) eq 'JSON') {
         $data = eval { JSON::from_json($data, {%{$FORMATS{JSON}}, %opts}) };
     } else {
          die_fatal "$fmt not supported yet", 4;
