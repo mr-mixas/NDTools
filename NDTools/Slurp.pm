@@ -10,6 +10,7 @@ use File::Basename qw(basename);
 use File::Slurp qw(read_file write_file);
 use JSON qw();
 use Log::Log4Cli;
+use YAML::XS qw();
 
 our @EXPORT_OK = qw(
     guess_fmt_by_uri
@@ -40,6 +41,8 @@ sub st_dump($$$;@) {
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
     if (uc($fmt) eq 'JSON') {
         $data = eval { JSON::to_json($data, {%{$FORMATS{JSON}}, %opts}) };
+    } elsif (uc($fmt) eq 'YAML') {
+        $data = eval { YAML::XS::Dump($data) };
     } else {
         die_fatal "$fmt not supported yet", 4;
     }
@@ -55,6 +58,8 @@ sub st_load($$;@) {
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
     if (uc($fmt) eq 'JSON') {
         $data = eval { JSON::from_json($data, {%{$FORMATS{JSON}}, %opts}) };
+    } elsif (uc($fmt) eq 'YAML') {
+        $data = eval { YAML::XS::Load($data) };
     } else {
          die_fatal "$fmt not supported yet", 4;
     }
