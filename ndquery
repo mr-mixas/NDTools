@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.02';
+my $VERSION = '0.03';
 
 use strict;
 use warnings FATAL => 'all';
@@ -10,8 +10,8 @@ use NDTools::INC;
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
 use Pod::Usage;
-use Struct::Path qw(spath);
-use Struct::Path::PerlStyle qw(ps_parse);
+use Struct::Path qw(slist spath);
+use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 use NDTools::Slurp qw(st_dump st_load);
 use NDTools::Struct qw(st_copy st_merge);
@@ -25,11 +25,13 @@ my $OPTS = {
 my @files;
 
 GetOptions (
+    'depth|d=i' => \$OPTS->{'depth'},
     'help|h' => sub {
         pod2usage(-exitval => 1, -output => \*STDERR,
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
     },
-    'path=s' => \$OPTS->{'path'},
+    'list|l' => \$OPTS->{'list'},
+    'path|p=s' => \$OPTS->{'path'},
     'verbose|v:+' => \$OPTS->{'verbose'},
     'version|ver' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
@@ -45,7 +47,13 @@ for my $file (@files) {
     my $data = st_load($file->{src}, undef);
     my $path = ps_parse($OPTS->{path});
     my ($out) = spath($data, $path, deref => 1);
-    st_dump(\*STDOUT, $out, undef, allow_nonref => 1);
+    if ($OPTS->{list}) {
+        for my $i (slist($out, depth => $OPTS->{'depth'})) {
+            print ps_serialize($i->[0]) . "\n";
+        }
+    } else {
+        st_dump(\*STDOUT, $out, undef, allow_nonref => 1);
+    }
 }
 
 die_info "All done", 0;
@@ -69,11 +77,19 @@ Get specified by path parts from nested data structure
 
 =over 4
 
+=item B<--depth> <N> B<-d> <N>
+
+Combined with B<--list> allows to define how much levels must be listed
+
 =item B<--help>
 
 Print a help message and exit.
 
-=item B<--path> <string>
+=item B<--list> B<-l>
+
+List structure's paths
+
+=item B<--path> <string> B<-p> <string>
 
 Path in the structure to deal with.
 
@@ -97,3 +113,6 @@ Get specified path from document:
 
     ndquery --path '{some}{path}[2]' struct.json
 
+List subpaths:
+
+    ndquery --list --path '{some}{path}[2]' struct.json
