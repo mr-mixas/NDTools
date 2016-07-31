@@ -3,10 +3,16 @@ Usage:
         ndquery [OPTIONS] <arguments>
 
 Options:
+    --depth <N> -d <N>
+        Combined with --list allows to define how much levels must be listed
+
     --help
         Print a help message and exit.
 
-    --path <string>
+    --list -l
+        List structure's paths
+
+    --path <string> -p <string>
         Path in the structure to deal with.
 
     --verbose [int] -v [int]
@@ -23,4 +29,8 @@ Examples:
     Get specified path from document:
 
         ndquery --path '{some}{path}[2]' struct.json
+
+    List subpaths:
+
+        ndquery --list --path '{some}{path}[2]' struct.json
 
