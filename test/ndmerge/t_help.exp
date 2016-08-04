@@ -12,6 +12,9 @@ Options:
     --dump-prereqs
         Dump list of prerequisites from merge rules.
 
+    --embed-rules <path>
+        Embed rules in structure.
+
     --file|-f <file>
         File to merge, also is a rule delimiter (all other opts affect only
         cpecified file). May be used several times.
