@@ -1,0 +1,93 @@
+#!/usr/bin/env perl
+
+my $VERSION = '0.01';
+
+use strict;
+use warnings FATAL => 'all';
+
+use NDTools::INC;
+
+use Getopt::Long qw(:config bundling pass_through);
+use Log::Log4Cli;
+use Module::Find;
+use Pod::Usage;
+
+# defaults
+my $OPTS = {
+    'module' => 'nddiff',
+    'verbose' => 0,
+};
+use constant MODDIR => "NDTools::NDDiff";
+
+GetOptions (
+    'help|h' => sub {
+        pod2usage(-exitval => 1, -output => \*STDERR,
+        -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
+    },
+    'module|m=s' => \$OPTS->{'module'},
+    'verbose|v:+' => \$OPTS->{'verbose'},
+    'version|ver' => sub { print "$VERSION\n"; exit 0; },
+) || pod2usage(-exitval => 1, -output  => \*STDERR);
+
+$Log::Log4Cli::LEVEL = $OPTS->{'verbose'};
+
+my $MODS = { map { $_, 1 } usesub MODDIR };
+my $mod = MODDIR . "::" . $OPTS->{'module'};
+die_fatal "Failed to locate module '$OPTS->{'module'}' in " . MODDIR, 1
+    unless exists ($MODS->{$mod});
+
+eval "use $mod";
+die_fatal "Unable to load module '$OPTS->{'module'}', $@", 1 if ($@);
+
+my %mod_opts;
+my $op = Getopt::Long::Parser->new;
+$op->configure("nopass_through"); # fail on unknown opts
+die_fatal undef, 1 unless ($op->getoptions(\%mod_opts, $mod->opts_def));
+
+my $dm = $mod->new(%mod_opts) or
+    die_fatal "Failed to init module $OPTS->{'module'}", 1;
+$dm->run or die_fatal undef, 1;
+
+die_info "All done", 0;
+
+__END__
+
+=head1 NAME
+
+nddiff - Diff for nested data structures
+
+=head1 SYNOPSIS
+
+    nddiff [OPTIONS] <file1> <file2>
+
+=head1 DESCRIPTION
+
+Diff for nested data structures
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--help>
+
+Print a help message and exit.
+
+=item B<--module> E<lt>nameE<gt> B<-m> E<lt>nameE<gt>
+
+Use specified diff module.
+
+=item B<--verbose> [int] B<-v> [int]
+
+Increase verbosity, max level - 4.
+
+=item B<--version> B<--ver>
+
+Print version and exit.
+
+=back
+
+=head1 EXAMPLES
+
+Simple diff:
+
+    nddiff a.json b.json
