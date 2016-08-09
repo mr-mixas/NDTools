@@ -68,19 +68,19 @@ Diff for nested data structures
 
 =over 4
 
-=item B<--help>
+=item B<--help|-h>
 
 Print a help message and exit.
 
-=item B<--module> E<lt>nameE<gt> B<-m> E<lt>nameE<gt>
+=item B<--module|-m> E<lt>nameE<gt>
 
 Use specified diff module.
 
-=item B<--verbose> [int] B<-v> [int]
+=item B<--verbose|-v> [int]
 
 Increase verbosity, max level - 4.
 
-=item B<--version> B<--ver>
+=item B<--version|--ver>
 
 Print version and exit.
 

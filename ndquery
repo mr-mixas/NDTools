@@ -77,27 +77,27 @@ Get specified by path parts from nested data structure
 
 =over 4
 
-=item B<--depth> <N> B<-d> <N>
+=item B<--depth|-d> E<lt>intE<gt>
 
 Combined with B<--list> allows to define how much levels must be listed
 
-=item B<--help>
+=item B<--help|-h>
 
 Print a help message and exit.
 
-=item B<--list> B<-l>
+=item B<--list|-l>
 
 List structure's paths
 
-=item B<--path> <string> B<-p> <string>
+=item B<--path|-p> E<lt>stringE<gt>
 
 Path in the structure to deal with.
 
-=item B<--verbose> [int] B<-v> [int]
+=item B<--verbose|-v> [int]
 
 Increase verbosity, max level - 4.
 
-=item B<--version> B<--ver>
+=item B<--version|--ver>
 
 Print version and exit.
 

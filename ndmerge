@@ -128,52 +128,52 @@ ndmerge - Merge nested data structures according provided rules
 
 =head1 DESCRIPTION
 
-Easy way to get prototypal inheritance for arbitrary JSON structures (or others converted to it).
+Easy way to get prototypal inheritance for arbitrary nested structures.
 
 =head1 OPTIONS
 
 =over 4
 
-=item B<--dump-blame> [<file>]
+=item B<--dump-blame> E<lt>fileE<gt>
 
 Dump blame.
 
-=item B<--dump-rules>
+=item B<--dump-rules> E<lt>fileE<gt>
 
 Dump merge rules.
 
-=item B<--dump-prereqs>
+=item B<--dump-prereqs> E<lt>fileE<gt>
 
 Dump list of prerequisites from merge rules.
 
-=item B<--embed-rules> <path>
+=item B<--embed-rules> E<lt>pathE<gt>
 
-Embed rules in structure.
+Embed rules into structure.
 
-=item B<--file|-f> <file>
+=item B<--file|-f> E<lt>fileE<gt>
 
 File to merge, also is a rule delimiter (all other opts affect only cpecified file). May
 be used several times.
 
-=item B<--help>
+=item B<--help|-h>
 
 Print a help message and exit.
 
-=item B<--ignore> <path>
+=item B<--ignore> E<lt>pathE<gt>
 
 Skip specified structure parts. Positional: per-source. May be used several times.
 
-=item B<--load-rules> <file> B<--rules> <file>
+=item B<--load-rules|--rules> E<lt>fileE<gt>
 
 Load merge rules from specified file. May be used several times.
 
-=item B<--merge> <path>
+=item B<--merge> E<lt>pathE<gt>
 
 Don't merge whole document, only specified parts.
 Paths '' or '{}' or '[]' means "whole" struct, use it as first merge target if whole struct must be merged
 and some parts merged with specific options. Positional: per-source. May be used several times.
 
-=item B<--style> <L_OVERRIDE|R_OVERRIDE>
+=item B<--style> E<lt>L_OVERRIDE|R_OVERRIDEE<gt>
 
 Merge style. Positional: defines merge style per-process, per-source or per-merge according it's porition
 relatively to B<--file> and B<--merge> options.
@@ -188,11 +188,11 @@ Objects merged, lists overrided, left and right precedence.
 
 Default is B<R_OVERRIDE>
 
-=item B<--verbose> [int] B<-v> [int]
+=item B<--verbose|-v> [int]
 
 Increase verbosity, max level - 4.
 
-=item B<--version> B<--ver>
+=item B<--version|--ver>
 
 Print version and exit.
 
