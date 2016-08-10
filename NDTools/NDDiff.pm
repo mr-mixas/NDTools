@@ -105,8 +105,8 @@ sub print_status_block {
     if (@{$path} and my @delta = $self->get_path_delta($self->{'hdr_path'}, $path)) {
         $self->{'hdr_path'} = [@{$path}];
 
-        my $header = {};                           # FIXME: 'undef' not supported by Struct::Path yet
-        spath($header, \@delta, expand => 1);      # wrap path into nested struct
+        my $header;
+        spath(\$header, \@delta, expand => 1);     # wrap path into nested structure
         $header = substr Dump($header), 4;         # convert to YAML and cut off it's header
         $header = substr($header, 0, -3);          # cut off trailing 'undef'
 
