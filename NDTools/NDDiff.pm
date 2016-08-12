@@ -47,6 +47,7 @@ sub defaults {
 sub new {
     my ($class, %opts) = @_;
     my $self = { OPTS => { %{(defaults)}, %opts }};
+    $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0;
     return bless $self, $class;
 }
 
@@ -100,6 +101,7 @@ sub get_path_delta { # TODO: move it to Struct::Path
 sub print_status_block {
     my ($self, $value, $path, $status) = @_;
     my @lines;
+    my $color = $self->{'OPTS'}->{'human'}->{'line'}->{$status};
 
     # diff for path
     if (@{$path} and my @delta = $self->get_path_delta($self->{'hdr_path'}, $path)) {
@@ -114,7 +116,7 @@ sub print_status_block {
         @lines = map { "  " . $indent . $_ } split("\n", $header);
         if ($status eq 'A' or $status eq 'R') {
             substr $lines[-1], 0, 1, $self->{'OPTS'}->{'human'}->{'sign'}->{$status};
-            $lines[-1] = colored($lines[-1], $self->{'OPTS'}->{'human'}->{'line'}->{$status});
+            $lines[-1] = colored($lines[-1], $color) if ($self->{OPTS}->{colors});
         }
     }
 
@@ -122,7 +124,7 @@ sub print_status_block {
     my $pfx = $self->{'OPTS'}->{'human'}->{'sign'}->{$status} . " ";
     $pfx .= sprintf "%" . @{$path} * 2 . "s", "";
     for my $line (split("\n", substr(Dump($value), 4))) {
-        push @lines, colored($pfx . $line, $self->{'OPTS'}->{'human'}->{'line'}->{$status});
+        push @lines, $self->{OPTS}->{colors} ? colored($pfx . $line, $color) : $pfx . $line;
     }
     print join("\n", @lines) . "\n";
 }
