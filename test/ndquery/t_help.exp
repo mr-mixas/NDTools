@@ -3,22 +3,22 @@ Usage:
         ndquery [OPTIONS] <arguments>
 
 Options:
-    --depth <N> -d <N>
+    --depth|-d <int>
         Combined with --list allows to define how much levels must be listed
 
-    --help
+    --help|-h
         Print a help message and exit.
 
-    --list -l
+    --list|-l
         List structure's paths
 
-    --path <string> -p <string>
+    --path|-p <string>
         Path in the structure to deal with.
 
-    --verbose [int] -v [int]
+    --verbose|-v [int]
         Increase verbosity, max level - 4.
 
-    --version --ver
+    --version|--ver
         Print version and exit.
 
 Examples:

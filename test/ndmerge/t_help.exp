@@ -3,30 +3,30 @@ Usage:
         ndmerge [OPTIONS] <arguments>
 
 Options:
-    --dump-blame [<file>]
+    --dump-blame <file>
         Dump blame.
 
-    --dump-rules
+    --dump-rules <file>
         Dump merge rules.
 
-    --dump-prereqs
+    --dump-prereqs <file>
         Dump list of prerequisites from merge rules.
 
     --embed-rules <path>
-        Embed rules in structure.
+        Embed rules into structure.
 
     --file|-f <file>
         File to merge, also is a rule delimiter (all other opts affect only
         cpecified file). May be used several times.
 
-    --help
+    --help|-h
         Print a help message and exit.
 
     --ignore <path>
         Skip specified structure parts. Positional: per-source. May be used
         several times.
 
-    --load-rules <file> --rules <file>
+    --load-rules|--rules <file>
         Load merge rules from specified file. May be used several times.
 
     --merge <path>
@@ -45,10 +45,10 @@ Options:
 
         Default is R_OVERRIDE
 
-    --verbose [int] -v [int]
+    --verbose|-v [int]
         Increase verbosity, max level - 4.
 
-    --version --ver
+    --version|--ver
         Print version and exit.
 
 Examples:

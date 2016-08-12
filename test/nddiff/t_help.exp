@@ -1,0 +1,21 @@
+Usage:
+        nddiff [OPTIONS] <file1> <file2>
+
+Options:
+    --help|-h
+        Print a help message and exit.
+
+    --module|-m <name>
+        Use specified diff module.
+
+    --verbose|-v [int]
+        Increase verbosity, max level - 4.
+
+    --version|--ver
+        Print version and exit.
+
+Examples:
+    Simple diff:
+
+        nddiff a.json b.json
+
