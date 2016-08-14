@@ -6,6 +6,7 @@ use strict;
 use warnings FATAL => 'all';
 use parent qw(Exporter);
 
+use File::Basename qw(basename);
 use File::Slurp qw(read_file write_file);
 use JSON qw();
 use Log::Log4Cli;
@@ -27,7 +28,7 @@ our %FORMATS = (
 );
 
 sub guess_fmt_by_uri($) {
-    my @names = split(/\./, shift);
+    my @names = split(/\./, basename(shift));
     if (@names and @names > 1) {
         my $ext = uc(pop @names);
         return 'YAML' if ($ext eq 'YML' or $ext eq 'YAML');
