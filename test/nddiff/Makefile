@@ -8,6 +8,7 @@ all: test clean
 test: \
 	t_common \
 	t_diff_human \
+	t_diff_human_full_headers \
 	t_diff_json \
 	t_diff_yaml
 	@echo === ALL $(BIN) TESTS PASSED ===
@@ -20,6 +21,11 @@ t_verbose: always
 
 t_diff_human:
 	$(BIN) $(VERB) ../alpha.json ../beta.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
+
+t_diff_human_full_headers:
+	$(BIN) $(VERB) ../alpha.json ../beta.json --full-headers > $@.0000.got
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 

@@ -16,7 +16,8 @@ sub MODNAME { die_fatal "Method 'MODNAME' must be overrided!" }
 sub VERSION { die_fatal "Method 'VERSION' must be overrided!" }
 
 sub opts_def { # Getopt::Long options
-    'out-fmt=s';
+    'out-fmt=s',
+    'full-headers'
 }
 
 sub defaults {
@@ -108,11 +109,18 @@ sub print_status_block {
         $self->{'hdr_path'} = [@{$path}];
 
         my $header;
-        spath(\$header, \@delta, expand => 1);     # wrap path into nested structure
+        my $indent = "";
+
+        if ($self->{OPTS}->{'full-headers'}) {
+            spath(\$header, $path, expand => 1);
+        } else {
+            spath(\$header, \@delta, expand => 1); # wrap path into nested structure
+            $indent = sprintf "%" . (@{$path} - @delta) * 2 . "s", "";
+        }
+
         $header = substr Dump($header), 4;         # convert to YAML and cut off it's header
         $header = substr($header, 0, -3);          # cut off trailing 'undef'
 
-        my $indent = sprintf "%" . (@{$path} - @delta) * 2 . "s", "";
         @lines = map { "  " . $indent . $_ } split("\n", $header);
         if ($status eq 'A' or $status eq 'R') {
             substr $lines[-1], 0, 1, $self->{'OPTS'}->{'human'}->{'sign'}->{$status};
