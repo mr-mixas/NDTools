@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.03';
+my $VERSION = '0.04';
 
 use strict;
 use warnings FATAL => 'all';
@@ -31,6 +31,7 @@ GetOptions (
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
     },
     'list|l' => \$OPTS->{'list'},
+    'out-fmt=s' => \$OPTS->{'out-fmt'},
     'path|p=s' => \$OPTS->{'path'},
     'verbose|v:+' => \$OPTS->{'verbose'},
     'version|ver' => sub { print "$VERSION\n"; exit 0; },
@@ -52,7 +53,7 @@ for my $file (@files) {
             print ps_serialize($i->[0]) . "\n";
         }
     } else {
-        st_dump(\*STDOUT, $out, undef, allow_nonref => 1);
+        st_dump(\*STDOUT, $out, $OPTS->{'out-fmt'});
     }
 }
 
@@ -88,6 +89,10 @@ Print a help message and exit.
 =item B<--list|-l>
 
 List structure's paths
+
+=item B<--out-fmt> E<lt>JSON|YAMLE<gt>
+
+Output format selector. JSON used by default.
 
 =item B<--path|-p> E<lt>stringE<gt>
 
