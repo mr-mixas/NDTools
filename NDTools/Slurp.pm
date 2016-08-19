@@ -20,7 +20,7 @@ our @EXPORT_OK = qw(
 
 our %FORMATS = (
     JSON => {
-        allow_nonref => 0,
+        allow_nonref => 1,
         canonical => 1,
         pretty => 1,
         relaxed => 1,

@@ -12,6 +12,9 @@ Options:
     --list|-l
         List structure's paths
 
+    --out-fmt <JSON|YAML>
+        Output format selector. JSON used by default.
+
     --path|-p <string>
         Path in the structure to deal with.
 

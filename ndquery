@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.04';
+my $VERSION = '0.05';
 
 use strict;
 use warnings FATAL => 'all';
@@ -34,6 +34,7 @@ GetOptions (
     },
     'list|l' => \$OPTS->{list},
     'path|p=s' => \$OPTS->{path},
+    'out-fmt=s' => \$OPTS->{'out-fmt'},
     'verbose|v:+' => \$OPTS->{verbose},
     'version|ver' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
@@ -62,7 +63,7 @@ for my $file (@files) {
             $prev = $i->[0];
         }
     } else {
-        st_dump(\*STDOUT, $out, undef, allow_nonref => 1);
+        st_dump(\*STDOUT, $out, $OPTS->{'out-fmt'});
     }
 }
 
@@ -98,6 +99,10 @@ Print a help message and exit.
 =item B<--list|-l>
 
 List structure's paths
+
+=item B<--out-fmt> E<lt>JSON|YAMLE<gt>
+
+Output format selector. JSON used by default.
 
 =item B<--path|-p> E<lt>stringE<gt>
 

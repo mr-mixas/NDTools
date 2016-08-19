@@ -111,13 +111,13 @@ sub print_status_block {
         my $header;
         my $indent = "";
 
-        if ($self->{OPTS}->{'full-headers'}) {
-            spath(\$header, $path, expand => 1);
-        } else {
-            spath(\$header, \@delta, expand => 1); # wrap path into nested structure
+        unless ($self->{OPTS}->{'full-headers'}) {
             $indent = sprintf "%" . (@{$path} - @delta) * 2 . "s", "";
+            $path = \@delta;
         }
 
+        $path = [ map { ref $_ eq 'ARRAY' ? [0] : $_ } @{$path} ]; # don't inflate arrays for headers
+        spath(\$header, $path, expand => 1);       # wrap path into nested structure
         $header = substr Dump($header), 4;         # convert to YAML and cut off it's header
         $header = substr($header, 0, -3);          # cut off trailing 'undef'
 
@@ -130,7 +130,7 @@ sub print_status_block {
 
     # diff for value
     my $pfx = $self->{'OPTS'}->{'human'}->{'sign'}->{$status} . " ";
-    $pfx .= sprintf "%" . @{$path} * 2 . "s", "";
+    $pfx .= sprintf "%" . @{$self->{'hdr_path'}} * 2 . "s", "";
     for my $line (split("\n", substr(Dump($value), 4))) {
         push @lines, $self->{OPTS}->{colors} ? colored($pfx . $line, $color) : $pfx . $line;
     }
