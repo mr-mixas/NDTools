@@ -33,4 +33,4 @@ test: $(addsuffix .test, $(MODS))
 	git -C $^ pull
 
 %.pm:
-	git clone git@github.com:mr-mixas/$@.git
+	git clone https://github.com/mr-mixas/$@.git
