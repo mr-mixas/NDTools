@@ -1,0 +1,15 @@
+Source: ndtools
+Section: misc
+Priority: optional
+Maintainer: Michael Samoglyadov <mixas@cpan.org>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.5
+Homepage: https://github.com/mr-mixas/NDTools
+Vcs-Browser: https://github.com/mr-mixas/NDTools.git
+
+Package: ndtools
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${perl:Depends}, libmodule-find-perl, libfile-slurp-perl, libhash-merge-perl, libjson-perl, libyaml-libyaml-perl
+Description: CLI tools for nested structures
+ JSON/YAML inspect/process/diff tools
+
