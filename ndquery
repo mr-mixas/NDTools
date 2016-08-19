@@ -27,32 +27,33 @@ my $OPTS = {
 my @files;
 
 GetOptions (
-    'depth|d=i' => \$OPTS->{'depth'},
+    'depth|d=i' => \$OPTS->{depth},
     'help|h' => sub {
         pod2usage(-exitval => 1, -output => \*STDERR,
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
     },
-    'list|l' => \$OPTS->{'list'},
-    'path|p=s' => \$OPTS->{'path'},
-    'verbose|v:+' => \$OPTS->{'verbose'},
+    'list|l' => \$OPTS->{list},
+    'path|p=s' => \$OPTS->{path},
+    'verbose|v:+' => \$OPTS->{verbose},
     'version|ver' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
-$Log::Log4Cli::LEVEL = $OPTS->{'verbose'};
+$Log::Log4Cli::LEVEL = $OPTS->{verbose};
 $OPTS->{colors} = -t STDOUT ? 1 : 0 unless (defined $OPTS->{colors});
 
 while (my $f = shift @ARGV) { push @files, { src => $f }};
 
 die_fatal "No one file specified", 1 unless (@files);
 
+my $path = eval_fatal { ps_parse($OPTS->{path}) } 2, "Failed to parse path";
+
 for my $file (@files) {
     log_debug { "Processing file '$file->{src}'" };
     my $data = st_load($file->{src}, undef);
-    my $path = ps_parse($OPTS->{path});
     my ($out) = spath($data, $path, deref => 1);
     if ($OPTS->{list}) {
         my $prev;
-        for my $i (slist($out, depth => $OPTS->{'depth'})) {
+        for my $i (slist($out, depth => $OPTS->{depth})) {
             my @delta = spath_delta($prev, $i->[0]);
             my $cmn = @{$i->[0]} - @delta;
             $cmn = ($cmn and @{$i->[0]} != @delta) ? [ @{$i->[0]}[0 .. $cmn - 1] ] : [];
