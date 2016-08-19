@@ -5,6 +5,7 @@ package NDTools::Slurp;
 use strict;
 use warnings FATAL => 'all';
 use parent qw(Exporter);
+use open qw(:std :utf8);
 
 use File::Basename qw(basename);
 use File::Slurp qw(read_file write_file);
