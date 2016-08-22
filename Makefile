@@ -4,19 +4,24 @@ CWD := $(shell pwd -P)
 export PATH := $(CWD):$(PATH)
 export PERL5LIB := $(CWD)
 
-.PHONY: all clean depends test veryclean
+.PHONY: all clean depends dist test veryclean
 
-all: depends test
+all: dist
 
 clean:
 	make -C test clean
+	make -C dist veryclean
 
 depends:
 	make -C $@
 
-test:
+dist:
+	make -C dist deb
+
+test: depends
 	make -C test
 	@echo ===== ALL TESTS PASSED =====
 
 veryclean: clean
 	make -C depends clean
+	make -C dist veryclean

@@ -9,7 +9,7 @@ Vcs-Browser: https://github.com/mr-mixas/NDTools.git
 
 Package: ndtools
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${perl:Depends}, libmodule-find-perl, libfile-slurp-perl, libhash-merge-perl, libjson-perl, libyaml-libyaml-perl
+Depends: ${misc:Depends}, ${perl:Depends}, libmodule-find-perl, libfile-slurp-perl, libhash-merge-perl, libjson-perl, libyaml-libyaml-perl
 Description: CLI tools for nested structures
  JSON/YAML inspect/process/diff tools
 
