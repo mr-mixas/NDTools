@@ -18,10 +18,9 @@ depends:
 dist:
 	make -C dist deb
 
-test: depends
+test:
 	make -C test
 	@echo ===== ALL TESTS PASSED =====
 
 veryclean: clean
 	make -C depends clean
-	make -C dist veryclean
