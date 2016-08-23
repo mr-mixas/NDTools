@@ -13,13 +13,12 @@ clean:
 
 links: $(MODS)
 	mkdir -p ../NDTools/INC/Log
-	ln -sf ../../../depends/Log-Log4Cli.pm/lib/Log/Log4Cli.pm ../NDTools/INC/Log/Log4Cli.pm
+	cp Log-Log4Cli.pm/lib/Log/Log4Cli.pm ../NDTools/INC/Log/Log4Cli.pm
 	mkdir -p ../NDTools/INC/Struct
-	ln -sf ../../../depends/Struct-Diff.pm/lib/Struct/Diff.pm ../NDTools/INC/Struct/Diff.pm
-	ln -sf ../../../depends/Struct-Path.pm/lib/Struct/Path.pm ../NDTools/INC/Struct/Path.pm
+	cp Struct-Diff.pm/lib/Struct/Diff.pm ../NDTools/INC/Struct/Diff.pm
+	cp Struct-Path.pm/lib/Struct/Path.pm ../NDTools/INC/Struct/Path.pm
 	mkdir -p ../NDTools/INC/Struct/Path
-	ln -sf ../../../../depends/Struct-Path-PerlStyle.pm/lib/Struct/Path/PerlStyle.pm \
-		../NDTools/INC/Struct/Path/PerlStyle.pm
+	cp Struct-Path-PerlStyle.pm/lib/Struct/Path/PerlStyle.pm ../NDTools/INC/Struct/Path/PerlStyle.pm
 
 pull: $(addsuffix .pull, $(MODS))
 
