@@ -7,7 +7,7 @@ use NDTools::INC;
 use NDTools::Slurp qw(st_dump st_load);
 use Log::Log4Cli;
 use Struct::Diff qw();
-use Struct::Path qw(spath);
+use Struct::Path qw(spath spath_delta);
 use Term::ANSIColor qw(colored);
 use YAML::XS qw(Dump);
 
@@ -89,23 +89,13 @@ sub pre_diff {
     return 1
 }
 
-sub get_path_delta { # TODO: move it to Struct::Path
-    my ($self, $old, $new) = @_;
-    return @{$new} unless (defined $old);
-    for (my $i = 0; $i < @{$old} and $i < @{$new}; $i++) {
-        return @{$new}[$i..$#{$new}]
-            if (keys %{ Struct::Diff::diff($old->[$i], $new->[$i], noU => 1) });
-    }
-    return ();
-}
-
 sub print_status_block {
     my ($self, $value, $path, $status) = @_;
     my @lines;
     my $color = $self->{'OPTS'}->{'human'}->{'line'}->{$status};
 
     # diff for path
-    if (@{$path} and my @delta = $self->get_path_delta($self->{'hdr_path'}, $path)) {
+    if (@{$path} and my @delta = spath_delta($self->{'hdr_path'}, $path)) {
         $self->{'hdr_path'} = [@{$path}];
 
         my $header;
