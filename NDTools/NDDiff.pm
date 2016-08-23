@@ -8,6 +8,7 @@ use NDTools::Slurp qw(st_dump st_load);
 use Log::Log4Cli;
 use Struct::Diff qw();
 use Struct::Path qw(spath spath_delta);
+use Struct::Path::PerlStyle qw(ps_parse);
 use Term::ANSIColor qw(colored);
 use YAML::XS qw(Dump);
 
@@ -16,8 +17,9 @@ sub MODNAME { die_fatal "Method 'MODNAME' must be overrided!" }
 sub VERSION { die_fatal "Method 'VERSION' must be overrided!" }
 
 sub opts_def { # Getopt::Long options
+    'full-headers',
     'out-fmt=s',
-    'full-headers'
+    'path=s'
 }
 
 sub defaults {
@@ -76,7 +78,12 @@ sub load {
     my $self = shift;
     die_fatal "Two arguments expected for diff", 1 unless (@ARGV == 2);
     for my $i (@ARGV) {
-        push @{$self->{items}}, st_load($i, undef) or return undef;
+        my $data = st_load($i, undef) or return undef;
+        if (my $path = $self->{OPTS}->{path}) {
+            $path = eval_fatal { ps_parse($path) } 1, "Failed to parse path '$path'";
+            ($data) = spath($data, $path, deref => 1);
+        }
+        push @{$self->{items}}, $data;
     }
     return 1;
 }
