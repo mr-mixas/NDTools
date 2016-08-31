@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.05';
+my $VERSION = '0.06';
 
 use strict;
 use warnings FATAL => 'all';
@@ -24,8 +24,6 @@ my $OPTS = {
     'verbose' => 0,
 };
 
-my @files;
-
 GetOptions (
     'depth|d=i' => \$OPTS->{depth},
     'help|h' => sub {
@@ -42,15 +40,12 @@ GetOptions (
 $Log::Log4Cli::LEVEL = $OPTS->{verbose};
 $OPTS->{colors} = -t STDOUT ? 1 : 0 unless (defined $OPTS->{colors});
 
-while (my $f = shift @ARGV) { push @files, { src => $f }};
-
-die_fatal "No one file specified", 1 unless (@files);
-
+my @files = @ARGV ? @ARGV : \*STDIN;
 my $path = eval_fatal { ps_parse($OPTS->{path}) } 2, "Failed to parse path";
 
 for my $file (@files) {
-    log_debug { "Processing file '$file->{src}'" };
-    my $data = st_load($file->{src}, undef);
+    log_debug { "Processing " . (ref $file ? "STDIN" : "file '$file'") };
+    my $data = st_load($file, undef);
     my ($out) = spath($data, $path, deref => 1);
     if ($OPTS->{list}) {
         my $prev;
@@ -58,7 +53,8 @@ for my $file (@files) {
             my @delta = spath_delta($prev, $i->[0]);
             my $cmn = @{$i->[0]} - @delta;
             $cmn = ($cmn and @{$i->[0]} != @delta) ? [ @{$i->[0]}[0 .. $cmn - 1] ] : [];
-            $cmn = $OPTS->{colors} ? colored(ps_serialize($cmn), $OPTS->{'color-common'}) : ps_serialize($cmn);
+            $cmn = $OPTS->{colors} ?
+                colored(ps_serialize($cmn), $OPTS->{'color-common'}) : ps_serialize($cmn);
             print $cmn . ps_serialize(\@delta) . "\n";
             $prev = $i->[0];
         }

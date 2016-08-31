@@ -34,3 +34,6 @@ t_path:
 	diff $@.0000.exp $@.0000.got
 
 include ../_common.mk
+
+t_barebin:
+	$(BIN) $(VERB) </dev/null && false || true
