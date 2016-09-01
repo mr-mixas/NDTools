@@ -6,6 +6,6 @@ use parent "NDTools::NDDiff";
 
 sub MODINFO { "Diff for nested data structires" }
 sub MODNAME { "nddiff" }
-sub VERSION { "0.01" }
+sub VERSION { "0.02" }
 
 1; # End of NDTools::NDDiff::nddiff
