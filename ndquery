@@ -15,13 +15,11 @@ use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
 use NDTools::Slurp qw(st_dump st_load);
-use NDTools::Struct qw(st_copy st_merge);
 
 # defaults
 my $OPTS = {
     'color-common' => 'bold black',
     'path' => '', # empty means whole doc
-    'verbose' => 0,
 };
 
 GetOptions (
@@ -37,13 +35,12 @@ GetOptions (
     'version|ver' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
-$Log::Log4Cli::LEVEL = $OPTS->{verbose};
+$Log::Log4Cli::LEVEL = $OPTS->{verbose} || 0;
 $OPTS->{colors} = -t STDOUT ? 1 : 0 unless (defined $OPTS->{colors});
 
-my @files = @ARGV ? @ARGV : \*STDIN;
 my $path = eval_fatal { ps_parse($OPTS->{path}) } 2, "Failed to parse path";
 
-for my $file (@files) {
+for my $file (@ARGV ? @ARGV : \*STDIN) {
     log_debug { "Processing " . (ref $file ? "STDIN" : "file '$file'") };
     my $data = st_load($file, undef);
     my ($out) = spath($data, $path, deref => 1);
