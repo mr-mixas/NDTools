@@ -15,7 +15,6 @@ use Pod::Usage;
 # defaults
 my $OPTS = {
     'module' => 'nddiff',
-    'verbose' => 0,
 };
 use constant MODDIR => "NDTools::NDDiff";
 
@@ -29,15 +28,13 @@ GetOptions (
     'version|ver' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
-$Log::Log4Cli::LEVEL = $OPTS->{'verbose'};
+$Log::Log4Cli::LEVEL = $OPTS->{'verbose'} || 0;
 
 my $MODS = { map { $_, 1 } usesub MODDIR };
 my $mod = MODDIR . "::" . $OPTS->{'module'};
 die_fatal "Failed to locate module '$OPTS->{'module'}' in " . MODDIR, 1
     unless exists ($MODS->{$mod});
-
-eval "use $mod";
-die_fatal "Unable to load module '$OPTS->{'module'}', $@", 1 if ($@);
+eval_fatal { "use $mod" } 1, "Unable to load module '$OPTS->{'module'}";
 
 my %mod_opts;
 my $op = Getopt::Long::Parser->new;
