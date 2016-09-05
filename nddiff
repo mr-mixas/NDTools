@@ -8,6 +8,7 @@ use NDTools::INC;
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Module::Find;
+use Pod::Find qw(pod_where);
 use Pod::Usage;
 
 # defaults
@@ -17,10 +18,7 @@ my $OPTS = {
 use constant MODDIR => "NDTools::NDDiff";
 
 GetOptions (
-    'help|h' => sub {
-        pod2usage(-exitval => 1, -output => \*STDERR,
-        -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
-    },
+    'help|h' => \$OPTS->{'help'},
     'module|m=s' => \$OPTS->{'module'},
     'verbose|v:+' => \$OPTS->{'verbose'},
     'version|ver' => \$OPTS->{'version'},
@@ -37,56 +35,25 @@ eval_fatal { "use $mod" } 1, "Unable to load module '$OPTS->{'module'}";
 my %mod_opts;
 my $op = Getopt::Long::Parser->new;
 $op->configure("nopass_through"); # fail on unknown opts
-die_fatal undef, 1 unless ($op->getoptions(\%mod_opts, $mod->opts_def));
+unless ($op->getoptions(\%mod_opts, $mod->opts_def)) {
+    pod2usage(
+        -exitval => 'NOEXIT',
+        -input => pod_where({-inc => 1}, $mod),
+        -output => \*STDERR
+    );
+    die_fatal undef, 1;
+}
 
 my $dm = $mod->new(%mod_opts) or
     die_fatal "Failed to init module $OPTS->{'module'}", 1;
-if ($OPTS->{'version'}) {
+
+if ($OPTS->{'help'}) {
+    $dm->usage;
+    exit 1;
+} elsif ($OPTS->{'version'}) {
     print $dm->VERSION . "\n";
 } else {
     $dm->run or die_fatal undef, 1;
 }
 
 die_info "All done", 0;
-
-__END__
-
-=head1 NAME
-
-nddiff - Diff for nested data structures
-
-=head1 SYNOPSIS
-
-    nddiff [OPTIONS] <file1> <file2>
-
-=head1 DESCRIPTION
-
-Diff for nested data structures
-
-=head1 OPTIONS
-
-=over 4
-
-=item B<--help|-h>
-
-Print a help message and exit.
-
-=item B<--module|-m> E<lt>nameE<gt>
-
-Use specified diff module.
-
-=item B<--verbose|-v> [int]
-
-Increase verbosity, max level - 4.
-
-=item B<--version|--ver>
-
-Print version and exit.
-
-=back
-
-=head1 EXAMPLES
-
-Simple diff:
-
-    nddiff a.json b.json

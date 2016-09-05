@@ -15,6 +15,10 @@ test: \
 
 include ../_common.mk
 
+# has pods in modules only
+t_pod:
+	true
+
 # redefine from common - diff requires two arguments
 t_verbose: always
 	$(BIN) -vv -v2 --verbose --verbose 3 ../alpha.json ../alpha.json >/dev/null 2>&1 #check aliases and args

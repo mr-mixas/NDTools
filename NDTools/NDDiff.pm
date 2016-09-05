@@ -11,6 +11,8 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse);
 use Term::ANSIColor qw(colored);
 use YAML::XS qw(Dump);
+use Pod::Find qw(pod_where);
+use Pod::Usage;
 
 sub MODINFO { die_fatal "Method 'MODINFO' must be overrided!" }
 sub MODNAME { die_fatal "Method 'MODNAME' must be overrided!" }
@@ -141,6 +143,16 @@ sub run {
     $self->diff or return undef;
     $self->post_diff;
     $self->dump or return undef;
+}
+
+sub usage {
+    pod2usage(
+        -exitval => 'NOEXIT',
+        -input => pod_where({-inc => 1}, ref(shift)),
+        -output => \*STDERR,
+        -sections => 'SYNOPSIS|OPTIONS|EXAMPLES',
+        -verbose => 99
+    );
 }
 
 1; # End of NDTools::NDDiff
