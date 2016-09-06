@@ -8,7 +8,7 @@ use NDTools::Slurp qw(st_dump st_load);
 use Log::Log4Cli;
 use Struct::Diff qw();
 use Struct::Path qw(spath spath_delta);
-use Struct::Path::PerlStyle qw(ps_parse);
+use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 use YAML::XS qw(Dump);
 use Pod::Find qw(pod_where);
@@ -100,23 +100,27 @@ sub pre_diff {
 
 sub print_status_block {
     my ($self, $value, $path, $status) = @_;
+    log_trace { ps_serialize($path) . ", " . $status . ":"};
+
     my @lines;
     my $color = $self->{'OPTS'}->{'human'}->{'line'}->{$status};
+    my @pstash = pop @{$path} if (ref $path->[-1] eq 'ARRAY'); # arrays signs go along with data in YAML
 
     # diff for path
     if (@{$path} and my @delta = spath_delta($self->{'hdr_path'}, $path)) {
         $self->{'hdr_path'} = [@{$path}];
 
         my $header;
+        my $hpath = [@{$path}];
         my $indent = "";
 
         unless ($self->{OPTS}->{'full-headers'}) {
             $indent = sprintf "%" . (@{$path} - @delta) * 2 . "s", "";
-            $path = \@delta;
+            $hpath = \@delta;
         }
 
-        $path = [ map { ref $_ eq 'ARRAY' ? [0] : $_ } @{$path} ]; # don't inflate arrays for headers
-        spath(\$header, $path, expand => 1);       # wrap path into nested structure
+        $hpath = [ map { ref $_ eq 'ARRAY' ? [0] : $_ } @{$hpath} ]; # deflate arrays for headers
+        spath(\$header, $hpath, expand => 1);      # wrap path into nested structure
         $header = substr Dump($header), 4;         # convert to YAML and cut off it's header
         $header = substr($header, 0, -3);          # cut off trailing 'undef'
 
@@ -129,7 +133,14 @@ sub print_status_block {
 
     # diff for value
     my $pfx = $self->{'OPTS'}->{'human'}->{'sign'}->{$status} . " ";
-    $pfx .= sprintf "%" . @{$self->{'hdr_path'}} * 2 . "s", "";
+    $pfx .= sprintf "%" . ($self->{'hdr_path'} ? @{$self->{'hdr_path'}} : 0) * 2 . "s", "";
+
+    if (@pstash) {
+        $value = [ $value ];
+        push @{$path}, pop @pstash;
+        $pfx = substr($pfx, 0, -2);
+    }
+
     for my $line (split("\n", substr(Dump($value), 4))) {
         push @lines, $self->{OPTS}->{colors} ? colored($pfx . $line, $color) : $pfx . $line;
     }
