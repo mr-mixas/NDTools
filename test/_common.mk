@@ -1,6 +1,6 @@
 # common tests and opts for all utils
 
-VERB=-vvvv
+VERBi ?= -vvvv
 
 define VRFY_EXIT_1
 e=$$?; [ $$e -ne 1 ] && { echo "--- WRONG EXIT CODE. EXPECTED: 1, GOT: $$e --- "; exit 255; } || true
