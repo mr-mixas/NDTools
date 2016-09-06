@@ -1,0 +1,45 @@
+=head1 NAME
+
+ndtools - a set of command line tools aimed to help to deal with nested data
+structures serialized to JSON or YAML
+
+=head1 SYNOPSIS
+
+    nd* --help|--version
+    nd* [OPTIONS] <arguments>
+
+See exact list of options, examples and exit codes for each tool in it's man page
+
+=head1 DESCRIPTION
+
+JSON and YAML nowadays are everywhere and sometimes requires quite complex
+processing. This tools may solve some of this "pain in the neck" cases.
+
+=head1 UTILS
+
+=over 4
+
+=item nddiff
+
+Module based diff tool
+
+=item ndmerge
+
+Merge multiple documents, using defined rules
+
+=item ndquery
+
+Inspect structure or dump it's parts
+
+=back
+
+=head1 REPORTING BUGS
+
+Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
+
+=head1 SEE ALSO
+
+L<nddiff(1)>, L<ndmerge(1)>, L<ndquery(1)>
+
+L<jq(1)>,
+L<json(1)>
