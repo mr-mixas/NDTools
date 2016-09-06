@@ -1,0 +1,9 @@
+  - Edit:
+<   - ~
+>   - id: edit_replace
+>     label: Replace
+<   - id: edit_settings
+<     label: Settings
+>   - ~
+>   - id: edit_settings
+>     label: Settings

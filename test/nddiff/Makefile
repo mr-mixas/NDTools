@@ -1,5 +1,5 @@
 BIN=nddiff
-VERB=-vvvv
+VERB=-vvv
 
 .PHONY: always test clean
 
@@ -9,6 +9,7 @@ test: \
 	t_common \
 	t_diff_human \
 	t_diff_human_full_headers \
+	t_diff_human_arrays \
 	t_diff_json \
 	t_diff_yaml
 	@echo === ALL $(BIN) TESTS PASSED ===
@@ -32,6 +33,12 @@ t_diff_human_full_headers:
 	$(BIN) $(VERB) ../alpha.json ../beta.json --full-headers > $@.0000.got
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
+
+t_diff_human_arrays:
+	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+	$(BIN) $(VERB) ../_data/menu.b.json ../_data/menu.a.json > $@.0010.got
+	diff $@.0010.exp $@.0010.got
 
 t_diff_json:
 	$(BIN) $(VERB) --out-fmt json ../alpha.json ../beta.json > $@.0000.got
