@@ -8,6 +8,7 @@ all: test clean
 test: \
 	t_common \
 	t_default \
+	t_inject \
 	t_list \
 	t_out_fmt \
 	t_path
@@ -16,6 +17,16 @@ test: \
 t_default:
 	$(BIN) $(VERB) ../alpha.json > $@.0000.got
 	diff $@.0000.exp $@.0000.got
+
+t_inject:
+	$(BIN) $(VERB) ../alpha.json --inject ../beta.json > $@.0000.got # whole doc must be rewritten
+	diff $@.0000.exp $@.0000.got
+	$(BIN) $(VERB) ../alpha.json --path '{files}' --inject ../beta.json > $@.0010.got
+	diff $@.0010.exp $@.0010.got
+	$(BIN) $(VERB) ../alpha.json --path '{some}{new}{path}' --inject ../beta.json > $@.0020.got
+	diff $@.0020.exp $@.0020.got
+	$(BIN) $(VERB) ../alpha.json --path '{}' --inject ../beta.json > $@.0030.got
+	diff $@.0030.exp $@.0030.got
 
 t_list:
 	$(BIN) $(VERB) --list ../alpha.json > $@.0000.got
