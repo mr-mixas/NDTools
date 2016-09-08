@@ -3,6 +3,7 @@ package NDTools::NDDiff;
 use strict;
 use warnings FATAL => 'all';
 
+use Algorithm::Diff;
 use NDTools::INC;
 use NDTools::Slurp qw(st_dump st_load);
 use Log::Log4Cli;
@@ -59,6 +60,10 @@ sub new {
 sub diff {
     my $self = shift;
     $self->{diff} = Struct::Diff::diff($self->{items}->[0], $self->{items}->[1]);
+    if ($self->{OPTS}->{'out-fmt'} eq 'human') {
+        $self->_diff_texts or return undef;
+    }
+    return $self->{diff};
 }
 
 sub dump {
@@ -67,7 +72,7 @@ sub dump {
         my $t_opts = {
             callback => sub { $self->print_status_block(@_) },
             sortkeys => 1,
-            statuses => [ qw{R O N A} ],
+            statuses => [ qw{R O N A Algorithm::Diff::sdiff} ],
         };
         Struct::Diff::dtraverse($self->{diff}, $t_opts);
     } else {
@@ -132,17 +137,23 @@ sub print_status_block {
     }
 
     # diff for value
-    my $pfx = $self->{'OPTS'}->{'human'}->{'sign'}->{$status} . " ";
-    $pfx .= sprintf "%" . ($self->{'hdr_path'} ? @{$self->{'hdr_path'}} : 0) * 2 . "s", "";
+    my $indent = sprintf "%" . ($self->{hdr_path} ? @{$self->{hdr_path}} : 0) * 2 . "s", "";
 
     if (@pstash) {
         $value = [ $value ];
         push @{$path}, pop @pstash;
-        $pfx = substr($pfx, 0, -2);
+        $indent = substr($indent, 0, -2);
     }
 
-    for my $line (split("\n", substr(Dump($value), 4))) {
-        push @lines, $self->{OPTS}->{colors} ? colored($pfx . $line, $color) : $pfx . $line;
+    if ($status eq 'Algorithm::Diff::sdiff') {
+        push @lines, $self->_human_text_diff($value, $indent);
+    } else {
+        my $pfx = $self->{OPTS}->{human}->{sign}->{$status} . " " . $indent;
+        for my $line (split("\n", substr(Dump($value), 4))) {
+            push @lines, $self->{OPTS}->{colors} ?
+                colored($pfx . $line, $color) :
+                $pfx . $line;
+        }
     }
     print join("\n", @lines) . "\n";
 }
@@ -164,6 +175,65 @@ sub usage {
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES',
         -verbose => 99
     );
+}
+
+sub _diff_texts {
+    my $self = shift;
+    log_debug { "Calculating diffs for text values" };
+    my $diff = $self->{diff};
+    my $t_opts = {
+        callback => sub {
+            my ($v, $p, $s, $r) = @_; # value, path, status, diff_ref
+            unless (exists ${$r}->{O}) {
+                log_error { "Incomplete diff passed (old value doesn't exists)" };
+                return undef;
+            }
+            my (@old, @new);
+            @old = split(/$\//, ${$r}->{O}) if (${$r}->{O} and not ref ${$r}->{O});
+            @new = split(/$\//, ${$r}->{N}) if (${$r}->{N} and not ref ${$r}->{N});
+            if (@old > 1 or @new > 1) {
+                ${$r}->{'Algorithm::Diff::sdiff'} = Algorithm::Diff::sdiff(\@old, \@new);
+                delete ${$r}->{O};
+                delete ${$r}->{N};
+            }
+            return 1;
+        },
+        statuses => [ 'N' ],
+    };
+    Struct::Diff::dtraverse($self->{diff}, $t_opts);
+}
+
+sub _human_text_diff {
+    my ($self, $val, $ind) = @_;
+    my %colors = (
+        '-' => $self->{OPTS}->{human}->{line}->{R},
+        '+' => $self->{OPTS}->{human}->{line}->{A},
+        'u' => $self->{OPTS}->{human}->{line}->{U},
+    );
+    my %signs = (
+        '-' => $self->{OPTS}->{human}->{sign}->{R},
+        '+' => $self->{OPTS}->{human}->{sign}->{A},
+        'u' => $self->{OPTS}->{human}->{sign}->{U},
+    );
+    my @out;
+
+    for my $line (@{$val}) {
+        if ($line->[0] eq 'c') {
+            push @out, $self->{OPTS}->{colors} ? # removed
+                colored($signs{'-'} . " " . $ind . $line->[1], $colors{'-'}) :
+                $signs{'-'} . " " . $ind . $line;
+            push @out, $self->{OPTS}->{colors} ? # added
+                colored($signs{'+'} . " " . $ind . $line->[2], $colors{'+'}) :
+                $signs{'+'} . " " . $ind . $line;
+            next;
+        }
+        my $str = ($line->[0] eq '+') ? $line->[2] : $line->[1];
+        push @out, $self->{OPTS}->{colors} ?
+            colored($signs{$line->[0]} . " " . $ind . $str, $colors{$line->[0]}) :
+            $signs{$line->[0]} . " " . $ind . $str;
+    }
+
+    return @out;
 }
 
 1; # End of NDTools::NDDiff
