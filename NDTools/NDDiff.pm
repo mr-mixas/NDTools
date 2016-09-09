@@ -221,10 +221,10 @@ sub _human_text_diff {
         if ($line->[0] eq 'c') {
             push @out, $self->{OPTS}->{colors} ? # removed
                 colored($signs{'-'} . " " . $ind . $line->[1], $colors{'-'}) :
-                $signs{'-'} . " " . $ind . $line;
+                $signs{'-'} . " " . $ind . $line->[1];
             push @out, $self->{OPTS}->{colors} ? # added
                 colored($signs{'+'} . " " . $ind . $line->[2], $colors{'+'}) :
-                $signs{'+'} . " " . $ind . $line;
+                $signs{'+'} . " " . $ind . $line->[2];
             next;
         }
         my $str = ($line->[0] eq '+') ? $line->[2] : $line->[1];
