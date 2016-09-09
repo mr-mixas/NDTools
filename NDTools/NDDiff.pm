@@ -137,12 +137,12 @@ sub print_status_block {
     }
 
     # diff for value
-    my $indent = sprintf "%" . ($self->{hdr_path} ? @{$self->{hdr_path}} : 0) * 2 . "s", "";
+    my $indent = sprintf "%" .
+        ($self->{hdr_path} ? grep { ref $_ ne 'ARRAY' } @{$self->{hdr_path}} : 0) * 2 . "s", "";
 
     if (@pstash) {
         $value = [ $value ];
         push @{$path}, pop @pstash;
-        $indent = substr($indent, 0, -2);
     }
 
     if ($status eq 'Algorithm::Diff::sdiff') {
