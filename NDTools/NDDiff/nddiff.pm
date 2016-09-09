@@ -6,7 +6,7 @@ use parent "NDTools::NDDiff";
 
 sub MODINFO { "Generic diff for nested data structires" }
 sub MODNAME { "nddiff" }
-sub VERSION { "0.02" }
+sub VERSION { "0.03" }
 
 1; # End of NDTools::NDDiff::nddiff
 
@@ -50,9 +50,6 @@ Print version and exit.
 
 LSC algorithm for arrays not implemented yet (items compared by their position). This means
 if there is a change in the middle of a list, then all next items will be showed as changed.
-
-LCS algorithm for texts not impelemented yet. This means values containing strings will be
-displayed as fully changed (if they are changed of course).
 
 =head1 EXAMPLES
 
