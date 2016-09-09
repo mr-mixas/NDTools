@@ -15,6 +15,8 @@ use YAML::XS qw();
 
 our @EXPORT_OK = qw(
     guess_fmt_by_uri
+    s_encode
+    s_dump
     st_dump
     st_load
 );
@@ -28,6 +30,21 @@ our %FORMATS = (
     },
 );
 
+sub s_encode($$;$) {
+    my ($data, $fmt, $opts) = @_;
+
+    if (uc($fmt) eq 'JSON') {
+        $data = eval { JSON::to_json($data, {%{$FORMATS{JSON}}, %{$opts || {}}}) };
+    } elsif (uc($fmt) eq 'YAML') {
+        $data = eval { YAML::XS::Dump($data) };
+    } else {
+        die_fatal "Unable to encode to '$fmt' (not supported)";
+    }
+    die_fatal "Failed to encode structure to $fmt: " . $@, 4 if $@;
+
+    return $data;
+}
+
 sub guess_fmt_by_uri($) {
     my @names = split(/\./, basename(shift));
     if (@names and @names > 1) {
@@ -35,6 +52,14 @@ sub guess_fmt_by_uri($) {
         return 'YAML' if ($ext eq 'YML' or $ext eq 'YAML');
     }
     return 'JSON'; # by default
+}
+
+sub s_dump(@) {
+    my ($uri, $fmt, $opts) = (shift, shift, shift);
+    $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
+    my $data = join($/, map { s_encode($_, $fmt, $opts) } @_);
+    eval { write_file($uri, $data) };
+    die_fatal "Failed to dump structure: " . $@, 2 if $@;
 }
 
 sub st_dump($$$;@) {
