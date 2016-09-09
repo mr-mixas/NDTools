@@ -14,7 +14,7 @@ use Struct::Path qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-use NDTools::Slurp qw(st_dump st_load);
+use NDTools::Slurp qw(s_dump st_load);
 
 # defaults
 my $OPTS = {
@@ -45,30 +45,34 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
     log_debug { "Processing " . (ref $file ? "STDIN" : "file '$file'") };
     my $data = st_load($file, undef);
 
+    my @out; # orig structure may be splitted to many
     if ($OPTS->{inject}) {
         my $val = st_load($OPTS->{inject}, undef);
         if (@{$path}) {
             map { ${$_} = $val } spath($data, $path, expand => 1);
+            push @out, $data;
         } else {
-            $data = $val;
+            push @out, $val;
         }
     } else {
-        ($data) = spath($data, $path, deref => 1);
+        @out = spath($data, $path, deref => 1);
     }
 
     if ($OPTS->{list}) {
-        my $prev;
-        for my $i (slist($data, depth => $OPTS->{depth})) {
-            my @delta = spath_delta($prev, $i->[0]);
-            my $cmn = @{$i->[0]} - @delta;
-            $cmn = ($cmn and @{$i->[0]} != @delta) ? [ @{$i->[0]}[0 .. $cmn - 1] ] : [];
-            $cmn = $OPTS->{colors} ?
-                colored(ps_serialize($cmn), $OPTS->{'color-common'}) : ps_serialize($cmn);
-            print $cmn . ps_serialize(\@delta) . "\n";
-            $prev = $i->[0];
+        for my $data (@out) {
+            my $prev;
+            for my $i (slist($data, depth => $OPTS->{depth})) {
+                my @delta = spath_delta($prev, $i->[0]);
+                my $cmn = @{$i->[0]} - @delta;
+                $cmn = ($cmn and @{$i->[0]} != @delta) ? [ @{$i->[0]}[0 .. $cmn - 1] ] : [];
+                $cmn = $OPTS->{colors} ?
+                    colored(ps_serialize($cmn), $OPTS->{'color-common'}) : ps_serialize($cmn);
+                print $cmn . ps_serialize(\@delta) . "\n";
+                $prev = $i->[0];
+            }
         }
     } else {
-        st_dump(\*STDOUT, $data, $OPTS->{'out-fmt'});
+        s_dump(\*STDOUT, $OPTS->{'out-fmt'}, undef, @out);
     }
 }
 

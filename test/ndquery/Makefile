@@ -43,6 +43,8 @@ t_out_fmt:
 t_path:
 	$(BIN) $(VERB) --path '{files}{"/etc/hosts"}' ../alpha.json > $@.0000.got
 	diff $@.0000.exp $@.0000.got
+	$(BIN) $(VERB) --path '[]' ../_data/menu.a.json > $@.0010.got
+	diff $@.0010.exp $@.0010.got
 
 include ../_common.mk
 
