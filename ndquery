@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.07';
+my $VERSION = '0.08';
 
 use strict;
 use warnings FATAL => 'all';
@@ -28,7 +28,7 @@ GetOptions (
         pod2usage(-exitval => 1, -output => \*STDERR,
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
     },
-    'inject=s' => \$OPTS->{inject},
+    'insert=s' => \$OPTS->{insert},
     'list|l' => \$OPTS->{list},
     'path|p=s' => \$OPTS->{path},
     'out-fmt=s' => \$OPTS->{'out-fmt'},
@@ -46,8 +46,8 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
     my $data = st_load($file, undef);
 
     my @out; # orig structure may be splitted to many
-    if ($OPTS->{inject}) {
-        my $val = st_load($OPTS->{inject}, undef);
+    if ($OPTS->{insert}) {
+        my $val = st_load($OPTS->{insert}, undef);
         if (@{$path}) {
             map { ${$_} = $val } spath($data, $path, expand => 1);
             push @out, $data;
@@ -105,9 +105,9 @@ Combined with B<--list> allows to define how much levels must be listed
 
 Print a help message and exit.
 
-=item B<--inject> E<lt>fileE<gt>
+=item B<--insert> E<lt>fileE<gt>
 
-Load data from file and inject to structire using path as a pointer.
+Load data from file and insert to structire using path as a pointer.
 
 =item B<--list|-l>
 
