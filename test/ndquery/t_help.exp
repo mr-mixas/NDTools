@@ -9,8 +9,8 @@ Options:
     --help|-h
         Print a help message and exit.
 
-    --inject <file>
-        Load data from file and inject to structire using path as a pointer.
+    --insert <file>
+        Load data from file and insert to structire using path as a pointer.
 
     --list|-l
         List structure's paths
