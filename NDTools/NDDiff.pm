@@ -83,9 +83,9 @@ sub dump {
 
 sub load {
     my $self = shift;
-    die_fatal "Two arguments expected for diff", 1 unless (@ARGV == 2);
-    for my $i (@ARGV) {
-        my $data = st_load($i, undef) or return undef;
+    die_fatal "Two arguments expected for diff", 1 unless (@_ == 2);
+    for my $i (@_) {
+        my $data = $self->load_uri($i) or return undef;
         if (my $path = $self->{OPTS}->{path}) {
             $path = eval_fatal { ps_parse($path) } 1, "Failed to parse path '$path'";
             ($data) = spath($data, $path, deref => 1);
@@ -93,6 +93,11 @@ sub load {
         push @{$self->{items}}, $data;
     }
     return 1;
+}
+
+sub load_uri {
+    my ($self, $uri) = @_;
+    st_load($uri, undef) or return undef;
 }
 
 sub post_diff {
