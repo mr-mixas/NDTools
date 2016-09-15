@@ -109,46 +109,47 @@ sub print_status_block {
 
     my @lines;
     my $color = $self->{'OPTS'}->{'human'}->{'line'}->{$status};
-    my @pstash = pop @{$path} if (ref $path->[-1] eq 'ARRAY'); # arrays signs go along with data in YAML
 
     # diff for path
     if (@{$path} and my @delta = spath_delta($self->{'hdr_path'}, $path)) {
         $self->{'hdr_path'} = [@{$path}];
 
-        my $header;
         my $hpath = [@{$path}];
-        my $indent = "";
+        my $hindt = 0;
 
-        unless ($self->{OPTS}->{'full-headers'}) {
-            $indent = sprintf "%" . (@{$path} - @delta) * 2 . "s", "";
+        if (not $self->{OPTS}->{'full-headers'} and @delta != @{$path}) {
+            my @path_pfx = @{$path}[0 .. @{$path} - @delta - 1];
+            $hindt = (ref $delta[0] eq 'ARRAY' or ref $path_pfx[-1] eq 'ARRAY')
+                ? @path_pfx - 1 : @path_pfx;
             $hpath = \@delta;
         }
+        pop @{$hpath} if (ref $hpath->[-1] eq 'ARRAY');
 
-        $hpath = [ map { ref $_ eq 'ARRAY' ? [0] : $_ } @{$hpath} ]; # deflate arrays for headers
-        spath(\$header, $hpath, expand => 1);      # wrap path into nested structure
-        $header = substr Dump($header), 4;         # convert to YAML and cut off it's header
-        $header = substr($header, 0, -3);          # cut off trailing 'undef'
+        if (@{$hpath}) {
+            $hindt = sprintf "%" . $hindt * 2 . "s", "";
 
-        @lines = map { "  " . $indent . $_ } split("\n", $header);
-        if ($status eq 'A' or $status eq 'R') {
-            substr $lines[-1], 0, 1, $self->{'OPTS'}->{'human'}->{'sign'}->{$status};
-            $lines[-1] = colored($lines[-1], $color) if ($self->{OPTS}->{colors});
+            my $header;
+            $hpath = [ map { ref $_ eq 'ARRAY' ? [0] : $_ } @{$hpath} ]; # deflate arrays for headers
+            spath(\$header, $hpath, expand => 1);      # wrap path into nested structure
+            $header = substr Dump($header), 4;         # convert to YAML and cut off it's header
+            $header = substr($header, 0, -3);          # cut off trailing 'undef'
+
+            @lines = map { "  " . $hindt . $_ } split("\n", $header);
+            if ($status eq 'A' or $status eq 'R') {
+                substr $lines[-1], 0, 1, $self->{'OPTS'}->{'human'}->{'sign'}->{$status};
+                $lines[-1] = colored($lines[-1], $color) if ($self->{OPTS}->{colors});
+            }
         }
     }
 
     # diff for value
-    my $indent = sprintf "%" . ($self->{hdr_path} ? @{$self->{hdr_path}} : 0) * 2 . "s", "";
-
-    if (@pstash) {
-        $value = [ $value ];
-        push @{$path}, pop @pstash;
-        $indent = substr($indent, 0, -2);
-    }
+    my $dindt = sprintf "%" . (grep { ref $_ ne 'ARRAY' } @{$path}) * 2 . "s", "";
+    $value = [ $value ] if (ref $path->[-1] eq 'ARRAY');
 
     if ($status eq 'Algorithm::Diff::sdiff') {
-        push @lines, $self->_human_text_diff($value, $indent);
+        push @lines, $self->_human_text_diff($value, $dindt);
     } else {
-        my $pfx = $self->{OPTS}->{human}->{sign}->{$status} . " " . $indent;
+        my $pfx = $self->{OPTS}->{human}->{sign}->{$status} . " " . $dindt;
         for my $line (split("\n", substr(Dump($value), 4))) {
             push @lines, $self->{OPTS}->{colors} ?
                 colored($pfx . $line, $color) :
@@ -221,10 +222,10 @@ sub _human_text_diff {
         if ($line->[0] eq 'c') {
             push @out, $self->{OPTS}->{colors} ? # removed
                 colored($signs{'-'} . " " . $ind . $line->[1], $colors{'-'}) :
-                $signs{'-'} . " " . $ind . $line;
+                $signs{'-'} . " " . $ind . $line->[1];
             push @out, $self->{OPTS}->{colors} ? # added
                 colored($signs{'+'} . " " . $ind . $line->[2], $colors{'+'}) :
-                $signs{'+'} . " " . $ind . $line;
+                $signs{'+'} . " " . $ind . $line->[2];
             next;
         }
         my $str = ($line->[0] eq '+') ? $line->[2] : $line->[1];

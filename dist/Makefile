@@ -11,6 +11,11 @@ deb: man
 
 man: $(addsuffix .1, $(NDTOOLS))
 
+nddiff.1:
+	pod2man --center ndtools --section 1 --release $(shell ../nddiff --ver) \
+		--name nddiff ../NDTools/NDDiff/nddiff.pm > $@.TMP
+	mv $@.TMP $@
+
 %.1:
 	pod2man --center ndtools --section 1 --release $(shell ../$* --ver) --name $* ../$* > $@.TMP
 	mv $@.TMP $@
