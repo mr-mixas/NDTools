@@ -25,4 +25,4 @@ t_verbose: always
 	$(BIN) -vv -v2 --verbose --verbose 3 ../alpha.json >/dev/null 2>&1 #check aliases and args
 
 t_version: always
-	$(BIN) --version --ver | grep --quiet --perl-regexp '^\d+\.\d+' # also to check aliases
+	$(BIN) --version -V | grep --quiet --perl-regexp '^\d+\.\d+' # also to check aliases

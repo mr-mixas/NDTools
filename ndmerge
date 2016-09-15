@@ -50,7 +50,7 @@ GetOptions (
         }
     },
     'verbose|v:+' => \$OPTS->{'verbose'},
-    'version|ver' => sub { print "$VERSION\n"; exit 0; },
+    'version|V' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
 $Log::Log4Cli::LEVEL = $OPTS->{'verbose'};
@@ -192,7 +192,7 @@ Default is B<R_OVERRIDE>
 
 Increase verbosity, max level - 4.
 
-=item B<--version|--ver>
+=item B<--version|-V>
 
 Print version and exit.
 

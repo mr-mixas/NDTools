@@ -21,7 +21,7 @@ GetOptions (
     'help|h' => \$OPTS->{'help'},
     'module|m=s' => \$OPTS->{'module'},
     'verbose|v:+' => \$OPTS->{'verbose'},
-    'version|ver' => \$OPTS->{'version'},
+    'version|V' => \$OPTS->{'version'},
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
 $Log::Log4Cli::LEVEL = $OPTS->{'verbose'} || 0;

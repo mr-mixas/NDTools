@@ -33,7 +33,7 @@ GetOptions (
     'path|p=s' => \$OPTS->{path},
     'out-fmt=s' => \$OPTS->{'out-fmt'},
     'verbose|v:+' => \$OPTS->{verbose},
-    'version|ver' => sub { print "$VERSION\n"; exit 0; },
+    'version|V' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
 $Log::Log4Cli::LEVEL = $OPTS->{verbose} || 0;
@@ -125,7 +125,7 @@ Path in the structure to deal with.
 
 Increase verbosity, max level - 4.
 
-=item B<--version|--ver>
+=item B<--version|-V>
 
 Print version and exit.
 

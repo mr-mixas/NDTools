@@ -24,7 +24,7 @@ Options:
     --verbose|-v [int]
         Increase verbosity, max level - 4.
 
-    --version|--ver
+    --version|-V
         Print version and exit.
 
 Examples:

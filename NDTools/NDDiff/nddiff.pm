@@ -40,7 +40,7 @@ Use specified diff module.
 
 Increase verbosity, max level - 4.
 
-=item B<--version|--ver>
+=item B<--version|-V>
 
 Print version and exit.
 
