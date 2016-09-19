@@ -66,7 +66,7 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
                 my $cmn = @{$i->[0]} - @delta;
                 $cmn = ($cmn and @{$i->[0]} != @delta) ? [ @{$i->[0]}[0 .. $cmn - 1] ] : [];
                 $cmn = $OPTS->{colors} ?
-                    colored(ps_serialize($cmn), $OPTS->{'color-common'}) : ps_serialize($cmn);
+                    colored(scalar ps_serialize($cmn), $OPTS->{'color-common'}) : ps_serialize($cmn);
                 print $cmn . ps_serialize(\@delta) . "\n";
                 $prev = $i->[0];
             }
