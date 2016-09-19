@@ -57,6 +57,11 @@ sub new {
     return bless $self, $class;
 }
 
+sub add {
+    my $self = shift;
+    push @{$self->{items}}, @_;
+}
+
 sub diff {
     my $self = shift;
     $self->{diff} = Struct::Diff::diff($self->{items}->[0], $self->{items}->[1]);
@@ -81,6 +86,11 @@ sub dump {
     return 1
 }
 
+sub list {
+    my $self = shift;
+    return @{$self->{items}};
+}
+
 sub load {
     my $self = shift;
     die_fatal "Two arguments expected for diff", 1 unless (@_ == 2);
@@ -90,7 +100,7 @@ sub load {
             $path = eval_fatal { ps_parse($path) } 1, "Failed to parse path '$path'";
             ($data) = spath($data, $path, deref => 1);
         }
-        push @{$self->{items}}, $data;
+        $self->add($data);
     }
     return 1;
 }
