@@ -5,16 +5,14 @@ use warnings FATAL => 'all';
 
 use NDTools::INC;
 
+use File::Basename qw(basename);
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Module::Find;
 use Pod::Find qw(pod_where);
 use Pod::Usage;
 
-# defaults
-my $OPTS = {
-    'module' => 'nddiff',
-};
+my $OPTS;
 use constant MODDIR => "NDTools::NDDiff";
 
 GetOptions (
@@ -26,6 +24,7 @@ GetOptions (
 
 $Log::Log4Cli::LEVEL = $OPTS->{'verbose'} || 0;
 
+$OPTS->{'module'} = basename($0) unless (defined $OPTS->{'module'});
 my $MODS = { map { $_, 1 } usesub MODDIR };
 my $mod = MODDIR . "::" . $OPTS->{'module'};
 die_fatal "Failed to locate module '$OPTS->{'module'}' in " . MODDIR, 1
