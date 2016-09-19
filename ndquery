@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.08';
+my $VERSION = '0.09';
 
 use strict;
 use warnings FATAL => 'all';
@@ -23,6 +23,7 @@ my $OPTS = {
 };
 
 GetOptions (
+    'colors!' => \$OPTS->{colors},
     'depth|d=i' => \$OPTS->{depth},
     'help|h' => sub {
         pod2usage(-exitval => 1, -output => \*STDERR,
@@ -97,9 +98,13 @@ Get specified by path parts from nested data structure
 
 =over 4
 
+=item B<--[no]colors>
+
+On/Off colors in --list mode.
+
 =item B<--depth|-d> E<lt>intE<gt>
 
-Combined with B<--list> allows to define how much levels must be listed
+Combined with B<--list> allows to define how much levels must be listed.
 
 =item B<--help|-h>
 
@@ -111,7 +116,7 @@ Load data from file and insert to structire using path as a pointer.
 
 =item B<--list|-l>
 
-List structure's paths
+List structure's paths.
 
 =item B<--out-fmt> E<lt>JSON|YAMLE<gt>
 

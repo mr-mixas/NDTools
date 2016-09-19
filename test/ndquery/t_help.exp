@@ -3,8 +3,12 @@ Usage:
         ndquery [OPTIONS] <arguments>
 
 Options:
+    --[no]colors
+        On/Off colors in --list mode.
+
     --depth|-d <int>
-        Combined with --list allows to define how much levels must be listed
+        Combined with --list allows to define how much levels must be
+        listed.
 
     --help|-h
         Print a help message and exit.
@@ -13,7 +17,7 @@ Options:
         Load data from file and insert to structire using path as a pointer.
 
     --list|-l
-        List structure's paths
+        List structure's paths.
 
     --out-fmt <JSON|YAML>
         Output format selector. JSON used by default.

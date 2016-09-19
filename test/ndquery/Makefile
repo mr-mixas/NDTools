@@ -35,6 +35,8 @@ t_list:
 	diff $@.0010.exp $@.0010.got
 	$(BIN) $(VERB) --path '{files}' --list ../alpha.json > $@.0020.got
 	diff $@.0020.exp $@.0020.got
+	$(BIN) $(VERB) --colors --list ../_data/deep-down-lorem.a.json > $@.0030.got
+	diff $@.0030.exp $@.0030.got
 
 t_out_fmt:
 	$(BIN) $(VERB) --out-fmt yaml ../alpha.json > $@.0000.got
