@@ -4,6 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Algorithm::Diff;
+use JSON qw(to_json);
 use NDTools::INC;
 use NDTools::Slurp qw(st_dump st_load);
 use Log::Log4Cli;
@@ -11,7 +12,6 @@ use Struct::Diff qw();
 use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
-use YAML::XS qw(Dump);
 use Pod::Find qw(pod_where);
 use Pod::Usage;
 
@@ -124,53 +124,38 @@ sub print_status_block {
 
     my @lines;
     my $color = $self->{'OPTS'}->{'human'}->{'line'}->{$status};
+    my $dsign = $self->{'OPTS'}->{'human'}->{'sign'}->{$status};
 
     # diff for path
     if (@{$path} and my @delta = spath_delta($self->{'hdr_path'}, $path)) {
         $self->{'hdr_path'} = [@{$path}];
-
-        my $hpath = [@{$path}];
-        my $hindt = 0;
-
-        if (not $self->{OPTS}->{'full-headers'} and @delta != @{$path}) {
-            my @path_pfx = @{$path}[0 .. @{$path} - @delta - 1];
-            $hindt = (ref $delta[0] eq 'ARRAY' or ref $path_pfx[-1] eq 'ARRAY')
-                ? @path_pfx - 1 : @path_pfx;
-            $hpath = \@delta;
-        }
-        pop @{$hpath} if (ref $hpath->[-1] eq 'ARRAY');
-
-        if (@{$hpath}) {
-            $hindt = sprintf "%" . $hindt * 2 . "s", "";
-
-            my $header;
-            $hpath = [ map { ref $_ eq 'ARRAY' ? [0] : $_ } @{$hpath} ]; # deflate arrays for headers
-            spath(\$header, $hpath, expand => 1);      # wrap path into nested structure
-            $header = substr Dump($header), 4;         # convert to YAML and cut off it's header
-            $header = substr($header, 0, -3);          # cut off trailing 'undef'
-
-            @lines = map { "  " . $hindt . $_ } split("\n", $header);
-            if ($status eq 'A' or $status eq 'R') {
-                substr $lines[-1], 0, 1, $self->{'OPTS'}->{'human'}->{'sign'}->{$status};
-                $lines[-1] = colored($lines[-1], $color) if ($self->{OPTS}->{colors});
+        for (my $s = 0; $s < @{$path}; $s++) {
+            next if (not $self->{OPTS}->{'full-headers'} and $s < @{$path} - @delta);
+            my $line = sprintf("%" . $s * 2 . "s", "") . ps_serialize([$path->[$s]]);
+            if (($status eq 'A' or $status eq 'R') and $s == $#{$path}) {
+                $line = "$dsign $line";
+                $line = colored($line, "bold $color") if ($self->{OPTS}->{colors});
+            } else {
+                $line = "  $line";
             }
+            push @lines, $line;
         }
     }
 
     # diff for value
-    my $dindt = sprintf "%" . (grep { ref $_ ne 'ARRAY' } @{$path}) * 2 . "s", "";
-    $value = [ $value ] if (ref $path->[-1] eq 'ARRAY');
-
+    my $indt = sprintf "%" . @{$path} * 2 . "s", "";
     if ($status eq 'Algorithm::Diff::sdiff') {
-        push @lines, $self->_human_text_diff($value, $dindt);
+        push @lines, $self->_human_text_diff($value, $indt);
     } else {
-        my $pfx = $self->{OPTS}->{human}->{sign}->{$status} . " " . $dindt;
-        for my $line (split("\n", substr(Dump($value), 4))) {
-            push @lines, $self->{OPTS}->{colors} ?
-                colored($pfx . $line, $color) :
-                $pfx . $line;
+        $value = to_json($value, {allow_nonref => 1, canonical => 1, pretty => 0})
+            if (ref $value or not defined $value);
+        for my $line (split("\n", $value)) {
+            $line = "$dsign $indt" . $line;
+            $line = colored($line, $color) if ($self->{OPTS}->{colors});
+            push @lines, $line;
         }
     }
+
     print join("\n", @lines) . "\n";
 }
 

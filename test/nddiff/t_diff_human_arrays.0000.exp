@@ -1,9 +1,10 @@
-  - Edit:
-<   - ~
->   - id: edit_replace
->     label: Replace
-<   - id: edit_settings
-<     label: Settings
->   - ~
->   - id: edit_settings
->     label: Settings
+  [1]
+    {Edit}
+      [5]
+<       null
+>       {"id":"edit_replace","label":"Replace"}
+      [6]
+<       {"id":"edit_settings","label":"Settings"}
+>       null
+>     [7]
+>       {"id":"edit_settings","label":"Settings"}
