@@ -1,10 +1,4 @@
   [1]
     {Edit}
-      [5]
+<     [5]
 <       {"id":"edit_replace","label":"Replace"}
->       null
-      [6]
-<       null
->       {"id":"edit_settings","label":"Settings"}
-<     [7]
-<       {"id":"edit_settings","label":"Settings"}
