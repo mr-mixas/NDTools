@@ -16,7 +16,6 @@ use Pod::Find qw(pod_where);
 use Pod::Usage;
 
 sub MODINFO { die_fatal "Method 'MODINFO' must be overrided!" }
-sub MODNAME { die_fatal "Method 'MODNAME' must be overrided!" }
 sub VERSION { die_fatal "Method 'VERSION' must be overrided!" }
 
 sub opts_def { # Getopt::Long options
@@ -110,14 +109,6 @@ sub load_uri {
     st_load($uri, undef) or return undef;
 }
 
-sub post_diff {
-    return 1
-}
-
-sub pre_diff {
-    return 1
-}
-
 sub print_status_block {
     my ($self, $value, $path, $status) = @_;
     log_trace { ps_serialize($path) . ", " . $status . ":"};
@@ -162,9 +153,7 @@ sub print_status_block {
 sub run {
     my $self = shift;
     $self->load(@ARGV) or return undef;
-    $self->pre_diff;
     $self->diff or return undef;
-    $self->post_diff;
     $self->dump or return undef;
 }
 

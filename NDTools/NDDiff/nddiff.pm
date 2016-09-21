@@ -5,7 +5,6 @@ use warnings FATAL => 'all';
 use parent "NDTools::NDDiff";
 
 sub MODINFO { "Generic diff for nested data structires" }
-sub MODNAME { "nddiff" }
 sub VERSION { "0.03" }
 
 1; # End of NDTools::NDDiff::nddiff
