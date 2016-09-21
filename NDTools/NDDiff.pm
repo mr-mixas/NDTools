@@ -4,6 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Algorithm::Diff;
+use Getopt::Long qw(:config bundling nopass_through);
 use JSON qw(to_json);
 use NDTools::INC;
 use NDTools::Slurp qw(st_dump st_load);
@@ -18,15 +19,18 @@ use Pod::Usage;
 sub MODINFO { die_fatal "Method 'MODINFO' must be overrided!" }
 sub VERSION { die_fatal "Method 'VERSION' must be overrided!" }
 
-sub opts_def { # Getopt::Long options
-    'full-headers',
-    'out-fmt=s',
-    'path=s'
+sub arg_opts {
+    my $self = shift;
+    return (
+        'full-headers' => \$self->{OPTS}->{'full-headers'},
+        'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
+        'path=s' => \$self->{OPTS}->{path},
+    )
 }
 
 sub defaults {
     my $out = {
-        'out-fmt' => 'human',
+        'colors' => -t STDOUT ? 1 : 0,
         'human' => {
             'line' => {
                 'A' => 'green',
@@ -41,6 +45,7 @@ sub defaults {
                 'R' => '<',
             },
         },
+        'out-fmt' => 'human',
     };
     $out->{human}{line}{N} = $out->{human}{line}{A};
     $out->{human}{line}{O} = $out->{human}{line}{R};
@@ -50,10 +55,12 @@ sub defaults {
 }
 
 sub new {
-    my ($class, %opts) = @_;
-    my $self = { OPTS => { %{(defaults)}, %opts }};
-    $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0;
-    return bless $self, $class;
+    my $self = bless { OPTS => defaults }, shift;
+    unless (GetOptions ($self->arg_opts)) {
+        $self->usage;
+        return undef;
+    }
+    return $self;
 }
 
 sub add {

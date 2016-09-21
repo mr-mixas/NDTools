@@ -9,8 +9,6 @@ use File::Basename qw(basename);
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Module::Find;
-use Pod::Find qw(pod_where);
-use Pod::Usage;
 
 my $OPTS;
 use constant MODDIR => "NDTools::NDDiff";
@@ -31,20 +29,7 @@ die_fatal "Failed to locate module '$OPTS->{'module'}' in " . MODDIR, 1
     unless exists ($MODS->{$mod});
 eval_fatal { "use $mod" } 1, "Unable to load module '$OPTS->{'module'}";
 
-my %mod_opts;
-my $op = Getopt::Long::Parser->new;
-$op->configure("nopass_through"); # fail on unknown opts
-unless ($op->getoptions(\%mod_opts, $mod->opts_def)) {
-    pod2usage(
-        -exitval => 'NOEXIT',
-        -input => pod_where({-inc => 1}, $mod),
-        -output => \*STDERR
-    );
-    die_fatal undef, 1;
-}
-
-my $dm = $mod->new(%mod_opts) or
-    die_fatal "Failed to init module $OPTS->{'module'}", 1;
+my $dm = $mod->new() or die_fatal undef, 1;
 
 if ($OPTS->{'help'}) {
     $dm->usage;
