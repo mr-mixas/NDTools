@@ -22,6 +22,7 @@ sub VERSION { die_fatal "Method 'VERSION' must be overrided!" }
 sub arg_opts {
     my $self = shift;
     return (
+        'colors!' => \$self->{OPTS}->{'colors'},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
@@ -30,7 +31,6 @@ sub arg_opts {
 
 sub defaults {
     my $out = {
-        'colors' => -t STDOUT ? 1 : 0,
         'human' => {
             'line' => {
                 'A' => 'green',
@@ -60,6 +60,8 @@ sub new {
         $self->usage;
         return undef;
     }
+    $self->{OPTS}->{'colors'} = -t STDOUT ? 1 : 0
+        unless (defined $self->{OPTS}->{'colors'});
     return $self;
 }
 

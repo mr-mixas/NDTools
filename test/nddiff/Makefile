@@ -8,6 +8,7 @@ all: test clean
 test: \
 	t_common \
 	t_diff_human \
+	t_diff_human_colors \
 	t_diff_human_full_headers \
 	t_diff_human_arrays \
 	t_diff_human_text \
@@ -27,6 +28,11 @@ t_verbose: always
 
 t_diff_human:
 	$(BIN) $(VERB) ../alpha.json ../beta.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
+
+t_diff_human_colors:
+	$(BIN) $(VERB) --colors ../alpha.json ../beta.json > $@.0000.got
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 

@@ -2,6 +2,9 @@ Usage:
         nddiff [OPTIONS] <file1> <file2>
 
 Options:
+    --[no]colors
+        On/Off colors for diff.
+
     --help|-h
         Print a help message and exit.
 
