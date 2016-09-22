@@ -13,6 +13,7 @@ test: \
 	t_diff_human_arrays \
 	t_diff_human_text \
 	t_diff_json \
+	t_diff_list_modules \
 	t_diff_yaml
 	@echo === ALL $(BIN) TESTS PASSED ===
 
@@ -53,6 +54,11 @@ t_diff_human_text:
 
 t_diff_json:
 	$(BIN) $(VERB) --out-fmt json ../alpha.json ../beta.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
+
+t_diff_list_modules:
+	$(BIN) $(VERB) --list-modules -l > $@.0000.got
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 

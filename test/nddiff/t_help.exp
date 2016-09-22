@@ -8,6 +8,9 @@ Options:
     --help|-h
         Print a help message and exit.
 
+    --list-modules|-l
+        Print list of available diff modules.
+
     --module|-m <name>
         Use specified diff module.
 

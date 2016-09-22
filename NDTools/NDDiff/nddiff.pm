@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use parent "NDTools::NDDiff";
 
 sub MODINFO { "Generic diff for nested data structires" }
-sub VERSION { "0.04" }
+sub VERSION { "0.05" }
 
 1; # End of NDTools::NDDiff::nddiff
 
@@ -34,6 +34,10 @@ On/Off colors for diff.
 =item B<--help|-h>
 
 Print a help message and exit.
+
+=item B<--list-modules|-l>
+
+Print list of available diff modules.
 
 =item B<--module|-m> E<lt>nameE<gt>
 
