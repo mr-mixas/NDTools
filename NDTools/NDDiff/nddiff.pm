@@ -43,6 +43,11 @@ Print list of available diff modules.
 
 Use specified diff module.
 
+=item B<--path> E<lt>pathE<gt>
+
+Define path to substructure to deal with. See detailed syntax description
+at L<https://metacpan.org/pod/Struct::Path::PerlStyle>
+
 =item B<--verbose|-v> [int]
 
 Increase verbosity, max level - 4.
@@ -53,13 +58,25 @@ Print version and exit.
 
 =back
 
-=head1 LIMITATIONS
-
-LSC algorithm for arrays not implemented yet (items compared by their position). This means
-if there is a change in the middle of a list, then all next items will be showed as changed.
-
 =head1 EXAMPLES
 
 Simple diff:
 
     nddiff a.json b.json
+
+=head1 REPORTING BUGS
+
+Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
+
+=head1 SEE ALSO
+
+L<diff(1)>, L<sdiff(1)>
+
+L<Struct::Diff>, L<Struct::Path>, L<Struct::Path::PerlStyle>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2016 Michael Samoglyadov C<< <mixas at cpan.org> >>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of GNU General Public License 3 or later versions.

@@ -14,6 +14,10 @@ Options:
     --module|-m <name>
         Use specified diff module.
 
+    --path <path>
+        Define path to substructure to deal with. See detailed syntax
+        description at <https://metacpan.org/pod/Struct::Path::PerlStyle>
+
     --verbose|-v [int]
         Increase verbosity, max level - 4.
 
