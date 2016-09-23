@@ -72,6 +72,7 @@ sub add {
 
 sub diff {
     my $self = shift;
+    log_debug { "Calculating diff for structure" };
     $self->{diff} = Struct::Diff::diff($self->{items}->[0], $self->{items}->[1]);
     if ($self->{OPTS}->{'out-fmt'} eq 'human') {
         $self->_diff_texts or return undef;
@@ -81,11 +82,12 @@ sub diff {
 
 sub dump {
     my $self = shift;
+    log_debug { "Dumping results" };
     if ($self->{OPTS}->{'out-fmt'} eq 'human') {
         my $t_opts = {
             callback => sub { $self->print_status_block(@_) },
             sortkeys => 1,
-            statuses => [ qw{R O N A Algorithm::Diff::sdiff} ],
+            statuses => [ qw{R O N A TEXT_SDIFF} ],
         };
         Struct::Diff::dtraverse($self->{diff}, $t_opts);
     } else {
@@ -115,6 +117,7 @@ sub load {
 
 sub load_uri {
     my ($self, $uri) = @_;
+    log_debug { "Loading $uri" };
     st_load($uri, undef) or return undef;
 }
 
@@ -144,7 +147,7 @@ sub print_status_block {
 
     # diff for value
     my $indt = sprintf "%" . @{$path} * 2 . "s", "";
-    if ($status eq 'Algorithm::Diff::sdiff') {
+    if ($status eq 'TEXT_SDIFF') {
         push @lines, $self->_human_text_diff($value, $indt);
     } else {
         $value = to_json($value, {allow_nonref => 1, canonical => 1, pretty => 0})
@@ -191,7 +194,7 @@ sub _diff_texts {
             @old = split(/$\//, ${$r}->{O}) if (${$r}->{O} and not ref ${$r}->{O});
             @new = split(/$\//, ${$r}->{N}) if (${$r}->{N} and not ref ${$r}->{N});
             if (@old > 1 or @new > 1) {
-                ${$r}->{'Algorithm::Diff::sdiff'} = Algorithm::Diff::sdiff(\@old, \@new);
+                ${$r}->{'TEXT_SDIFF'} = Algorithm::Diff::sdiff(\@old, \@new);
                 delete ${$r}->{O};
                 delete ${$r}->{N};
             }
