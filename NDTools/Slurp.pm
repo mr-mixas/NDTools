@@ -17,7 +17,6 @@ our @EXPORT_OK = qw(
     guess_fmt_by_uri
     s_encode
     s_dump
-    st_dump
     st_load
 );
 
@@ -58,21 +57,6 @@ sub s_dump(@) {
     my ($uri, $fmt, $opts) = (shift, shift, shift);
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
     my $data = join($/, map { s_encode($_, $fmt, $opts) } @_);
-    eval { write_file($uri, $data) };
-    die_fatal "Failed to dump structure: " . $@, 2 if $@;
-}
-
-sub st_dump($$$;@) {
-    my ($uri, $data, $fmt, %opts) = @_;
-    $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
-    if (uc($fmt) eq 'JSON') {
-        $data = eval { JSON::to_json($data, {%{$FORMATS{JSON}}, %opts}) };
-    } elsif (uc($fmt) eq 'YAML') {
-        $data = eval { YAML::XS::Dump($data) };
-    } else {
-        die_fatal "$fmt not supported yet", 4;
-    }
-    die_fatal "Failed to serialize structure: " . $@, 4 if $@; # convert related
     eval { write_file($uri, $data) };
     die_fatal "Failed to dump structure: " . $@, 2 if $@;
 }

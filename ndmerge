@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-use NDTools::Slurp qw(st_dump st_load);
+use NDTools::Slurp qw(s_dump st_load);
 use NDTools::Struct qw(st_copy st_merge);
 
 # defaults
@@ -62,10 +62,10 @@ while (my $f = shift @ARGV) { push @rules, { src => $f }}; # files may also be d
 die_fatal "At least one rule must be specified, see --help for details", 1 unless (@rules);
 
 if (defined $OPTS->{'dump-rules'}) {
-    st_dump($OPTS->{'dump-rules'}, \@rules, undef);
+    s_dump($OPTS->{'dump-rules'}, undef, undef, \@rules);
     die_info "All done", 0;
 } elsif (defined $OPTS->{'dump-prereqs'}) {
-    st_dump($OPTS->{'dump-prereqs'}, [ map { $_->{src} } @rules ], undef);
+    s_dump($OPTS->{'dump-prereqs'}, undef, undef, [ map { $_->{src} } @rules ]);
     die_info "All done", 0;
 }
 
@@ -110,8 +110,8 @@ if ($OPTS->{'embed-rules'}) {
     ${$path} = \@rules;
 }
 
-st_dump($OPTS->{'dump-blame'}, \@blame, undef) if ($OPTS->{'dump-blame'});
-st_dump(\*STDOUT, $result, undef);
+s_dump($OPTS->{'dump-blame'}, undef, undef, \@blame) if ($OPTS->{'dump-blame'});
+s_dump(\*STDOUT, undef, undef, $result);
 
 die_info "All done", 0;
 

@@ -7,7 +7,7 @@ use Algorithm::Diff;
 use Getopt::Long qw(:config bundling nopass_through);
 use JSON qw(to_json);
 use NDTools::INC;
-use NDTools::Slurp qw(st_dump st_load);
+use NDTools::Slurp qw(s_dump st_load);
 use Log::Log4Cli;
 use Struct::Diff qw();
 use Struct::Path qw(spath spath_delta);
@@ -89,7 +89,7 @@ sub dump {
         };
         Struct::Diff::dtraverse($self->{diff}, $t_opts);
     } else {
-        st_dump(\*STDOUT, $self->{diff}, $self->{OPTS}->{'out-fmt'});
+        s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, undef, $self->{diff});
     }
     return 1
 }
