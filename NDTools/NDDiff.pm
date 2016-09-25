@@ -169,6 +169,13 @@ sub run {
     $self->dump or return undef;
 }
 
+sub status {
+    my $self = shift;
+    return 250 unless (exists $self->{diff});
+    return 0 if (keys $self->{diff} == 0 or exists $self->{diff}->{U});
+    return 8; # differences found
+}
+
 sub usage {
     pod2usage(
         -exitval => 'NOEXIT',

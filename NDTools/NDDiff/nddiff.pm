@@ -64,6 +64,12 @@ Simple diff:
 
     nddiff a.json b.json
 
+=head1 EXIT STATUS
+
+0   No errors, no diff.
+1   Generic error code.
+8   Diff exists.
+
 =head1 REPORTING BUGS
 
 Report bugs to L<https://github.com/mr-mixas/NDTools/issues>

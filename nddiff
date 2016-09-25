@@ -47,6 +47,7 @@ if ($OPTS->{'help'}) {
     print $dm->VERSION . "\n";
 } else {
     $dm->run or die_fatal undef, 1;
+    die_info undef, $dm->status;
 }
 
 die_info "All done", 0;
