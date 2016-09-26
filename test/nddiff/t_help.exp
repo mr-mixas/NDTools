@@ -8,6 +8,9 @@ Options:
     --help|-h
         Print a help message and exit.
 
+    --json
+        Use JSON as diff format.
+
     --list-modules|-l
         Print list of available diff modules.
 

@@ -24,6 +24,7 @@ sub arg_opts {
     return (
         'colors!' => \$self->{OPTS}->{'colors'},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
+        'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0]},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
         'quiet|q' => \$self->{OPTS}->{quiet},

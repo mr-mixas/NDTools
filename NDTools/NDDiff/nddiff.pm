@@ -35,6 +35,10 @@ On/Off colors for diff.
 
 Print a help message and exit.
 
+=item B<--json>
+
+Use JSON as diff format.
+
 =item B<--list-modules|-l>
 
 Print list of available diff modules.

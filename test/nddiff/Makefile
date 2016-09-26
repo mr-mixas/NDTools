@@ -59,7 +59,7 @@ t_diff_human_text:
 	diff $@.0000.exp $@.0000.got
 
 t_diff_json:
-	$(BIN) $(VERB) --out-fmt json ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
+	$(BIN) $(VERB) --json ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 
