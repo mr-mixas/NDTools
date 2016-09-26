@@ -26,6 +26,7 @@ sub arg_opts {
         'full-headers' => \$self->{OPTS}->{'full-headers'},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
+        'quiet|q' => \$self->{OPTS}->{quiet},
     )
 }
 
@@ -166,7 +167,7 @@ sub run {
     my $self = shift;
     $self->load(@ARGV) or return undef;
     $self->diff or return undef;
-    $self->dump or return undef;
+    $self->dump or return undef unless ($self->{OPTS}->{quiet});
 }
 
 sub status {

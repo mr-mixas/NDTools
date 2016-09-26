@@ -48,6 +48,10 @@ Use specified diff module.
 Define path to substructure to deal with. See detailed syntax description
 at L<https://metacpan.org/pod/Struct::Path::PerlStyle>
 
+=item B<--quiet|-q>
+
+Don't show diff, only exit code shows exists diff or not.
+
 =item B<--verbose|-v> [int]
 
 Increase verbosity, max level - 4.

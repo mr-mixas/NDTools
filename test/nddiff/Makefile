@@ -11,6 +11,7 @@ test: \
 	t_diff_human_colors \
 	t_diff_human_full_headers \
 	t_diff_human_arrays \
+	t_diff_human_quiet \
 	t_diff_human_text \
 	t_diff_json \
 	t_diff_list_modules \
@@ -47,6 +48,11 @@ t_diff_human_arrays:
 	diff $@.0000.exp $@.0000.got
 	$(BIN) $(VERB) ../_data/menu.b.json ../_data/menu.a.json > $@.0010.got; $(VRFY_EXIT_8)
 	diff $@.0010.exp $@.0010.got
+
+t_diff_human_quiet:
+	$(BIN) $(VERB) --quiet ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
 
 t_diff_human_text:
 	$(BIN) $(VERB) ../_data/deep-down-lorem.a.json ../_data/deep-down-lorem.b.json > $@.0000.got; $(VRFY_EXIT_8)
