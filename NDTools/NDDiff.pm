@@ -109,7 +109,11 @@ sub load {
     for my $i (@_) {
         my $data = $self->load_uri($i) or return undef;
         if (my $path = $self->{OPTS}->{path}) {
-            $path = eval_fatal { ps_parse($path) } 1, "Failed to parse path '$path'";
+            $path = eval { ps_parse($path) };
+            if ($@) {
+                log_error { "Failed to parse path '$path' ($@)" };
+                return undef;
+            }
             ($data) = spath($data, $path, deref => 1);
         }
         $self->add($data);

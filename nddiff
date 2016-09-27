@@ -36,7 +36,8 @@ if ($OPTS->{'list-modules'}) {
 my $mod = MODDIR . "::" . $OPTS->{'module'};
 die_fatal "Failed to locate module '$OPTS->{'module'}' in " . MODDIR, 1
     unless exists ($MODS->{$mod});
-eval_fatal { "use $mod" } 1, "Unable to load module '$OPTS->{'module'}";
+eval "use $mod";
+die_fatal "Unable to load module '$OPTS->{'module'}", 1 if ($@);
 
 my $dm = $mod->new() or die_fatal undef, 1;
 

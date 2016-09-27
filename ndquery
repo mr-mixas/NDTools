@@ -40,7 +40,8 @@ GetOptions (
 $Log::Log4Cli::LEVEL = $OPTS->{verbose} || 0;
 $OPTS->{colors} = -t STDOUT ? 1 : 0 unless (defined $OPTS->{colors});
 
-my $path = eval_fatal { ps_parse($OPTS->{path}) } 2, "Failed to parse path";
+my $path = eval { ps_parse($OPTS->{path}) };
+die_fatal "Failed to parse path ($@)", 2 if ($@);
 
 for my $file (@ARGV ? @ARGV : \*STDIN) {
     log_debug { "Processing " . (ref $file ? "STDIN" : "file '$file'") };
