@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use parent "NDTools::NDDiff";
 
 sub MODINFO { "Generic diff for nested data structires" }
-sub VERSION { "0.05" }
+sub VERSION { "0.06" }
 
 1; # End of NDTools::NDDiff::nddiff
 
@@ -38,6 +38,10 @@ Print a help message and exit.
 =item B<--json>
 
 Use JSON as diff format.
+
+=item B<--ignore> E<lt>pathE<gt>
+
+Ignore substructure. This path is used relatively to --path opt. May be used several times.
 
 =item B<--list-modules|-l>
 

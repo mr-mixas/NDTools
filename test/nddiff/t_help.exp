@@ -11,6 +11,10 @@ Options:
     --json
         Use JSON as diff format.
 
+    --ignore <path>
+        Ignore substructure. This path is used relatively to --path opt. May
+        be used several times.
+
     --list-modules|-l
         Print list of available diff modules.
 

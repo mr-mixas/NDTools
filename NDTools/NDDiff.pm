@@ -25,6 +25,7 @@ sub arg_opts {
         'colors!' => \$self->{OPTS}->{'colors'},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
         'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0]},
+        'ignore=s@' => \$self->{OPTS}->{ignore},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
         'quiet|q' => \$self->{OPTS}->{quiet},
@@ -115,6 +116,16 @@ sub load {
                 return undef;
             }
             ($data) = spath($data, $path, deref => 1);
+        }
+        if (exists $self->{OPTS}->{ignore}) {
+            for my $path (@{$self->{OPTS}->{ignore}}) {
+                my $p = eval { ps_parse($path) };
+                if ($@) {
+                    log_error { "Failed to parse path '$path' ($@)" };
+                    return undef;
+                }
+                spath($data, $p, delete => 1);
+            }
         }
         $self->add($data);
     }
