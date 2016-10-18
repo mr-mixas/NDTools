@@ -19,6 +19,4 @@ nytprof.out
 *.bs
 /_eumm/
 *.swp
-/depends/
-/tmp/
 /NDTools/INC/
