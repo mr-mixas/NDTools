@@ -7,8 +7,8 @@ use warnings FATAL => 'all';
 use parent qw(Exporter);
 use open qw(:std :utf8);
 
+use Carp qw(croak);
 use File::Basename qw(basename);
-use File::Slurp qw(read_file write_file);
 use JSON qw();
 use Log::Log4Cli;
 use YAML::XS qw();
@@ -17,6 +17,8 @@ our @EXPORT_OK = qw(
     guess_fmt_by_uri
     s_encode
     s_dump
+    s_file_dump
+    s_file_load
     st_load
 );
 
@@ -44,6 +46,21 @@ sub s_encode($$;$) {
     return $data;
 }
 
+sub s_file_dump($$) {
+    my ($file, $data) = @_;
+    open(FH, '>', $file) or croak "Failed to open file '$file' $!";
+    print FH $data;
+    close(FH);
+}
+
+sub s_file_load($) {
+    my $file = shift;
+    open(FH, '<', $file) or croak "Failed to open file '$file' $!";
+    my $data = do { local $/; <FH> }; # load whole file
+    close(FH);
+    return $data;
+}
+
 sub guess_fmt_by_uri($) {
     my @names = split(/\./, basename(shift));
     if (@names and @names > 1) {
@@ -57,13 +74,17 @@ sub s_dump(@) {
     my ($uri, $fmt, $opts) = (shift, shift, shift);
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
     my $data = join($/, map { s_encode($_, $fmt, $opts) } @_);
-    eval { write_file($uri, $data) };
-    die_fatal "Failed to dump structure: " . $@, 2 if $@;
+    if (ref $uri eq 'GLOB') {
+        print $uri $data;
+    } else {
+        eval { s_file_dump($uri, $data) };
+        die_fatal "Failed to dump structure: " . $@, 2 if $@;
+    }
 }
 
 sub st_load($$;@) {
     my ($uri, $fmt, %opts) = @_;
-    my $data = eval { read_file($uri) };
+    my $data = eval { s_file_load($uri) };
     die_fatal "Failed to load file: " . $@, 2 if $@;
     $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
     if (uc($fmt) eq 'JSON') {
