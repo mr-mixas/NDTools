@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-use NDTools::Slurp qw(s_dump st_load);
+use NDTools::Slurp qw(s_dump s_load);
 use NDTools::Struct qw(st_copy st_merge);
 
 # defaults
@@ -36,7 +36,7 @@ GetOptions (
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
     },
     'ignore=s' => sub { push @{$rules[-1]->{'ignore'}}, $_[1] },
-    'load-rules|rules=s' => sub { push @rules, @{st_load($_[1], undef)} },
+    'load-rules|rules=s' => sub { push @rules, @{s_load($_[1], undef)} },
     'merge=s' => sub { push @{$rules[-1]->{'merge'}}, { path => $_[1] } },
     'style=s' => sub {
         if (@rules) {
@@ -73,7 +73,7 @@ for (my $r = 0; $r < @rules; $r++) {
     die_fatal "Undefined source in $r rule" unless (defined $rules[$r]{src});
     my $file = $rules[$r]{src};
     log_debug { "Loading file '$file'" };
-    my $loaded = st_load($file, undef);
+    my $loaded = s_load($file, undef);
 
     if (exists $rules[$r]{ignore}) {
         for my $path (@{$rules[$r]{ignore}}) {

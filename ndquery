@@ -14,7 +14,7 @@ use Struct::Path qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-use NDTools::Slurp qw(s_dump st_load);
+use NDTools::Slurp qw(s_dump s_load);
 
 # defaults
 my $OPTS = {
@@ -45,11 +45,11 @@ die_fatal "Failed to parse path ($@)", 2 if ($@);
 
 for my $file (@ARGV ? @ARGV : \*STDIN) {
     log_debug { "Processing " . (ref $file ? "STDIN" : "file '$file'") };
-    my $data = st_load($file, undef);
+    my $data = s_load($file, undef);
 
     my @out; # orig structure may be splitted to many
     if ($OPTS->{insert}) {
-        my $val = st_load($OPTS->{insert}, undef);
+        my $val = s_load($OPTS->{insert}, undef);
         if (@{$path}) {
             map { ${$_} = $val } spath($data, $path, expand => 1);
             push @out, $data;

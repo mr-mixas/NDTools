@@ -14,12 +14,13 @@ use Log::Log4Cli;
 use YAML::XS qw();
 
 our @EXPORT_OK = qw(
-    guess_fmt_by_uri
-    s_encode
+    s_decode
     s_dump
-    s_file_dump
-    s_file_load
-    st_load
+    s_dump_file
+    s_encode
+    s_fmt_by_uri
+    s_load
+    s_load_uri
 );
 
 our %FORMATS = (
@@ -30,6 +31,40 @@ our %FORMATS = (
         relaxed => 1,
     },
 );
+
+sub s_decode($$;$) {
+    my ($data, $fmt, $opts) = @_;
+
+    if (uc($fmt) eq 'JSON') {
+        $data = eval { JSON::from_json($data, {%{$FORMATS{JSON}}, %{$opts || {}}}) };
+    } elsif (uc($fmt) eq 'YAML') {
+        $data = eval { YAML::XS::Load($data) };
+    } else {
+        die_fatal "Unable to decode '$fmt' (not supported)";
+    }
+    die_fatal "Failed to decode '$fmt': " . $@, 4 if $@;
+
+    return $data;
+}
+
+sub s_dump(@) {
+    my ($uri, $fmt, $opts) = (shift, shift, shift);
+    $fmt = s_fmt_by_uri($uri) unless (defined $fmt);
+    my $data = join($/, map { s_encode($_, $fmt, $opts) } @_);
+    if (ref $uri eq 'GLOB') {
+        print $uri $data;
+    } else {
+        eval { s_dump_file($uri, $data) };
+        die_fatal "Failed to dump structure: " . $@, 2 if $@;
+    }
+}
+
+sub s_dump_file($$) {
+    my ($file, $data) = @_;
+    open(FH, '>', $file) or croak "Failed to open file '$file' $!";
+    print FH $data;
+    close(FH);
+}
 
 sub s_encode($$;$) {
     my ($data, $fmt, $opts) = @_;
@@ -46,22 +81,7 @@ sub s_encode($$;$) {
     return $data;
 }
 
-sub s_file_dump($$) {
-    my ($file, $data) = @_;
-    open(FH, '>', $file) or croak "Failed to open file '$file' $!";
-    print FH $data;
-    close(FH);
-}
-
-sub s_file_load($) {
-    my $file = shift;
-    open(FH, '<', $file) or croak "Failed to open file '$file' $!";
-    my $data = do { local $/; <FH> }; # load whole file
-    close(FH);
-    return $data;
-}
-
-sub guess_fmt_by_uri($) {
+sub s_fmt_by_uri($) {
     my @names = split(/\./, basename(shift));
     if (@names and @names > 1) {
         my $ext = uc(pop @names);
@@ -70,31 +90,24 @@ sub guess_fmt_by_uri($) {
     return 'JSON'; # by default
 }
 
-sub s_dump(@) {
-    my ($uri, $fmt, $opts) = (shift, shift, shift);
-    $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
-    my $data = join($/, map { s_encode($_, $fmt, $opts) } @_);
-    if (ref $uri eq 'GLOB') {
-        print $uri $data;
-    } else {
-        eval { s_file_dump($uri, $data) };
-        die_fatal "Failed to dump structure: " . $@, 2 if $@;
-    }
+sub s_load($$;@) {
+    my ($uri, $fmt, %opts) = @_;
+    my $data = eval { s_load_uri($uri) };
+    die_fatal "Failed to load file: " . $@, 2 if $@;
+    $fmt = s_fmt_by_uri($uri) unless (defined $fmt);
+    return s_decode($data, $fmt);
 }
 
-sub st_load($$;@) {
-    my ($uri, $fmt, %opts) = @_;
-    my $data = eval { s_file_load($uri) };
-    die_fatal "Failed to load file: " . $@, 2 if $@;
-    $fmt = guess_fmt_by_uri($uri) unless (defined $fmt);
-    if (uc($fmt) eq 'JSON') {
-        $data = eval { JSON::from_json($data, {%{$FORMATS{JSON}}, %opts}) };
-    } elsif (uc($fmt) eq 'YAML') {
-        $data = eval { YAML::XS::Load($data) };
+sub s_load_uri($) {
+    my $uri = shift;
+    my $data;
+    if (ref $uri eq 'GLOB') {
+        $data = do { local $/; <$uri> };
     } else {
-         die_fatal "$fmt not supported yet", 4;
+        open(FH, '<', $uri) or croak "Failed to open file '$uri' $!";
+        $data = do { local $/; <FH> }; # load whole file
+        close(FH);
     }
-    die_fatal "Failed to parse $fmt: " . $@, 4 if $@; # convert related
     return $data;
 }
 

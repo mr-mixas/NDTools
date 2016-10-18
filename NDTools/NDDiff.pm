@@ -7,7 +7,7 @@ use Algorithm::Diff;
 use Getopt::Long qw(:config bundling nopass_through);
 use JSON qw(to_json);
 use NDTools::INC;
-use NDTools::Slurp qw(s_dump st_load);
+use NDTools::Slurp qw(s_dump s_load);
 use Log::Log4Cli;
 use Struct::Diff qw();
 use Struct::Path qw(spath spath_delta);
@@ -135,7 +135,7 @@ sub load {
 sub load_uri {
     my ($self, $uri) = @_;
     log_debug { "Loading $uri" };
-    st_load($uri, undef) or return undef;
+    s_load($uri, undef) or return undef;
 }
 
 sub print_status_block {
