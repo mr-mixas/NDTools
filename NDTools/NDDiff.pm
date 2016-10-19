@@ -32,6 +32,11 @@ sub arg_opts {
     )
 }
 
+sub configure {
+    my $self = shift;
+    $self->{OPTS}->{'colors'} = -t STDOUT ? 1 : 0 unless (defined $self->{OPTS}->{'colors'});
+}
+
 sub defaults {
     my $out = {
         'human' => {
@@ -64,8 +69,7 @@ sub new {
         $self->usage;
         return undef;
     }
-    $self->{OPTS}->{'colors'} = -t STDOUT ? 1 : 0
-        unless (defined $self->{OPTS}->{'colors'});
+    $self->configure();
     return $self;
 }
 
