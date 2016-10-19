@@ -58,7 +58,8 @@ sub defaults {
 }
 
 sub new {
-    my $self = bless { OPTS => defaults }, shift;
+    my $self = bless {}, shift;
+    $self->{OPTS} = $self->defaults();
     unless (GetOptions ($self->arg_opts)) {
         $self->usage;
         return undef;
