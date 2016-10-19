@@ -11,5 +11,5 @@ Package: ndtools
 Architecture: all
 Depends: ${misc:Depends}, ${perl:Depends}, libalgorithm-diff-perl, libhash-merge-perl, libjson-perl, libmodule-find-perl, libppi-perl, libyaml-libyaml-perl
 Description: CLI tools for nested structures
- JSON/YAML inspect/process/diff tools
+ JSON inspect/process/diff tools
 
