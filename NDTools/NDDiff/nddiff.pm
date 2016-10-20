@@ -80,6 +80,7 @@ Simple diff:
 
 0   No errors, no diff.
 1   Generic error code.
+2   I/O Error.
 8   Diff exists.
 
 =head1 REPORTING BUGS
