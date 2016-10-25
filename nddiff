@@ -17,27 +17,20 @@ GetOptions (
     'help|h' => \$OPTS->{'help'},
     'module|m=s' => \$OPTS->{'module'},
     'list-modules|l' => \$OPTS->{'list-modules'},
-    'verbose|v:+' => \$OPTS->{'verbose'},
+    'verbose|v:+' => \$Log::Log4Cli::LEVEL,
     'version|V' => \$OPTS->{'version'},
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
-$Log::Log4Cli::LEVEL = $OPTS->{'verbose'} || 0;
-
-$OPTS->{'module'} = basename($0) unless (defined $OPTS->{'module'});
-my $MODS = { map { $_, 1 } usesub MODDIR };
-
 if ($OPTS->{'list-modules'}) {
-    for my $m (sort keys %{$MODS}) {
+    for my $m (sort keys { map { $_, 1 } usesub MODDIR }) {
         printf "%-10s %-8s %s\n", (split('::', $m))[-1], $m->VERSION, $m->MODINFO;
     }
     die_info "All done", 0;
 }
 
-my $mod = MODDIR . "::" . $OPTS->{'module'};
-die_fatal "Failed to locate module '$OPTS->{'module'}' in " . MODDIR, 1
-    unless exists ($MODS->{$mod});
-eval "use $mod";
-die_fatal "Unable to load module '$OPTS->{'module'}", 1 if ($@);
+my $mod = MODDIR . "::" . ($OPTS->{'module'} || basename($0));
+eval "require $mod";
+die_fatal "Unable to load module '$OPTS->{'module'}' ($@)", 1 if ($@);
 
 my $dm = $mod->new() or die_fatal undef, 1;
 

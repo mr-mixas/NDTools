@@ -33,11 +33,10 @@ GetOptions (
     'list|l' => \$OPTS->{list},
     'path|p=s' => \$OPTS->{path},
     'out-fmt=s' => \$OPTS->{'out-fmt'},
-    'verbose|v:+' => \$OPTS->{verbose},
+    'verbose|v:+' => \$Log::Log4Cli::LEVEL,
     'version|V' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
-$Log::Log4Cli::LEVEL = $OPTS->{verbose} || 0;
 $OPTS->{colors} = -t STDOUT ? 1 : 0 unless (defined $OPTS->{colors});
 
 my $path = eval { ps_parse($OPTS->{path}) };

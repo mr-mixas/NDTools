@@ -20,7 +20,6 @@ use NDTools::Struct qw(st_copy st_merge);
 # defaults
 my $OPTS = {
     'style' => 'R_OVERRIDE',
-    'verbose' => 0,
 };
 
 my @rules;
@@ -49,11 +48,9 @@ GetOptions (
             $OPTS->{'style'} = $_[1]; # process wide
         }
     },
-    'verbose|v:+' => \$OPTS->{'verbose'},
+    'verbose|v:+' => \$Log::Log4Cli::LEVEL,
     'version|V' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
-
-$Log::Log4Cli::LEVEL = $OPTS->{'verbose'};
 
 my (@blame, $result);
 
