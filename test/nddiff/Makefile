@@ -16,6 +16,7 @@ test: \
 	t_ignore \
 	t_json \
 	t_list_modules \
+	t_path \
 	t_yaml
 	@echo === ALL $(BIN) TESTS PASSED ===
 
@@ -73,6 +74,11 @@ t_json:
 
 t_list_modules:
 	$(BIN) $(VERB) --list-modules -l > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
+
+t_path:
+	$(BIN) $(VERB) --path '{files}' ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 
