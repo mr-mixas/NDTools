@@ -1,0 +1,4 @@
+#!/usr/bin/env perl
+
+use NDTools::NDProc::Module::NDProc;
+NDTools::NDProc::Module::NDProc->run();
