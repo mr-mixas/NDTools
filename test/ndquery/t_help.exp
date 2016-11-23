@@ -14,7 +14,7 @@ Options:
         Print a help message and exit.
 
     --insert <file>
-        Load data from file and insert to structire using path as a pointer.
+        Load data from file and insert to structure using path as a pointer.
 
     --list|-l
         List structure's paths.

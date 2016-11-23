@@ -112,7 +112,7 @@ Print a help message and exit.
 
 =item B<--insert> E<lt>fileE<gt>
 
-Load data from file and insert to structire using path as a pointer.
+Load data from file and insert to structure using path as a pointer.
 
 =item B<--list|-l>
 
