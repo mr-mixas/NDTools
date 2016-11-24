@@ -1,0 +1,27 @@
+Usage:
+        ndproc [OPTIONS] <arguments>
+
+Options:
+    --help|-h
+        Print a help message and exit.
+
+    --list-modules|-l
+        List available modules.
+
+    --module|-m <name>
+        Process using specified module.
+
+    --rules <file>
+        Load rules from specified file. May be used several times.
+
+    --verbose|-v [int]
+        Increase verbosity, max level - 4.
+
+    --version|-V
+        Print version and exit.
+
+Examples:
+    Simply merge three files using module 'Merge':
+
+        ndproc -m Merge a.json b.json c.json
+
