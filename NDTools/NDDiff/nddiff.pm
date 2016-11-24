@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 use parent "NDTools::NDDiff";
 
-sub MODINFO { "Generic diff for nested data structires" }
+sub MODINFO { "Generic diff for nested data structures" }
 sub VERSION { "0.06" }
 
 1; # End of NDTools::NDDiff::nddiff
