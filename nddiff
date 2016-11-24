@@ -22,7 +22,7 @@ GetOptions (
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
 
 if ($OPTS->{'list-modules'}) {
-    for my $m (sort keys { map { $_, 1 } usesub MODDIR }) {
+    for my $m (sort keys %{{ map { $_, 1 } usesub MODDIR }}) {
         printf "%-10s %-8s %s\n", (split('::', $m))[-1], $m->VERSION, $m->MODINFO;
     }
     die_info "All done", 0;
