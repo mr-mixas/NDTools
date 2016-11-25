@@ -58,15 +58,27 @@ sub run {
         die_info undef, 0;
     }
 
+    my $rules = [];
+    if (defined $self->{OPTS}->{'module'}) {
+        push @{$rules}, $processor->get_mod_opts($self->{OPTS}->{'module'});
+        $rules->[-1]->{modname} = $self->{OPTS}->{'module'};
+    } else {
+        # here we check rest args, because passthrough used for single-module mode
+        # to be sure there is no unsupported opts remain in args
+        my $p = Getopt::Long::Parser->new();
+        unless ($p->getoptions()) {
+            $self->usage;
+            die_fatal undef, 1;
+        }
+    }
+
     die_fatal "At least one argument expected", 1 unless (@ARGV);
 
     for my $struct (@ARGV) {
         log_info { "Processing $struct" };
         $struct = s_load($struct, 'JSON');
-        my $rules = [
-            { modname => "Remove", path => '{a}{b}{c}' },
-        ];
         $processor->process($struct, $rules);
+        s_dump(\*STDOUT, undef, undef, $struct);
     }
 
     die_info "All done", 0;
