@@ -39,8 +39,14 @@ sub new {
 
 sub process {
     my ($self, $struct, $rules) = @_;
-    for my $r (@{$rules}) {
-        log_debug { "Processing rule $r->{modname}" };
+    for my $rule (@{$rules}) {
+        unless ($rule->{enabled}) {
+            log_debug { $rule->{modname} . "is disabled, skip it "};
+            next;
+        }
+        log_debug { "Processing rule $rule->{modname}" };
+        my $module = $self->{MODS}->{$rule->{modname}}->new();
+        $module->process($struct, $rule);
     }
 }
 
