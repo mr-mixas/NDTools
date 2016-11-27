@@ -40,7 +40,7 @@ GetOptions (
 $OPTS->{colors} = -t STDOUT ? 1 : 0 unless (defined $OPTS->{colors});
 
 my $path = eval { ps_parse($OPTS->{path}) };
-die_fatal "Failed to parse path ($@)", 2 if ($@);
+die_fatal "Failed to parse path ($@)", 4 if ($@);
 
 for my $file (@ARGV ? @ARGV : \*STDIN) {
     log_debug { "Processing " . (ref $file ? "STDIN" : "file '$file'") };
@@ -83,7 +83,7 @@ __END__
 
 =head1 NAME
 
-ndquery - Get desired parts from nested data structure
+ndquery - get desired parts from nested data structure
 
 =head1 SYNOPSIS
 
@@ -149,3 +149,25 @@ Get specified path from document:
 List subpaths:
 
     ndquery --list --path '{some}{path}[2]' struct.json
+
+=head1 EXIT STATUS
+
+0   No errors occured.
+1   Generic error code.
+2   I/O Error.
+4   Path related errors.
+
+=head1 REPORTING BUGS
+
+Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
+
+=head1 SEE ALSO
+
+L<jq(1)>, L<nddiff(1)>, L<ndproc(1)>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2016 Michael Samoglyadov C<< <mixas at cpan.org> >>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of GNU General Public License 3 or later versions.
