@@ -17,22 +17,18 @@ sub VERSION { die_fatal "Method 'VERSION' must be overrided!" }
 sub arg_opts {
     my $self = shift;
     return (
-        'colors!' => \$self->{OPTS}->{'colors'},
         'help|h' => sub {
             pod2usage(-exitval => 1, -output => \*STDERR,
             -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
         },
+        'path=s@' => \$self->{OPTS}->{path}
     )
-}
-
-sub configure {
-    my $self = shift;
-    $self->{OPTS}->{'colors'} = -t STDOUT ? 1 : 0 unless (defined $self->{OPTS}->{'colors'});
 }
 
 sub defaults {
     return {
         enabled => 1,
+        path => [],
     };
 }
 
