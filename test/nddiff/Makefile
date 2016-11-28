@@ -62,7 +62,7 @@ t_human_text:
 
 t_ignore:
 	$(BIN) $(VERB) --json --ignore 'unsupported_path_format' ../_data/menu.a.json ../_data/menu.b.json; $(VRFY_EXIT_1)
-	$(BIN) $(VERB) --json --ignore '[1]{Edit}[5]' ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got;
+	$(BIN) $(VERB) --json --ignore "{some}[5]{text}[0]{buried}[1]{'deep down'}{in}[0]{'the structure'}" ../_data/deep-down-lorem.a.json ../_data/deep-down-lorem.b.json > $@.0000.got;
 	diff $@.0000.exp $@.0000.got # diff part ignored (removed)
 	$(BIN) $(VERB) --json --ignore '[1]{notexists}[5]' ../_data/menu.a.json ../_data/menu.b.json > $@.0010.got; $(VRFY_EXIT_8)
 	diff $@.0010.exp $@.0010.got # check we doesn't corrupt diff specifying unexisted parts to ignore
