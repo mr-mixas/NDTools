@@ -8,11 +8,11 @@ structures
     nd* --help|--version
     nd* [OPTIONS] <arguments>
 
-See exact list of options, examples and exit codes for each tool in it's man page
+See exact list of options, examples and exit codes for each tool in it's man page.
 
 =head1 DESCRIPTION
 
-JSON and YAML nowadays are everywhere and often requires quite complex
+Nested structures nowadays are everywhere and often requires quite complex
 processing. This tools may solve some "pain in the neck" cases without writing
 any code.
 
@@ -20,26 +20,26 @@ any code.
 
 =over 4
 
-=item nddiff
+=item B<nddiff>
 
-Diff tool, extendable by modules
+Diff tool, extendable by modules, with human friendly (colored) and JSON output.
 
-=item ndmerge
+=item B<ndproc>
 
-Merge multiple documents, using rules
+Modify documents, using rules. Extendable by modules.
 
-=item ndquery
+=item B<ndquery>
 
-Inspect structure or dump/modify it's parts
+Inspect structure or dump it's parts.
 
 =back
 
-=head1 REPORTING BUGS
+=head1 BUGS
 
 Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
 
 =head1 SEE ALSO
 
-L<nddiff(1)>, L<ndmerge(1)>, L<ndquery(1)>
+L<nddiff(1)>, L<ndproc(1)>, L<ndquery(1)>
 
 L<jq(1)>, L<json(1)>
