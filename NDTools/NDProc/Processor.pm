@@ -11,6 +11,8 @@ use Module::Find qw(findsubmod);
 
 sub get_mod_opts {
     my ($self, $mod) = @_;
+    die_fatal "Unknown module '$mod' specified", 1
+        unless (exists $self->{MODS}->{$mod});
     $mod = $self->{MODS}->{$mod}->new(); # will parse rest of args
     return $mod->{OPTS};
 }
@@ -39,12 +41,16 @@ sub new {
 
 sub process {
     my ($self, $struct, $rules) = @_;
+    my $rcnt = 0; # rules counter
     for my $rule (@{$rules}) {
         unless ($rule->{enabled}) {
             log_debug { $rule->{modname} . "is disabled, skip it "};
             next;
         }
-        log_debug { "Processing rule $rule->{modname}" };
+        die_fatal "Unknown module '$rule->{modname}' specified (rule #$rcnt)", 1
+            unless (exists $self->{MODS}->{$rule->{modname}});
+
+        log_debug { "Processing rule #$rcnt ($rule->{modname})" };
         my $module = $self->{MODS}->{$rule->{modname}}->new();
         $module->process($struct, $rule);
     }
