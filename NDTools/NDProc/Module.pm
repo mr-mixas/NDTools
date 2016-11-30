@@ -23,7 +23,7 @@ sub arg_opts {
     return (
         'help|h' => sub { $self->usage; die_info undef, 1 },
         'list-modules|l' => \$self->{OPTS}->{'list-modules'},
-        'module|m=s' => \$self->{OPTS}->{'module'},
+        'module|m=s' => \$self->{OPTS}->{module},
         'rules=s' => sub { push @{$self->{rules}}, @{s_load($_[1], undef)} },
         'verbose|v:+' => \$Log::Log4Cli::LEVEL,
         'version|V' => sub { print $self->VERSION . "\n"; die_info undef, 0 },
@@ -59,9 +59,9 @@ sub run {
     }
 
     my $rules = [];
-    if (defined $self->{OPTS}->{'module'}) {
-        push @{$rules}, $processor->get_mod_opts($self->{OPTS}->{'module'});
-        $rules->[-1]->{modname} = $self->{OPTS}->{'module'};
+    if (defined $self->{OPTS}->{module}) {
+        push @{$rules}, $processor->get_mod_opts($self->{OPTS}->{module});
+        $rules->[-1]->{modname} = $self->{OPTS}->{module};
     } else {
         # here we check rest args, because passthrough used for single-module mode
         # to be sure there is no unsupported opts remain in args
