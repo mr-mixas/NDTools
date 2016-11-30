@@ -39,11 +39,11 @@ __END__
 
 Remove - remove specified parts from structure
 
-=head1 AVAILABLE OPTIONS
+=head1 OPTIONS
 
 =over 4
 
-=item B<--path> E<lt>stringE<gt>
+=item B<--path> E<lt>pathE<gt>
 
 Path in the structure to remove. May be used several times.
 
@@ -55,4 +55,6 @@ Fail if path specified for remove doesn't exists.
 
 =head1 SEE ALSO
 
-L<ndquery(1)>, L<Struct::Path::PerlStyle>
+L<ndproc(1)>, L<ndproc-modules>
+
+L<nddiff(1)>, L<ndquery(1)>, L<Struct::Path::PerlStyle>
