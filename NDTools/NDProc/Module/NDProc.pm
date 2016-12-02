@@ -61,9 +61,9 @@ Simply merge three files using module 'Merge':
 
 =head1 EXIT STATUS
 
-0   No errors occured.
-1   Generic error code.
-2   I/O Error.
+ 0   No errors occured.
+ 1   Generic error code.
+ 2   I/O Error.
 
 =head1 REPORTING BUGS
 

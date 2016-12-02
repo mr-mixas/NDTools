@@ -152,10 +152,10 @@ List subpaths:
 
 =head1 EXIT STATUS
 
-0   No errors occured.
-1   Generic error code.
-2   I/O Error.
-4   Path related errors.
+ 0   No errors occured.
+ 1   Generic error code.
+ 2   I/O Error.
+ 4   Path related errors.
 
 =head1 REPORTING BUGS
 
