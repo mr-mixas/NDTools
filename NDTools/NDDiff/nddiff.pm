@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use parent "NDTools::NDDiff";
 
 sub MODINFO { "Generic diff for nested data structures" }
-sub VERSION { "0.06" }
+sub VERSION { "0.07" }
 
 1; # End of NDTools::NDDiff::nddiff
 
@@ -13,7 +13,7 @@ __END__
 
 =head1 NAME
 
-nddiff - Diff for nested data structures
+nddiff - diff for nested data structures
 
 =head1 SYNOPSIS
 
@@ -21,7 +21,8 @@ nddiff - Diff for nested data structures
 
 =head1 DESCRIPTION
 
-Diff for nested data structures
+Diff for nested data structures with human friendly (colored)
+and machine-readable (JSON) output format.
 
 =head1 OPTIONS
 
@@ -56,6 +57,10 @@ Use specified diff module.
 Define path to substructure to deal with. See detailed syntax description
 at L<https://metacpan.org/pod/Struct::Path::PerlStyle>
 
+=item B<--[no]pretty>
+
+On/Off pretty-print for JSON. Enabled by default.
+
 =item B<--quiet|-q>
 
 Don't show diff, only exit code shows exists diff or not.
@@ -78,10 +83,10 @@ Simple diff:
 
 =head1 EXIT STATUS
 
-0   No errors, no diff.
-1   Generic error code.
-2   I/O Error.
-8   Diff exists.
+ 0   No errors, no diff.
+ 1   Generic error code.
+ 2   I/O Error.
+ 8   Diff exists.
 
 =head1 REPORTING BUGS
 

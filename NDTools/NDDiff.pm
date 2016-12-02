@@ -28,6 +28,7 @@ sub arg_opts {
         'ignore=s@' => \$self->{OPTS}->{ignore},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
+        'pretty!' => \$self->{OPTS}->{pretty},
         'quiet|q' => \$self->{OPTS}->{quiet},
     )
 }
@@ -54,6 +55,7 @@ sub defaults {
             },
         },
         'out-fmt' => 'human',
+        'pretty' => 1,
     };
     $out->{human}{line}{N} = $out->{human}{line}{A};
     $out->{human}{line}{O} = $out->{human}{line}{R};
@@ -99,7 +101,7 @@ sub dump {
         };
         Struct::Diff::dtraverse($self->{diff}, $t_opts);
     } else {
-        s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, undef, $self->{diff});
+        s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, {pretty => $self->{OPTS}->{pretty}}, $self->{diff});
     }
     return 1
 }
@@ -172,7 +174,7 @@ sub print_status_block {
     if ($status eq 'TEXT_SDIFF') {
         push @lines, $self->_human_text_diff($value, $indt);
     } else {
-        $value = to_json($value, {allow_nonref => 1, canonical => 1, pretty => 0})
+        $value = to_json($value, {allow_nonref => 1, canonical => 1, pretty => $self->{OPTS}->{pretty}})
             if (ref $value or not defined $value);
         for my $line (split("\n", $value)) {
             $line = "$dsign $indt" . $line;
