@@ -1,2 +1,13 @@
-tests:
-    nddiff --path
+* nddiff --patch
+    1. Visualize patch if one argument used
+    2. Make small possible diff (patch) when two arguments used
+
+* ndpatch
+    As is - patch tool
+
+* ndproc
+    Processing tool
+
+* ndquery --delete <path>
+    Remove desired parts
+
