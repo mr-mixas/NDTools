@@ -10,11 +10,13 @@ test: \
 	t_human \
 	t_human_colors \
 	t_human_full_headers \
+	t_human_nopretty \
 	t_human_arrays \
 	t_human_quiet \
 	t_human_text \
 	t_ignore \
 	t_json \
+	t_json_nopretty \
 	t_list_modules \
 	t_path \
 	t_yaml
@@ -45,6 +47,10 @@ t_human_full_headers:
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 
+t_human_nopretty:
+	$(BIN) $(VERB) --nopretty ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+
 t_human_arrays:
 	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
@@ -69,6 +75,11 @@ t_ignore:
 
 t_json:
 	$(BIN) $(VERB) --json ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
+
+t_json_nopretty:
+	$(BIN) $(VERB) --nopretty --json ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 
