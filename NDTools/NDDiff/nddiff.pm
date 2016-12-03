@@ -13,7 +13,7 @@ __END__
 
 =head1 NAME
 
-nddiff - diff for nested data structures
+nddiff - diff tool for nested data structures
 
 =head1 SYNOPSIS
 
@@ -77,9 +77,13 @@ Print version and exit.
 
 =head1 EXAMPLES
 
-Simple diff:
+Human-friendly diff:
 
     nddiff a.json b.json
+
+Machine-readable diff:
+
+    nddiff --json a.json b.json
 
 =head1 EXIT STATUS
 
@@ -95,6 +99,8 @@ Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
 =head1 SEE ALSO
 
 L<diff(1)>, L<sdiff(1)>
+
+L<ndpatch(1)>, L<ndproc(1)>, L<ndquery(1)>
 
 L<Struct::Diff>, L<Struct::Path>, L<Struct::Path::PerlStyle>
 

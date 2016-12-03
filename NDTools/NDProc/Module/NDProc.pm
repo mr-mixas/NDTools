@@ -71,7 +71,11 @@ Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
 
 =head1 SEE ALSO
 
-L<jq(1)>, L<nddiff(1)>, L<ndquery(1)>
+L<jq(1)>
+
+L<nddiff(1)>, L<ndpatch(1)>, L<ndquery(1)>
+
+L<Struct::Diff>, L<Struct::Path>, L<Struct::Path::PerlStyle>
 
 =head1 LICENSE AND COPYRIGHT
 

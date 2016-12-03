@@ -38,7 +38,11 @@ Options:
         Print version and exit.
 
 Examples:
-    Simple diff:
+    Human-friendly diff:
 
         nddiff a.json b.json
+
+    Machine-readable diff:
+
+        nddiff --json a.json b.json
 
