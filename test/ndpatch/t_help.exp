@@ -1,0 +1,19 @@
+Usage:
+        ndpatch [OPTIONS]
+        ndpatch [OPTIONS] <file> [<patchfile>]
+
+Options:
+    --help|-h
+        Print a help message and exit.
+
+    --verbose|-v [int]
+        Increase verbosity, max level - 4.
+
+    --version|-V
+        Print version and exit.
+
+Examples:
+    Apply patch:
+
+        ndpatch struct.json patch.json
+
