@@ -1,0 +1,104 @@
+#!/usr/bin/env perl
+
+my $VERSION = '0.01';
+
+use strict;
+use warnings FATAL => 'all';
+
+use NDTools::INC;
+
+#use Carp qw(shortmess);
+use Getopt::Long qw(:config bundling);
+use Log::Log4Cli;
+use NDTools::Slurp qw(s_dump s_load);
+use Pod::Usage;
+use Struct::Diff qw(patch);
+
+GetOptions (
+    'help|h' => sub {
+        pod2usage(-exitval => 1, -output => \*STDERR,
+        -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
+    },
+    'verbose|v:+' => \$Log::Log4Cli::LEVEL,
+    'version|V' => sub { print "$VERSION\n"; exit 0; },
+) || pod2usage(-exitval => 1, -output  => \*STDERR);
+
+die_fatal "One or two arguments expected", 1 if (@ARGV < 1 or @ARGV > 2);
+
+my $file = shift @ARGV;
+my $data = s_load($file, undef);
+
+my $patch = @ARGV ? shift @ARGV : \*STDIN;
+$patch = s_load($patch, undef);
+
+eval { patch($data, $patch) };
+die_fatal "Failed to patch '$file' ($@)", 8 if ($@);
+
+s_dump($file, undef, undef, $data);
+
+die_info "All done", 0;
+
+__END__
+
+=head1 NAME
+
+ndpatch - apply diff to a file
+
+=head1 SYNOPSIS
+
+    ndpatch [OPTIONS]
+    ndpatch [OPTIONS] <file> [<patchfile>]
+
+=head1 DESCRIPTION
+
+Apply diff file to original one
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--help|-h>
+
+Print a help message and exit.
+
+=item B<--verbose|-v> [int]
+
+Increase verbosity, max level - 4.
+
+=item B<--version|-V>
+
+Print version and exit.
+
+=back
+
+=head1 EXAMPLES
+
+Apply patch:
+
+    ndpatch struct.json patch.json
+
+=head1 EXIT STATUS
+
+ 0   No errors occured.
+ 1   Generic error code.
+ 2   I/O Error.
+ 8   Diff/patch related errors.
+
+=head1 REPORTING BUGS
+
+Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
+
+=head1 SEE ALSO
+
+L<patch(1)>
+
+L<nddiff(1)>, L<ndproc(1)>, L<ndquery(1)>
+
+L<Struct::Diff>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2016 Michael Samoglyadov C<< <mixas at cpan.org> >>.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of GNU General Public License 3 or later versions.
