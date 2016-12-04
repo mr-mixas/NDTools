@@ -55,13 +55,13 @@ sub s_dump(@) {
         print $uri $data;
     } else {
         eval { s_dump_file($uri, $data) };
-        die_fatal "Failed to dump structure: " . $@, 2 if $@;
+        die_fatal $@, 2 if $@;
     }
 }
 
 sub s_dump_file($$) {
     my ($file, $data) = @_;
-    open(FH, '>', $file) or croak "Failed to open file '$file' $!";
+    open(FH, '>', $file) or croak "Failed to open file '$file' ($!)";
     print FH $data;
     close(FH);
 }
@@ -93,7 +93,7 @@ sub s_fmt_by_uri($) {
 sub s_load($$;@) {
     my ($uri, $fmt, %opts) = @_;
     my $data = eval { s_load_uri($uri) };
-    die_fatal "Failed to load file: " . $@, 2 if $@;
+    die_fatal $@, 2 if $@;
     $fmt = s_fmt_by_uri($uri) unless (defined $fmt);
     return s_decode($data, $fmt);
 }
@@ -104,7 +104,7 @@ sub s_load_uri($) {
     if (ref $uri eq 'GLOB') {
         $data = do { local $/; <$uri> };
     } else {
-        open(FH, '<', $uri) or croak "Failed to open file '$uri' $!";
+        open(FH, '<', $uri) or croak "Failed to open file '$uri' ($!)";
         $data = do { local $/; <FH> }; # load whole file
         close(FH);
     }
