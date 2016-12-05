@@ -1,5 +1,6 @@
 ../nddiff    usr/bin
 ../ndmerge   usr/bin
+../ndpatch   usr/bin
 ../ndquery   usr/bin
 
 ../NDTools   /usr/share/perl5

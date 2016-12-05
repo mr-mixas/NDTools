@@ -1,6 +1,6 @@
 export DEVSCRIPTS_CHECK_DIRNAME_LEVEL=0
 
-NDTOOLS=nddiff ndmerge ndquery
+NDTOOLS=nddiff ndmerge ndpatch ndquery
 
 .PHONY: deb man veryclean
 

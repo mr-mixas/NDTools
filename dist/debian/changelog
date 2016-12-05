@@ -1,3 +1,11 @@
+ndtools (0.2.0) unstable; urgency=low
+
+  * nddiff: --[no]pretty opt added
+  * ndpatch appeared
+  * all: minor bugfixes, tweaks, docs improvements
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Mon, 05 Dec 2016 10:00:26 +0300
+
 ndtools (0.1.0) unstable; urgency=low
 
   * Working Draft.
