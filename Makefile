@@ -35,11 +35,11 @@ NDTools/INC/Struct/Diff.pm:
 
 NDTools/INC/Struct/Path.pm:
 	mkdir -p $(@D)
-	wget -O $@ "https://api.metacpan.org/source/MIXAS/Struct-Path-0.52/lib/Struct/Path.pm"
+	wget -O $@ "https://api.metacpan.org/source/MIXAS/Struct-Path-0.60/lib/Struct/Path.pm"
 
 NDTools/INC/Struct/Path/PerlStyle.pm:
 	mkdir -p $(@D)
-	wget -O $@ "https://api.metacpan.org/source/MIXAS/Struct-Path-PerlStyle-0.33/lib/Struct/Path/PerlStyle.pm"
+	wget -O $@ "https://api.metacpan.org/source/MIXAS/Struct-Path-PerlStyle-0.41/lib/Struct/Path/PerlStyle.pm"
 
 veryclean: clean
 	rm -rf NDTools/INC/*
