@@ -1,42 +1,7 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.01';
-
-use strict;
-use warnings FATAL => 'all';
-
-use NDTools::INC;
-
-#use Carp qw(shortmess);
-use Getopt::Long qw(:config bundling);
-use Log::Log4Cli;
-use NDTools::Slurp qw(s_dump s_load);
-use Pod::Usage;
-use Struct::Diff qw(patch);
-
-GetOptions (
-    'help|h' => sub {
-        pod2usage(-exitval => 1, -output => \*STDERR,
-        -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
-    },
-    'verbose|v:+' => \$Log::Log4Cli::LEVEL,
-    'version|V' => sub { print "$VERSION\n"; exit 0; },
-) || pod2usage(-exitval => 1, -output  => \*STDERR);
-
-die_fatal "One or two arguments expected", 1 if (@ARGV < 1 or @ARGV > 2);
-
-my $file = shift @ARGV;
-my $data = s_load($file, undef);
-
-my $patch = @ARGV ? shift @ARGV : \*STDIN;
-$patch = s_load($patch, undef);
-
-eval { patch($data, $patch) };
-die_fatal "Failed to patch '$file' ($@)", 8 if ($@);
-
-s_dump($file, undef, undef, $data);
-
-die_info "All done", 0;
+use NDTools::NDPatch;
+NDTools::NDPatch->run();
 
 __END__
 
