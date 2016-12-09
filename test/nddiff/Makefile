@@ -12,9 +12,11 @@ test: \
 	t_human_full_headers \
 	t_human_nopretty \
 	t_human_arrays \
+	t_human_bool \
 	t_human_quiet \
 	t_human_text \
 	t_human_text_changed_seqs \
+	t_human_text_utf8 \
 	t_ignore \
 	t_json \
 	t_json_nopretty \
@@ -58,6 +60,10 @@ t_human_arrays:
 	$(BIN) $(VERB) ../_data/menu.b.json ../_data/menu.a.json > $@.0010.got; $(VRFY_EXIT_8)
 	diff $@.0010.exp $@.0010.got
 
+t_human_bool:
+	$(BIN) $(VERB) --nopretty ../_data/bool.a.json ../_data/bool.b.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+
 t_human_quiet:
 	$(BIN) $(VERB) --quiet ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
@@ -70,6 +76,10 @@ t_human_text:
 # check that sequences of changed lines grouped by removed and added blocks
 t_human_text_changed_seqs:
 	$(BIN) $(VERB) ../_data/text-changed-seqs.a.json ../_data/text-changed-seqs.b.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+
+t_human_text_utf8:
+	$(BIN) $(VERB) ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
 t_ignore:
