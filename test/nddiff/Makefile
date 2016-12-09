@@ -14,6 +14,7 @@ test: \
 	t_human_arrays \
 	t_human_quiet \
 	t_human_text \
+	t_human_text_changed_seqs \
 	t_ignore \
 	t_json \
 	t_json_nopretty \
@@ -64,6 +65,11 @@ t_human_quiet:
 
 t_human_text:
 	$(BIN) $(VERB) ../_data/deep-down-lorem.a.json ../_data/deep-down-lorem.b.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+
+# check that sequences of changed lines grouped by removed and added blocks
+t_human_text_changed_seqs:
+	$(BIN) $(VERB) ../_data/text-changed-seqs.a.json ../_data/text-changed-seqs.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
 t_ignore:

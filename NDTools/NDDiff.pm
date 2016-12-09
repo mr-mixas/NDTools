@@ -248,18 +248,24 @@ sub _human_text_diff {
         '+' => $self->{OPTS}->{human}->{sign}->{A},
         'u' => $self->{OPTS}->{human}->{sign}->{U},
     );
+
     my @out;
+    my (@add, @rmv); # group consequent lines together
 
     for my $line (@{$val}) {
         if ($line->[0] eq 'c') {
-            push @out, $self->{OPTS}->{colors} ? # removed
+            push @rmv, $self->{OPTS}->{colors} ? # removed
                 colored($signs{'-'} . " " . $ind . $line->[1], $colors{'-'}) :
                 $signs{'-'} . " " . $ind . $line->[1];
-            push @out, $self->{OPTS}->{colors} ? # added
+            push @add, $self->{OPTS}->{colors} ? # added
                 colored($signs{'+'} . " " . $ind . $line->[2], $colors{'+'}) :
                 $signs{'+'} . " " . $ind . $line->[2];
             next;
         }
+
+        push @out, splice @rmv;
+        push @out, splice @add;
+
         my $str = ($line->[0] eq '+') ? $line->[2] : $line->[1];
         push @out, $self->{OPTS}->{colors} ?
             colored($signs{$line->[0]} . " " . $ind . $str, $colors{$line->[0]}) :
