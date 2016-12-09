@@ -1,13 +1,23 @@
+* nddiff --brief
+    ndquery --list style output, show only root item in changed substructure
+
+* nddiff --ctx-text <num>
+
+* nddiff --ctx-struct <num>
+
 * nddiff --patch
     1. Visualize patch if one argument used
     2. Make small possible diff (patch) when two arguments used
 
-* ndpatch
-    As is - patch tool
+* ndpatch --path <path>
+    patch only specified parts
+
+* ndpatch --ignore <path>
+    don't patch specified parts
 
 * ndproc
     Processing tool
 
-* ndquery --delete <path>
+* ndquery --delete|--ignore <path>
     Remove desired parts
 
