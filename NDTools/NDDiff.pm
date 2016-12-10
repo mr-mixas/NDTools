@@ -26,7 +26,6 @@ sub arg_opts {
         'ignore=s@' => \$self->{OPTS}->{ignore},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
-        'pretty!' => \$self->{OPTS}->{pretty},
         'quiet|q' => \$self->{OPTS}->{quiet},
     )
 }
@@ -37,7 +36,9 @@ sub configure {
 }
 
 sub defaults {
+    my $self = shift;
     my $out = {
+        %{$self->SUPER::defaults()},
         'human' => {
             'line' => {
                 'A' => 'green',
@@ -53,7 +54,6 @@ sub defaults {
             },
         },
         'out-fmt' => 'human',
-        'pretty' => 1,
     };
     $out->{human}{line}{N} = $out->{human}{line}{A};
     $out->{human}{line}{O} = $out->{human}{line}{R};

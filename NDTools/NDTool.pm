@@ -14,6 +14,7 @@ sub arg_opts {
     my $self = shift;
     return (
         'help|h' => sub { $self->usage; exit 1 },
+        'pretty!' => \$self->{OPTS}->{pretty},
         'verbose|v:+' => \$Log::Log4Cli::LEVEL,
         'version|V' => sub { print $self->VERSION . "\n"; exit 0; },
     );
@@ -24,7 +25,9 @@ sub configure {
 }
 
 sub defaults {
-    return {};
+    return {
+        'pretty' => 1,
+    };
 }
 
 sub new {

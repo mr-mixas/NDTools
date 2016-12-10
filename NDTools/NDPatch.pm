@@ -15,13 +15,13 @@ sub arg_opts {
     my $self = shift;
     return (
         $self->SUPER::arg_opts(),
-        'pretty!' => \$self->{OPTS}->{pretty},
     );
 }
 
 sub defaults {
+    my $self = shift;
     return {
-        'pretty' => 1,
+        %{$self->SUPER::defaults()},
     };
 }
 
