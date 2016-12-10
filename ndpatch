@@ -1,7 +1,9 @@
 #!/usr/bin/env perl
 
 use NDTools::NDPatch;
-NDTools::NDPatch->run();
+
+my $ndpatch = NDTools::NDPatch->new();
+$ndpatch->exec();
 
 __END__
 
