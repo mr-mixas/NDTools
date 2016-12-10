@@ -15,12 +15,6 @@ Options:
         Ignore substructure. This path is used relatively to --path opt. May
         be used several times.
 
-    --list-modules|-l
-        Print list of available diff modules.
-
-    --module|-m <name>
-        Use specified diff module.
-
     --path <path>
         Define path to substructure to deal with. See detailed syntax
         description at <https://metacpan.org/pod/Struct::Path::PerlStyle>

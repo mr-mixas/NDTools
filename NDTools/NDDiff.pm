@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Algorithm::Diff;
-use Getopt::Long qw(:config bundling nopass_through);
+use Getopt::Long qw(:config bundling);
 use JSON qw(to_json);
 use NDTools::INC;
 use NDTools::Slurp qw(s_dump s_load);
@@ -16,20 +16,25 @@ use Term::ANSIColor qw(colored);
 use Pod::Find qw(pod_where);
 use Pod::Usage;
 
-sub MODINFO { die_fatal "Method 'MODINFO' must be overrided!" }
-sub VERSION { die_fatal "Method 'VERSION' must be overrided!" }
+sub VERSION { "0.08" }
 
 sub arg_opts {
     my $self = shift;
     return (
         'colors!' => \$self->{OPTS}->{'colors'},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
+        'help|h' => sub {
+            pod2usage(-exitval => 1, -output => \*STDERR,
+            -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
+        },
         'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0]},
         'ignore=s@' => \$self->{OPTS}->{ignore},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
         'pretty!' => \$self->{OPTS}->{pretty},
         'quiet|q' => \$self->{OPTS}->{quiet},
+        'verbose|v:+' => \$Log::Log4Cli::LEVEL,
+        'version|V' => sub { print VERSION . "\n"; exit 0; },
     )
 }
 
@@ -104,6 +109,17 @@ sub dump {
         s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, {pretty => $self->{OPTS}->{pretty}}, $self->{diff});
     }
     return 1
+}
+
+sub exec {
+    my $self = shift;
+    $self->load(@ARGV) or die_fatal undef, 1;
+    $self->diff or die_fatal undef, 1;
+    $self->dump or die_fatal undef, 1 unless ($self->{OPTS}->{quiet});
+
+    die_info "All done, no difference found", 0
+        if (not keys %{$self->{diff}} or exists $self->{diff}->{U});
+    die_info "Difference found", 8;
 }
 
 sub list {
@@ -186,24 +202,9 @@ sub print_status_block {
     print join("\n", @lines) . "\n";
 }
 
-sub run {
-    my $self = shift;
-    $self->load(@ARGV) or return undef;
-    $self->diff or return undef;
-    $self->dump or return undef unless ($self->{OPTS}->{quiet});
-}
-
-sub status {
-    my $self = shift;
-    return 250 unless (exists $self->{diff});
-    return 0 if (keys %{$self->{diff}} == 0 or exists $self->{diff}->{U});
-    return 8; # differences found
-}
-
 sub usage {
     pod2usage(
         -exitval => 'NOEXIT',
-        -input => pod_where({-inc => 1}, ref(shift)),
         -output => \*STDERR,
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES',
         -verbose => 99
