@@ -2,9 +2,9 @@ package NDTools::NDDiff;
 
 use strict;
 use warnings FATAL => 'all';
+use parent "NDTools::NDTool";
 
 use Algorithm::Diff;
-use Getopt::Long qw(:config bundling);
 use JSON qw(to_json);
 use NDTools::INC;
 use NDTools::Slurp qw(s_dump s_load);
@@ -13,34 +13,27 @@ use Struct::Diff qw();
 use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
-use Pod::Find qw(pod_where);
-use Pod::Usage;
 
 sub VERSION { "0.08" }
 
 sub arg_opts {
     my $self = shift;
     return (
-        'colors!' => \$self->{OPTS}->{'colors'},
+        $self->SUPER::arg_opts(),
+        'colors!' => \$self->{OPTS}->{colors},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
-        'help|h' => sub {
-            pod2usage(-exitval => 1, -output => \*STDERR,
-            -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
-        },
         'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0]},
         'ignore=s@' => \$self->{OPTS}->{ignore},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
         'pretty!' => \$self->{OPTS}->{pretty},
         'quiet|q' => \$self->{OPTS}->{quiet},
-        'verbose|v:+' => \$Log::Log4Cli::LEVEL,
-        'version|V' => sub { print VERSION . "\n"; exit 0; },
     )
 }
 
 sub configure {
     my $self = shift;
-    $self->{OPTS}->{'colors'} = -t STDOUT ? 1 : 0 unless (defined $self->{OPTS}->{'colors'});
+    $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0 unless (defined $self->{OPTS}->{colors});
 }
 
 sub defaults {
@@ -67,17 +60,6 @@ sub defaults {
     $out->{human}{sign}{N} = $out->{human}{sign}{A};
     $out->{human}{sign}{O} = $out->{human}{sign}{R};
     return $out;
-}
-
-sub new {
-    my $self = bless {}, shift;
-    $self->{OPTS} = $self->defaults();
-    unless (GetOptions ($self->arg_opts)) {
-        $self->usage;
-        return undef;
-    }
-    $self->configure();
-    return $self;
 }
 
 sub add {
@@ -200,15 +182,6 @@ sub print_status_block {
     }
 
     print join("\n", @lines) . "\n";
-}
-
-sub usage {
-    pod2usage(
-        -exitval => 'NOEXIT',
-        -output => \*STDERR,
-        -sections => 'SYNOPSIS|OPTIONS|EXAMPLES',
-        -verbose => 99
-    );
 }
 
 sub _diff_texts {
