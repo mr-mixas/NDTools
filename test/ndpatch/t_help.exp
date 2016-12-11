@@ -6,6 +6,9 @@ Options:
     --help|-h
         Print a help message and exit.
 
+    --[no]pretty
+        On/Off pretty-print for JSON. Enabled by default.
+
     --verbose|-v [int]
         Increase verbosity, max level - 4.
 

@@ -28,6 +28,10 @@ Apply diff file to original one
 
 Print a help message and exit.
 
+=item B<--[no]pretty>
+
+On/Off pretty-print for JSON. Enabled by default.
+
 =item B<--verbose|-v> [int]
 
 Increase verbosity, max level - 4.
