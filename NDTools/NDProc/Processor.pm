@@ -8,6 +8,8 @@ use warnings FATAL => 'all';
 use NDTools::INC;
 use Log::Log4Cli;
 use Module::Find qw(findsubmod);
+use Storable qw(dclone);
+use Struct::Diff qw(diff dsplit);
 
 sub get_mod_opts {
     my ($self, $mod) = @_;
@@ -42,6 +44,7 @@ sub new {
 sub process {
     my ($self, $struct, $rules) = @_;
     my $rcnt = 0; # rules counter
+    my @blame;
     for my $rule (@{$rules}) {
         unless ($rule->{enabled}) {
             log_debug { $rule->{modname} . "is disabled, skip it "};
@@ -52,8 +55,16 @@ sub process {
 
         log_debug { "Processing rule #$rcnt ($rule->{modname})" };
         my $module = $self->{MODS}->{$rule->{modname}}->new();
+        my $result = dclone($struct);
         $module->process($struct, $rule);
+        push @blame, {
+            rule_number => $rcnt,
+            comment => $rule->{comment},
+            %{dsplit(diff($result, $struct, noO => 1, noU => 1))},
+        };
+        $struct = $result;
     }
+    return @blame;
 }
 
 1; # End of NDTools::NDProc::Processor

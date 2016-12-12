@@ -2,6 +2,9 @@ Usage:
         ndproc [OPTIONS] <arguments>
 
 Options:
+    --dump-blame <file>
+        Dump blame to file.
+
     --help|-h
         Print a help message and exit.
 

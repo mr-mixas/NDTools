@@ -27,6 +27,10 @@ Process nested data structures according provided rules
 
 =over 4
 
+=item B<--dump-blame> E<lt>fileE<gt>
+
+Dump blame to file.
+
 =item B<--help|-h>
 
 Print a help message and exit.

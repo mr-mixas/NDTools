@@ -21,6 +21,7 @@ sub VERSION { die_fatal "Method 'VERSION' must be overrided!" }
 sub arg_opts {
     my $self = shift;
     return (
+        'dump-blame=s' => \$self->{OPTS}->{blame},
         'help|h' => sub { $self->usage; die_info undef, 1 },
         'list-modules|l' => \$self->{OPTS}->{'list-modules'},
         'module|m=s' => \$self->{OPTS}->{module},
@@ -75,10 +76,12 @@ sub run {
     die_fatal "At least one argument expected", 1 unless (@ARGV);
 
     for my $struct (@ARGV) {
-        log_info { "Processing $struct" };
+        log_info { "Loading $struct" };
         $struct = s_load($struct, 'JSON');
-        $processor->process($struct, $rules);
+        my @blame = $processor->process($struct, $rules);
         s_dump(\*STDOUT, undef, undef, $struct);
+        s_dump($self->{OPTS}->{blame}, undef, undef, \@blame)
+            if (defined $self->{OPTS}->{blame});
     }
 
     die_info "All done", 0;
