@@ -1,13 +1,13 @@
-package NDTools::NDProc::Plugin::Merge;
+package NDTools::NDProc::Module::Merge;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDProc::Plugin";
+use parent "NDTools::NDProc::Module";
 
 sub MODINFO { "Merge structures according provided rules" }
 sub VERSION { "0.01" }
 
-1; # End of NDTools::NDProc::Plugin::Merge
+1; # End of NDTools::NDProc::Module::Merge
 
 __END__
 

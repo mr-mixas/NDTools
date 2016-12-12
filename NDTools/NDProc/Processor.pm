@@ -28,7 +28,7 @@ sub list_avail_modules {
 sub new {
     my $self = bless {}, shift;
     for my $path (@_) {
-        log_trace { "Loading plugins from $path" };
+        log_trace { "Loading modules from $path" };
         for my $m (findsubmod $path) {
             $self->{MODS}->{(split('::', $m))[-1]} = $m;
         }

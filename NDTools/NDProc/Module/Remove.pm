@@ -1,8 +1,8 @@
-package NDTools::NDProc::Plugin::Remove;
+package NDTools::NDProc::Module::Remove;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDProc::Plugin";
+use parent "NDTools::NDProc::Module";
 
 use NDTools::INC;
 use Log::Log4Cli;
@@ -31,7 +31,7 @@ sub process {
     }
 }
 
-1; # End of NDTools::NDProc::Plugin::Remove
+1; # End of NDTools::NDProc::Module::Remove
 
 __END__
 

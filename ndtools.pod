@@ -30,7 +30,7 @@ Apply diff to file
 
 =item B<ndproc>
 
-Modify documents, using rules. Extendable by modules.
+Process documents, using rules. Extendable by modules.
 
 =item B<ndquery>
 

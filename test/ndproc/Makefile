@@ -36,6 +36,3 @@ t_m_Remove__strict:
 t_m_Remove__dump_blame:
 	$(BIN) $(VERB) --module Remove --path '[1]{Edit}[3..5]' ../_data/menu.a.json --dump-blame $@.0000.got >/dev/null
 	diff $@.0000.exp $@.0000.got
-
-t_pod:
-	@# bin itself doesn't contain pod
