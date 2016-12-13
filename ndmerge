@@ -31,7 +31,7 @@ GetOptions (
     'embed-rules=s' => \$OPTS->{'embed-rules'},
     'file|f=s' => sub { push @rules, { src => $_[1] }},
     'help|h' => sub {
-        pod2usage(-exitval => 1, -output => \*STDERR,
+        pod2usage(-exitval => 0, -output => \*STDERR,
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
     },
     'ignore=s' => sub { push @{$rules[-1]->{'ignore'}}, $_[1] },

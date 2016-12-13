@@ -23,7 +23,7 @@ t_barebin: always
 	$(BIN); $(VRFY_EXIT_1)
 
 t_help: always
-	$(BIN) --help > $@.got 2>&1; $(VRFY_EXIT_1)
+	$(BIN) --help -h > $@.got 2>&1
 	diff $@.exp $@.got
 
 t_pod:

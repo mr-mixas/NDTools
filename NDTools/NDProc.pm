@@ -56,7 +56,7 @@ sub exec {
         # here we check rest args (passthrough used for single-module mode)
         # to be sure there is no unsupported opts remain in args
         my @rest_opts = (
-            'help|h' => sub { $self->usage; die_info undef, 1 },
+            'help|h' => sub { $self->usage; die_info undef, 0 },
             'version|V' => sub { print $self->VERSION . "\n"; die_info undef, 0; },
         );
         my $p = Getopt::Long::Parser->new();

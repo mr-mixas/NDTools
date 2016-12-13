@@ -26,7 +26,7 @@ GetOptions (
     'colors!' => \$OPTS->{colors},
     'depth|d=i' => \$OPTS->{depth},
     'help|h' => sub {
-        pod2usage(-exitval => 1, -output => \*STDERR,
+        pod2usage(-exitval => 0, -output => \*STDERR,
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
     },
     'insert=s' => \$OPTS->{insert},
