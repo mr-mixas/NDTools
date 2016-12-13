@@ -11,17 +11,15 @@ use Log::Log4Cli;
 use Pod::Find qw(pod_where);
 use Pod::Usage;
 
-sub MODINFO { die_fatal "Method 'MODINFO' must be overrided!" }
-sub VERSION { die_fatal "Method 'VERSION' must be overrided!" }
+sub MODINFO { "n/a" }
+sub VERSION { "n/a" }
 
 sub arg_opts {
     my $self = shift;
     return (
-        'help|h' => sub {
-            pod2usage(-exitval => 1, -output => \*STDERR,
-            -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
-        },
-        'path=s@' => \$self->{OPTS}->{path}
+        'help|h' => sub { $self->usage(); die_info undef, 0 },
+        'path=s@' => \$self->{OPTS}->{path},
+        'version|V' => sub { print $self->VERSION . "\n"; die_info undef, 0; },
     )
 }
 
