@@ -17,9 +17,11 @@ sub arg_opts {
     return (
         $self->SUPER::arg_opts(),
         'dump-blame=s' => \$self->{OPTS}->{blame},
+        'help|h' => \$self->{OPTS}->{help}, # redefine parent's
         'list-modules|l' => \$self->{OPTS}->{'list-modules'},
         'module|m=s' => \$self->{OPTS}->{module},
         'rules=s' => sub { push @{$self->{rules}}, @{s_load($_[1], undef)} },
+        'version|V' => \$self->{OPTS}->{version}, # redefine parent's
     )
 }
 
@@ -42,17 +44,25 @@ sub exec {
         die_info undef, 0;
     }
 
+    # restore opts used by main program and mods
+    push @ARGV, '--help' if ($self->{OPTS}->{help});
+    push @ARGV, '--version' if ($self->{OPTS}->{version});
+
     my $rules = [];
     if (defined $self->{OPTS}->{module}) {
         push @{$rules}, $processor->get_mod_opts($self->{OPTS}->{module});
         $rules->[-1]->{modname} = $self->{OPTS}->{module};
     } else {
-        # here we check rest args, because passthrough used for single-module mode
+        # here we check rest args (passthrough used for single-module mode)
         # to be sure there is no unsupported opts remain in args
+        my @rest_opts = (
+            'help|h' => sub { $self->usage; die_info undef, 1 },
+            'version|V' => sub { print $self->VERSION . "\n"; die_info undef, 0; },
+        );
         my $p = Getopt::Long::Parser->new();
-        unless ($p->getoptions()) {
+        unless ($p->getoptions(@rest_opts)) {
             $self->usage;
-            die_fatal undef, 1;
+            die_fatal "Unsupported opts passed", 1;
         }
     }
 

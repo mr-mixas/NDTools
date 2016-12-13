@@ -1,0 +1,7 @@
+Options:
+    --path <path>
+        Path in the structure to remove. May be used several times.
+
+    --strict
+        Fail if path specified for remove doesn't exists.
+
