@@ -10,14 +10,15 @@
     2. Make small possible diff (patch) when two arguments used
 
 * ndpatch --path <path>
-    patch only specified parts
-
-* ndpatch --ignore <path>
-    don't patch specified parts
+    patch specified parts
 
 * ndproc
     Processing tool
 
-* ndquery --delete|--ignore <path>
-    Remove desired parts
+* ndquery --ignore <path>
+    Ignore desired parts
 
+* NDProc::Module::Insert
+    --path
+    --override # disabled by default (item in arrays inserts shifting tail)
+    --value <value> # insert structure specified by arg if omitted
