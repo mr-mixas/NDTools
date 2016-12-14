@@ -17,6 +17,7 @@ sub arg_opts {
     return (
         $self->SUPER::arg_opts(),
         'dump-blame=s' => \$self->{OPTS}->{blame},
+        'dump-rules=s' => \$self->{OPTS}->{'dump-rules'},
         'help|h' => \$self->{OPTS}->{help}, # redefine parent's
         'list-modules|l' => \$self->{OPTS}->{'list-modules'},
         'module|m=s' => \$self->{OPTS}->{module},
@@ -44,7 +45,7 @@ sub exec {
         die_info undef, 0;
     }
 
-    # restore opts used by main program and mods
+    # restore opts common for main program and mods
     push @ARGV, '--help' if ($self->{OPTS}->{help});
     push @ARGV, '--version' if ($self->{OPTS}->{version});
 
@@ -64,6 +65,11 @@ sub exec {
             $self->usage;
             die_fatal "Unsupported opts passed", 1;
         }
+    }
+
+    if ($self->{OPTS}->{'dump-rules'}) {
+        s_dump($self->{OPTS}->{'dump-rules'}, undef, undef, $rules);
+        die_info "All done", 0;
     }
 
     die_fatal "At least one argument expected", 1 unless (@ARGV);

@@ -1,0 +1,10 @@
+[
+   {
+      "enabled" : 1,
+      "modname" : "Remove",
+      "path" : [
+         "{some}[0..5]"
+      ],
+      "strict" : null
+   }
+]
