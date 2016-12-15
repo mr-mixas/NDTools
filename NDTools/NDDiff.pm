@@ -148,8 +148,8 @@ sub print_status_block {
     log_trace { ps_serialize($path) . ", " . $status . ":"};
 
     my @lines;
-    my $color = $self->{'OPTS'}->{'human'}->{'line'}->{$status};
-    my $dsign = $self->{'OPTS'}->{'human'}->{'sign'}->{$status};
+    my $color = $self->{OPTS}->{human}->{line}->{$status};
+    my $dsign = $self->{OPTS}->{human}->{sign}->{$status};
 
     # diff for path
     if (@{$path} and my @delta = spath_delta($self->{'hdr_path'}, $path)) {
@@ -199,7 +199,7 @@ sub _diff_texts {
             @old = split(/$\//, ${$r}->{O}) if (${$r}->{O} and not ref ${$r}->{O});
             @new = split(/$\//, ${$r}->{N}) if (${$r}->{N} and not ref ${$r}->{N});
             if (@old > 1 or @new > 1) {
-                ${$r}->{'TEXT_SDIFF'} = Algorithm::Diff::sdiff(\@old, \@new);
+                ${$r}->{TEXT_SDIFF} = Algorithm::Diff::sdiff(\@old, \@new);
                 delete ${$r}->{O};
                 delete ${$r}->{N};
             }
