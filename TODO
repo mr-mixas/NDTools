@@ -1,6 +1,3 @@
-* nddiff --brief
-    ndquery --list style output, show only root item in changed substructure
-
 * nddiff --ctx-text <num>
 
 * nddiff --ctx-struct <num>

@@ -7,16 +7,18 @@ all: test clean
 
 test: \
 	t_common \
-	t_human \
-	t_human_colors \
-	t_human_full_headers \
-	t_human_nopretty \
-	t_human_arrays \
-	t_human_bool \
-	t_human_quiet \
-	t_human_text \
-	t_human_text_changed_seqs \
-	t_human_text_utf8 \
+	t_brief \
+	t_brief_colors \
+	t_term \
+	t_term_colors \
+	t_term_full_headers \
+	t_term_nopretty \
+	t_term_arrays \
+	t_term_bool \
+	t_term_quiet \
+	t_term_text \
+	t_term_text_changed_seqs \
+	t_term_text_utf8 \
 	t_ignore \
 	t_json \
 	t_json_nopretty \
@@ -30,50 +32,60 @@ include ../_common.mk
 t_verbose: always
 	$(BIN) -vv -v2 --verbose --verbose 3 ../alpha.json ../alpha.json >/dev/null 2>&1 #check aliases and args
 
-t_human:
+t_brief:
+	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json --brief > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
+
+t_brief_colors:
+	$(BIN) $(VERB) ../_data/bool.a.json ../_data/bool.b.json --brief --colors > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
+
+t_term:
 	$(BIN) $(VERB) ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 
-t_human_colors:
+t_term_colors:
 	$(BIN) $(VERB) --colors ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 
-t_human_full_headers:
+t_term_full_headers:
 	$(BIN) $(VERB) ../alpha.json ../beta.json --full-headers > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 
-t_human_nopretty:
+t_term_nopretty:
 	$(BIN) $(VERB) --nopretty ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
-t_human_arrays:
+t_term_arrays:
 	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	$(BIN) $(VERB) ../_data/menu.b.json ../_data/menu.a.json > $@.0010.got; $(VRFY_EXIT_8)
 	diff $@.0010.exp $@.0010.got
 
-t_human_bool:
+t_term_bool:
 	$(BIN) $(VERB) --nopretty ../_data/bool.a.json ../_data/bool.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
-t_human_quiet:
+t_term_quiet:
 	$(BIN) $(VERB) --quiet ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
 
-t_human_text:
+t_term_text:
 	$(BIN) $(VERB) ../_data/deep-down-lorem.a.json ../_data/deep-down-lorem.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
 # check that sequences of changed lines grouped by removed and added blocks
-t_human_text_changed_seqs:
+t_term_text_changed_seqs:
 	$(BIN) $(VERB) ../_data/text-changed-seqs.a.json ../_data/text-changed-seqs.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
-t_human_text_utf8:
+t_term_text_utf8:
 	$(BIN) $(VERB) ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
