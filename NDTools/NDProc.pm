@@ -49,10 +49,9 @@ sub exec {
     push @ARGV, '--help' if ($self->{OPTS}->{help});
     push @ARGV, '--version' if ($self->{OPTS}->{version});
 
-    my $rules = [];
     if (defined $self->{OPTS}->{module}) {
-        push @{$rules}, $processor->get_mod_opts($self->{OPTS}->{module});
-        $rules->[-1]->{modname} = $self->{OPTS}->{module};
+        push @{$self->{rules}}, $processor->get_mod_opts($self->{OPTS}->{module});
+        $self->{rules}->[-1]->{modname} = $self->{OPTS}->{module};
     } else {
         # here we check rest args (passthrough used for single-module mode)
         # to be sure there is no unsupported opts remain in args
@@ -68,7 +67,7 @@ sub exec {
     }
 
     if ($self->{OPTS}->{'dump-rules'}) {
-        s_dump($self->{OPTS}->{'dump-rules'}, undef, undef, $rules);
+        s_dump($self->{OPTS}->{'dump-rules'}, undef, undef, $self->{rules});
         die_info "All done", 0;
     }
 
@@ -77,7 +76,7 @@ sub exec {
     for my $struct (@ARGV) {
         log_info { "Loading $struct" };
         $struct = s_load($struct, 'JSON');
-        my @blame = $processor->process($struct, $rules);
+        my @blame = $processor->process($struct, $self->{rules});
         s_dump(\*STDOUT, undef, undef, $struct);
         s_dump($self->{OPTS}->{blame}, undef, undef, \@blame)
             if (defined $self->{OPTS}->{blame});
