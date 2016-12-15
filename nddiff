@@ -24,6 +24,10 @@ and machine-readable (JSON) output format.
 
 =over 4
 
+=item B<--brief>
+
+Show where differences has happend, but don't show what exactly changed.
+
 =item B<--[no]colors>
 
 On/Off colors for diff.

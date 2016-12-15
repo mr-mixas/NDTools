@@ -2,6 +2,10 @@ Usage:
         nddiff [OPTIONS] <file1> <file2>
 
 Options:
+    --brief
+        Show where differences has happend, but don't show what exactly
+        changed.
+
     --[no]colors
         On/Off colors for diff.
 

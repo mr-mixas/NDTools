@@ -7,6 +7,8 @@ all: test clean
 
 test: \
 	t_common \
+	t_brief \
+	t_brief_colors \
 	t_term \
 	t_term_colors \
 	t_term_full_headers \
@@ -29,6 +31,16 @@ include ../_common.mk
 # redefine from common - diff requires two arguments
 t_verbose: always
 	$(BIN) -vv -v2 --verbose --verbose 3 ../alpha.json ../alpha.json >/dev/null 2>&1 #check aliases and args
+
+t_brief:
+	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json --brief > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
+
+t_brief_colors:
+	$(BIN) $(VERB) ../_data/bool.a.json ../_data/bool.b.json --brief --colors > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
 
 t_term:
 	$(BIN) $(VERB) ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)

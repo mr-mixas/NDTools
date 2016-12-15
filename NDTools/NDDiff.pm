@@ -14,15 +14,16 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.08" }
+sub VERSION { "0.09" }
 
 sub arg_opts {
     my $self = shift;
     return (
         $self->SUPER::arg_opts(),
+        'brief' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
         'colors!' => \$self->{OPTS}->{colors},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
-        'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0]},
+        'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
         'ignore=s@' => \$self->{OPTS}->{ignore},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
@@ -87,6 +88,13 @@ sub dump {
             statuses => [ qw{R O N A TEXT_SDIFF} ],
         };
         Struct::Diff::dtraverse($self->{diff}, $t_opts);
+    } elsif ($self->{OPTS}->{'out-fmt'} eq 'brief') {
+        my $t_opts = {
+            callback => sub { $self->print_brief_block(@_) },
+            sortkeys => 1,
+            statuses => [ qw{R N A} ],
+        };
+        Struct::Diff::dtraverse($self->{diff}, $t_opts);
     } else {
         s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, {pretty => $self->{OPTS}->{pretty}}, $self->{diff});
     }
@@ -141,6 +149,21 @@ sub load_uri {
     my ($self, $uri) = @_;
     log_debug { "Loading $uri" };
     s_load($uri, undef) or return undef;
+}
+
+sub print_brief_block {
+    my ($self, $value, $path, $status) = @_;
+
+    $status = 'D' if ($status eq 'N');
+    my $last = ps_serialize([pop @{$path}]);
+    my $base = ps_serialize($path);
+
+    if ($self->{OPTS}->{colors}) {
+        $last = colored($last, "bold " . $self->{OPTS}->{term}->{line}->{$status});
+        $base = colored($base, $self->{OPTS}->{term}->{line}->{U});
+    }
+
+    print $self->{OPTS}->{term}->{sign}->{$status} . " " . $base . $last . "\n";
 }
 
 sub print_term_block {
