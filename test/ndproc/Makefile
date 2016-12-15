@@ -11,6 +11,7 @@ test: \
 	t_common \
 	t_list_modules \
 	t_rules \
+	t_rules_redump \
 	t_m__UNKNOWN_via_args \
 	t_m_Remove \
 	t_m_Remove_dump_rules \
@@ -55,4 +56,8 @@ t_m_Remove__dump_blame:
 
 t_rules:
 	$(BIN) $(VERB) --rules $@.rules.json ../_data/menu.a.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
+t_rules_redump:
+	$(BIN) $(VERB) --rules $@.0000.exp --dump-rules $@.0000.got
 	diff $@.0000.exp $@.0000.got
