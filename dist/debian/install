@@ -1,5 +1,6 @@
 ../nddiff    usr/bin
 ../ndmerge   usr/bin
+../ndproc    usr/bin
 ../ndpatch   usr/bin
 ../ndquery   usr/bin
 

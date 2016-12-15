@@ -1,3 +1,14 @@
+ndtools (0.3.0) unstable; urgency=low
+
+  * nddiff: group changed lines in texts by removed and added blocks
+  * nddiff: --brief mode implemented
+  * nddiff: -m and -l opts removed
+  * ndproc appeared (pre alpha)
+  * all: exit code changed to 0 for --help
+  * all: refactorings
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Thu, 15 Dec 2016 19:21:44 +0300
+
 ndtools (0.2.0) unstable; urgency=low
 
   * nddiff: --[no]pretty opt added
