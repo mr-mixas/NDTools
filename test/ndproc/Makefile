@@ -10,6 +10,7 @@ include ../_common.mk
 test: \
 	t_common \
 	t_list_modules \
+	t_rules \
 	t_m__UNKNOWN_via_args \
 	t_m_Remove \
 	t_m_Remove_dump_rules \
@@ -50,4 +51,8 @@ t_m_Remove_version:
 
 t_m_Remove__dump_blame:
 	$(BIN) $(VERB) --module Remove --path '[1]{Edit}[3..5]' ../_data/menu.a.json --dump-blame $@.0000.got >/dev/null
+	diff $@.0000.exp $@.0000.got
+
+t_rules:
+	$(BIN) $(VERB) --rules $@.rules.json ../_data/menu.a.json > $@.0000.got
 	diff $@.0000.exp $@.0000.got

@@ -62,7 +62,7 @@ sub process {
             comment => $rule->{comment},
             %{dsplit(diff($result, $struct, noO => 1, noU => 1))},
         };
-        $struct = $result;
+        $rcnt++;
     }
     return @blame;
 }
