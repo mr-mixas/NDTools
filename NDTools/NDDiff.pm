@@ -82,7 +82,7 @@ sub dump {
     log_debug { "Dumping results" };
     if ($self->{OPTS}->{'out-fmt'} eq 'term') {
         my $t_opts = {
-            callback => sub { $self->print_status_block(@_) },
+            callback => sub { $self->print_term_block(@_) },
             sortkeys => 1,
             statuses => [ qw{R O N A TEXT_SDIFF} ],
         };
@@ -143,7 +143,7 @@ sub load_uri {
     s_load($uri, undef) or return undef;
 }
 
-sub print_status_block {
+sub print_term_block {
     my ($self, $value, $path, $status) = @_;
     log_trace { ps_serialize($path) . ", " . $status . ":"};
 
