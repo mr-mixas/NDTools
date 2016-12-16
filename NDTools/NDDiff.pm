@@ -156,6 +156,7 @@ sub print_brief_block {
 
     return unless (@{$path}); # nothing to show
 
+    $path = [ @{$path} ]; # prevent passed path corruption (used later for items with same subpath)
     $status = 'D' if ($status eq 'N');
     my $last = ps_serialize([pop @{$path}]);
     my $base = ps_serialize($path);
