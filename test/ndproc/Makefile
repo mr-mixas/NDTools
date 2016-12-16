@@ -18,7 +18,8 @@ test: \
 	t_m_Remove_help \
 	t_m_Remove__strict \
 	t_m_Remove_version \
-	t_m_Remove__dump_blame
+	t_m_Remove__dump_blame \
+	t_m_Remove__unsupported_opt
 	@echo === ALL $(BIN) TESTS PASSED ===
 
 t_list_modules:
@@ -53,6 +54,9 @@ t_m_Remove_version:
 t_m_Remove__dump_blame:
 	$(BIN) $(VERB) --module Remove --path '[1]{Edit}[3..5]' ../_data/menu.a.json --dump-blame $@.0000.got >/dev/null
 	diff $@.0000.exp $@.0000.got
+
+t_m_Remove__unsupported_opt:
+	$(BIN) --module Remove --unsupported-opt-test --path '[1]{Edit}[3..5]' ../_data/menu.a.json 2>/dev/null; $(VRFY_EXIT_1)
 
 t_rules:
 	$(BIN) $(VERB) --rules $@.rules.json ../_data/menu.a.json > $@.0000.got

@@ -35,7 +35,7 @@ sub new {
     $self->{OPTS} = $self->defaults();
     unless (GetOptions ($self->arg_opts)) {
         $self->usage;
-        return undef;
+        die_fatal "Unsupported opt passed", 1;
     }
     return $self;
 }
