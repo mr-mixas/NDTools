@@ -9,6 +9,7 @@ test: \
 	t_common \
 	t_brief \
 	t_brief_colors \
+	t_brief_lastpathitem \
 	t_term \
 	t_term_colors \
 	t_term_full_headers \
@@ -40,6 +41,12 @@ t_brief:
 t_brief_colors:
 	$(BIN) $(VERB) ../_data/bool.a.json ../_data/bool.b.json --brief --colors > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
+	@echo === $@ PASS ===
+
+# [5] here is added item, that's why empty STDOUT. But exit code must be 8 - diff exists after all
+t_brief_lastpathitem:
+	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json --path [1]{Edit}[5] --brief > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got # must be empty
 	@echo === $@ PASS ===
 
 t_term:

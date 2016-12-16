@@ -154,6 +154,8 @@ sub load_uri {
 sub print_brief_block {
     my ($self, $value, $path, $status) = @_;
 
+    return unless (@{$path}); # nothing to show
+
     $status = 'D' if ($status eq 'N');
     my $last = ps_serialize([pop @{$path}]);
     my $base = ps_serialize($path);
