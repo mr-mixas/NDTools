@@ -123,12 +123,12 @@ sub load {
     for my $i (@_) {
         my $data = $self->load_uri($i) or return undef;
         if (my $path = $self->{OPTS}->{path}) {
-            $path = eval { ps_parse($path) };
+            my $p = eval { ps_parse($path) };
             if ($@) {
                 log_error { "Failed to parse path '$path' ($@)" };
                 return undef;
             }
-            ($data) = spath($data, $path, deref => 1);
+            ($data) = spath($data, $p, deref => 1);
         }
         if (exists $self->{OPTS}->{ignore}) {
             for my $path (@{$self->{OPTS}->{ignore}}) {
