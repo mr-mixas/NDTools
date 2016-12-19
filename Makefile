@@ -39,7 +39,7 @@ NDTools/INC/Struct/Path.pm:
 
 NDTools/INC/Struct/Path/PerlStyle.pm:
 	mkdir -p $(@D)
-	wget -O $@ "https://api.metacpan.org/source/MIXAS/Struct-Path-PerlStyle-0.41/lib/Struct/Path/PerlStyle.pm"
+	wget -O $@ "https://api.metacpan.org/source/MIXAS/Struct-Path-PerlStyle-0.42/lib/Struct/Path/PerlStyle.pm"
 
 veryclean: clean
 	rm -rf NDTools/INC/*

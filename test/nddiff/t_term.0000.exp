@@ -1,7 +1,7 @@
   {files}
->   {/etc/cron.d/beta}
+>   {'/etc/cron.d/beta'}
 >     * * * * * root sleep 5
-    {/etc/hostname}
+    {'/etc/hostname'}
 <     alpha
 >     beta
   {fqdn}
