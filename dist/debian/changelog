@@ -1,3 +1,14 @@
+ndtools (0.3.1) unstable; urgency=low
+
+  * nddiff: die correctly when failed to parse --path
+  * nddiff: path corruption fixed in --brief mode
+  * nddiff: don't fail if changed item used as path in --brief mode
+  * ndproc: die if usupported arg opt passed to module
+  * ndproc: 'Insert' module implemented
+  * all: Struct::Path::PerlStyle 0.42 used (quoting fixed)
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Mon, 19 Dec 2016 13:43:24 +0300
+
 ndtools (0.3.0) unstable; urgency=low
 
   * nddiff: group changed lines in texts by removed and added blocks
