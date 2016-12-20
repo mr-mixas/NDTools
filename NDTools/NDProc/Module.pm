@@ -49,7 +49,7 @@ sub usage {
         -exitval => 'NOEXIT',
         -input => pod_where({-inc => 1}, ref(shift)),
         -output => \*STDERR,
-        -sections => 'SYNOPSIS|OPTIONS|EXAMPLES',
+        -sections => 'NAME|OPTIONS',
         -verbose => 99
     );
 }

@@ -1,3 +1,6 @@
+Name:
+    Remove - remove specified parts from structure
+
 Options:
     --path <path>
         Path in the structure to remove. May be used several times.
