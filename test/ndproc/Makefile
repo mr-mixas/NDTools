@@ -13,6 +13,7 @@ test: \
 	t_rules \
 	t_rules_redump \
 	t_m__UNKNOWN_via_args \
+	t_m__UNKNOWN_via_rules \
 	t_m_Insert \
 	t_m_Insert_nopath \
 	t_m_Insert_file \
@@ -33,8 +34,8 @@ t_list_modules:
 t_m__UNKNOWN_via_args:
 	$(BIN) $(VERB) --module NoTeXiStEd; $(VRFY_EXIT_1)
 
-# TODO:
-# t_m__UNKNOWN_via_rules:
+t_m__UNKNOWN_via_rules:
+	$(BIN) $(VERB) --rules $@.rules.json ../_data/menu.a.json; $(VRFY_EXIT_1)
 
 t_m_Insert:
 	$(BIN) $(VERB) --module Insert --path '{some}[0..1]{path}' --path '{another}[1,0]{path}' ../_data/bool.a.json > $@.0000.got
