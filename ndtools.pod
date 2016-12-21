@@ -22,15 +22,15 @@ any code.
 
 =item B<nddiff>
 
-Diff tool, extendable by modules, with human friendly (colored) and JSON output.
+Diff tool with human friendly (colored, brief) and machine readable (JSON) output.
 
 =item B<ndpatch>
 
-Apply diff to file
+Apply diff to structure.
 
 =item B<ndproc>
 
-Process documents, using rules. Extendable by modules.
+Process structure using rules. Extendable by modules.
 
 =item B<ndquery>
 

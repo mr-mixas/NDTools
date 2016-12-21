@@ -9,13 +9,17 @@
 * ndpatch --path <path>
     patch specified parts
 
-* ndproc
-    Processing tool
-
 * ndquery --ignore <path>
     Ignore desired parts
 
+* ndquery --replace
+    Replace loaded file by output (canonize JSON etc)
+
+* ndquery: refactor to OO
+
 * NDProc::Module::Insert
-    --path
-    --override # disabled by default (item in arrays inserts shifting tail)
-    --value <value> # insert structure specified by arg if omitted
+    --shift # disabled by default (shift list's tails when inserting new values)
+
+* NDProc::Module::Merge
+
+* NDProc::Module::Pipe
