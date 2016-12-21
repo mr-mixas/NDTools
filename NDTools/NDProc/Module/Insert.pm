@@ -10,30 +10,31 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Insert structure/value into another structure" }
-sub VERSION { "0.01" }
+sub VERSION { "0.02" }
 
 sub arg_opts {
     my $self = shift;
     return (
         $self->SUPER::arg_opts(),
+        'file|f=s' => \$self->{OPTS}->{file},
         'value=s' => \$self->{OPTS}->{value},
     )
 }
 
-sub defaults {
+sub configure {
     my $self = shift;
-    return {
-        %{$self->SUPER::defaults()},
-        value => undef,
-    };
+    $self->{OPTS}->{value} = $self->load_uri($self->{OPTS}->{file})
+        if (defined $self->{OPTS}->{file});
 }
 
 sub process {
     my ($self, $data, $opts) = @_;
     for my $path (@{$opts->{path}}) {
         log_debug { 'Updating path "' . $path . '"' };
+
         $path = eval { ps_parse($path) };
         die_fatal "Failed to parse path ($@)", 4 if ($@);
+
         my @places = eval { spath($data, $path, expand => 1) };
         die_fatal "Failed to resolve path ($@)", 4 if ($@);
 
@@ -56,13 +57,17 @@ Insert - insert structure/value into another structure
 
 =over 4
 
+=item B<--file|-f> E<lt>fileE<gt>
+
+Load structure from file.
+
 =item B<--path> E<lt>pathE<gt>
 
 Path in the structure to deal with. May be used several times.
 
 =item B<--value> E<lt>valueE<gt>
 
-Value to insert.
+Value to insert. Meaningless when --file opt used.
 
 =back
 

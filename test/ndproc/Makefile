@@ -15,6 +15,7 @@ test: \
 	t_m__UNKNOWN_via_args \
 	t_m_Insert \
 	t_m_Insert_nopath \
+	t_m_Insert_file \
 	t_m_Insert_value \
 	t_m_Remove \
 	t_m_Remove_dump_rules \
@@ -42,6 +43,10 @@ t_m_Insert:
 t_m_Insert_nopath:
 	$(BIN) $(VERB) --module Insert ../_data/bool.a.json > $@.0000.got
 	diff ../_data/bool.a.json $@.0000.got # no path -- no insert =)
+
+t_m_Insert_file:
+	$(BIN) $(VERB) --module Insert --path '{some}[1]{path}' --file ../_data/text-utf8.a.json ../_data/bool.a.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
 
 t_m_Insert_value:
 	$(BIN) $(VERB) --module Insert --path '{some}[1]{path}' --value 'string' ../_data/bool.a.json > $@.0000.got
