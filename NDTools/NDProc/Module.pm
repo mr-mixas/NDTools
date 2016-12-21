@@ -6,6 +6,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use NDTools::INC;
+use NDTools::Slurp qw(s_load);
 use Getopt::Long qw(:config bundling nopass_through);
 use Log::Log4Cli;
 use Pod::Find qw(pod_where);
@@ -23,11 +24,21 @@ sub arg_opts {
     )
 }
 
+sub configure {
+    my $self = shift;
+}
+
 sub defaults {
     return {
         enabled => 1,
         path => [],
     };
+}
+
+sub load_uri {
+    my ($self, $uri) = @_;
+    log_debug { "Loading $uri" };
+    s_load($uri, undef) or return undef;
 }
 
 sub new {
@@ -37,6 +48,7 @@ sub new {
         $self->usage;
         die_fatal "Unsupported opt passed", 1;
     }
+    $self->configure;
     return $self;
 }
 
