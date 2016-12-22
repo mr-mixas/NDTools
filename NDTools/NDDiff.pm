@@ -260,19 +260,17 @@ sub _term_text_diff {
             push @add, $self->{OPTS}->{colors} ? # added
                 colored($signs{'+'} . " " . $ind . $line->[2], $colors{'+'}) :
                 $signs{'+'} . " " . $ind . $line->[2];
-            next;
+        } else {
+            push @out, splice(@rmv), splice(@add); # 'c' period closed - flush 'buffers'
+
+            my $str = ($line->[0] eq '+') ? $line->[2] : $line->[1];
+            push @out, $self->{OPTS}->{colors} ?
+                colored($signs{$line->[0]} . " " . $ind . $str, $colors{$line->[0]}) :
+                $signs{$line->[0]} . " " . $ind . $str;
         }
-
-        push @out, splice @rmv;
-        push @out, splice @add;
-
-        my $str = ($line->[0] eq '+') ? $line->[2] : $line->[1];
-        push @out, $self->{OPTS}->{colors} ?
-            colored($signs{$line->[0]} . " " . $ind . $str, $colors{$line->[0]}) :
-            $signs{$line->[0]} . " " . $ind . $str;
     }
 
-    return @out;
+    return @out, @rmv, @add; # if 'c' period doesn't closed @rmv and @add will contain changed block
 }
 
 1; # End of NDTools::NDDiff
