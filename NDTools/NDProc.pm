@@ -36,6 +36,12 @@ sub defaults {
     };
 }
 
+sub dump_arg {
+    my ($self, $uri, $arg) = @_;
+    log_info { "Dumping '$arg'" };
+    s_dump($uri, undef, undef, $arg);
+}
+
 sub exec {
     my $self = shift;
 
@@ -73,16 +79,21 @@ sub exec {
 
     die_fatal "At least one argument expected", 1 unless (@ARGV);
 
-    for my $struct (@ARGV) {
-        log_info { "Loading $struct" };
-        $struct = s_load($struct, 'JSON');
+    for my $arg (@ARGV) {
+        my $struct = $self->load_arg($arg);
         my @blame = $processor->process($struct, $self->{rules});
-        s_dump(\*STDOUT, undef, undef, $struct);
         s_dump($self->{OPTS}->{blame}, undef, undef, \@blame)
             if (defined $self->{OPTS}->{blame});
+        $self->dump_arg(\*STDOUT, $struct);
     }
 
     die_info "All done", 0;
+}
+
+sub load_arg {
+    my ($self, $arg) = @_;
+    log_info { "Loading '$arg'" };
+    s_load($arg, undef);
 }
 
 1; # End of NDTools::NDProc
