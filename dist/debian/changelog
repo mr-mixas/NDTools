@@ -1,3 +1,11 @@
+ndtools (0.3.2) unstable; urgency=low
+
+  * nddiff: text vals diff fixed (when last lines changed)
+  * ndmerge: removed from dist
+  * NDProc::Module::Insert: structures insertion implemented
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Thu, 22 Dec 2016 12:10:35 +0300
+
 ndtools (0.3.1) unstable; urgency=low
 
   * nddiff: die correctly when failed to parse --path
