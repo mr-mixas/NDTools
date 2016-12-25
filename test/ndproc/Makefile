@@ -15,6 +15,7 @@ test: \
 	t_m__UNKNOWN_via_args \
 	t_m__UNKNOWN_via_rules \
 	t_m_Insert \
+	t_m_Insert_help \
 	t_m_Insert_nopath \
 	t_m_Insert_file \
 	t_m_Insert_value \
@@ -39,6 +40,10 @@ t_m__UNKNOWN_via_rules:
 
 t_m_Insert:
 	$(BIN) $(VERB) --module Insert --path '{some}[0..1]{path}' --path '{another}[1,0]{path}' ../_data/bool.a.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
+t_m_Insert_help:
+	$(BIN) --module Insert --help -h 2>$@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_m_Insert_nopath:

@@ -1,0 +1,13 @@
+Name:
+    Insert - insert structure/value into another structure
+
+Options:
+    --file|-f <file>
+        Load structure from file.
+
+    --path <path>
+        Path in the structure to deal with. May be used several times.
+
+    --value <value>
+        Value to insert. Meaningless when --file opt used.
+
