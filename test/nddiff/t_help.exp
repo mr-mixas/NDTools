@@ -9,6 +9,9 @@ Options:
     --[no]colors
         On/Off colors for diff.
 
+    --full
+        Don't suppresss common items in JSON mode.
+
     --help|-h
         Print a help message and exit.
 

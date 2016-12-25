@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.09" }
+sub VERSION { "0.10" }
 
 sub arg_opts {
     my $self = shift;
@@ -22,6 +22,7 @@ sub arg_opts {
         $self->SUPER::arg_opts(),
         'brief' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
         'colors!' => \$self->{OPTS}->{colors},
+        'full' => \$self->{OPTS}->{full},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
         'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
         'ignore=s@' => \$self->{OPTS}->{ignore},
@@ -71,7 +72,11 @@ sub add {
 sub diff {
     my $self = shift;
     log_debug { "Calculating diff for structure" };
-    $self->{diff} = Struct::Diff::diff($self->{items}->[0], $self->{items}->[1]);
+    $self->{diff} = Struct::Diff::diff(
+        $self->{items}->[0],
+        $self->{items}->[1],
+        noU => $self->{OPTS}->{full} ? 0 : 1,
+    );
     if ($self->{OPTS}->{'out-fmt'} eq 'term') {
         $self->_diff_texts or return undef;
     }

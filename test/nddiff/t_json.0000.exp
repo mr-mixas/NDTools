@@ -8,12 +8,6 @@
             "/etc/hostname" : {
                "N" : "beta",
                "O" : "alpha"
-            },
-            "/etc/hosts" : {
-               "U" : "127.0.0.1    localhost"
-            },
-            "/etc/resolv.conf" : {
-               "U" : "nameserver 8.8.8.8"
             }
          }
       },
