@@ -2,9 +2,8 @@
 
 * nddiff --ctx-struct <num>
 
-* nddiff --patch
-    1. Visualize patch if one argument used
-    2. Make small possible diff (patch) when two arguments used
+* nddiff --show <file>
+    Visualize patch
 
 * ndpatch --path <path>
     patch specified parts
@@ -16,6 +15,11 @@
     Replace loaded file by output (canonize JSON etc)
 
 * ndquery: refactor to OO
+
+* ndproc
+    --builtin-rules <path>
+    --embed-rules <path>
+    --embed-blame <path>
 
 * NDProc::Module::Insert
     --shift # disabled by default (shift list's tails when inserting new values)
