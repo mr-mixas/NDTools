@@ -86,9 +86,9 @@ sub exec {
     for my $arg (@ARGV) {
         my $struct = $self->load_arg($arg);
         my @blame = $self->process($struct, $self->{rules});
+        $self->dump_arg($arg, $struct);
         s_dump($self->{OPTS}->{blame}, undef, undef, \@blame)
             if (defined $self->{OPTS}->{blame});
-        $self->dump_arg(\*STDOUT, $struct);
     }
 
     die_info "All done", 0;
@@ -136,7 +136,7 @@ sub process {
     my @blame;
     for my $rule (@{$rules}) {
         unless ($rule->{enabled}) {
-            log_debug { "Rule #$rcnt ($rule->{modname})is disabled, skip it "};
+            log_debug { "Rule #$rcnt ($rule->{modname}) is disabled, skip it "};
             next;
         }
         die_fatal "Unknown module '$rule->{modname}' specified (rule #$rcnt)", 1
