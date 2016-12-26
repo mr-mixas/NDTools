@@ -17,7 +17,7 @@
             "/etc/cron.d/beta" : "* * * * * root sleep 5"
          },
          "fqdn" : "beta.example.org",
-         "mtime" : "1462431002"
+         "mtime" : 1462431002
       },
       "src" : "../beta.json"
    }
