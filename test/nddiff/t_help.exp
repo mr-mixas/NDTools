@@ -32,6 +32,10 @@ Options:
     --quiet|-q
         Don't show diff, only exit code shows exists diff or not.
 
+    --show
+        Visualize diff (JSON formatted diff file must be provided as
+        argument).
+
     --verbose|-v [int]
         Increase verbosity, max level - 4.
 

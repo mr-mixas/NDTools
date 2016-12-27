@@ -61,6 +61,10 @@ On/Off pretty-print for JSON. Enabled by default.
 
 Don't show diff, only exit code shows exists diff or not.
 
+=item B<--show>
+
+Visualize diff (JSON formatted diff file must be provided as argument).
+
 =item B<--verbose|-v> [int]
 
 Increase verbosity, max level - 4.

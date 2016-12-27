@@ -24,6 +24,8 @@ test: \
 	t_json \
 	t_json_nopretty \
 	t_path \
+	t_show \
+	t_show_brief \
 	t_yaml
 	@echo === ALL $(BIN) TESTS PASSED ===
 
@@ -48,6 +50,14 @@ t_brief_lastpathitem:
 	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json --path [1]{Edit}[5] --brief > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got # must be empty
 	@echo === $@ PASS ===
+
+t_show:
+	$(BIN) $(VERB) --show t_show.diff.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+
+t_show_brief:
+	$(BIN) $(VERB) --brief --show t_show.diff.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
 
 t_term:
 	$(BIN) $(VERB) ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)

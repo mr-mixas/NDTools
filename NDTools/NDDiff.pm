@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.10" }
+sub VERSION { "0.11" }
 
 sub arg_opts {
     my $self = shift;
@@ -29,6 +29,7 @@ sub arg_opts {
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
         'quiet|q' => \$self->{OPTS}->{quiet},
+        'show' => \$self->{OPTS}->{show},
     )
 }
 
@@ -109,7 +110,11 @@ sub dump {
 sub exec {
     my $self = shift;
     $self->load(@ARGV) or die_fatal undef, 1;
-    $self->diff or die_fatal undef, 1;
+    if ($self->{OPTS}->{show}) {
+        $self->{diff} = shift @{$self->{items}};
+    } else {
+        $self->diff or die_fatal undef, 1;
+    }
     $self->dump or die_fatal undef, 1 unless ($self->{OPTS}->{quiet});
 
     die_info "All done, no difference found", 0
@@ -124,7 +129,12 @@ sub list {
 
 sub load {
     my $self = shift;
-    die_fatal "Two arguments expected for diff", 1 unless (@_ == 2);
+    if ($self->{OPTS}->{show}) {
+        die_fatal "One argument expected (--show) used", 1 unless (@_ == 1);
+    } else {
+        die_fatal "Two arguments expected for diff", 1 unless (@_ == 2);
+    }
+
     for my $i (@_) {
         my $data = $self->load_uri($i) or return undef;
         if (my $path = $self->{OPTS}->{path}) {
