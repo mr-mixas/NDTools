@@ -23,6 +23,7 @@ test: \
 	t_ignore \
 	t_json \
 	t_json_nopretty \
+	t_json_numbers \
 	t_path \
 	t_show \
 	t_show_brief \
@@ -122,6 +123,10 @@ t_json_nopretty:
 	$(BIN) $(VERB) --nopretty --json ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
+
+t_json_numbers:
+	$(BIN) $(VERB) --json ../_data/numbers.a.json ../_data/numbers.b.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
 
 t_path:
 	$(BIN) $(VERB) --path '{files}' ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
