@@ -3,6 +3,7 @@ package NDTools::NDTool;
 use strict;
 use warnings FATAL => 'all';
 
+use Encode::Locale qw(decode_argv);
 use NDTools::INC;
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
@@ -33,6 +34,7 @@ sub defaults {
 sub new {
     my $self = bless {}, shift;
     $self->{OPTS} = $self->defaults();
+    decode_argv(Encode::FB_CROAK);
     unless (GetOptions ($self->arg_opts)) {
         $self->usage;
         die_fatal "Unsupported opts used", 1;

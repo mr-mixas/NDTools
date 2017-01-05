@@ -1,12 +1,13 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.09';
+my $VERSION = '0.10';
 
 use strict;
 use warnings FATAL => 'all';
 
 use NDTools::INC;
 
+use Encode::Locale qw(decode_argv);
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
 use Pod::Usage;
@@ -22,6 +23,7 @@ my $OPTS = {
     'path' => '', # empty means whole doc
 };
 
+decode_argv(Encode::FB_CROAK);
 GetOptions (
     'colors!' => \$OPTS->{colors},
     'depth|d=i' => \$OPTS->{depth},
@@ -171,7 +173,7 @@ L<Struct::Path>, L<Struct::Path::PerlStyle>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016 Michael Samoglyadov C<< <mixas at cpan.org> >>.
+Copyright 2016,2017 Michael Samoglyadov C<< <mixas at cpan.org> >>.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of GNU General Public License 3 or later versions.

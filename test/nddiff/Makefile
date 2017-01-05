@@ -25,6 +25,7 @@ test: \
 	t_json_nopretty \
 	t_json_numbers \
 	t_path \
+	t_path_utf8 \
 	t_show \
 	t_show_brief \
 	t_yaml
@@ -132,6 +133,10 @@ t_path:
 	$(BIN) $(VERB) --path '{files}' ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 	@echo === $@ PASS ===
+
+t_path_utf8:
+	$(BIN) $(VERB) --path '{"текст"}' ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
 
 t_yaml:
 	$(BIN) $(VERB) --out-fmt yaml ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
