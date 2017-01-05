@@ -39,14 +39,12 @@ t_dump_rules: always
 	# complex rules by opts
 	$(COMPLEX_MERGE_01) --dump-rules $@.0010.got
 	diff $@.0010.exp $@.0010.got
-	@echo === $@ PASS ===
 
 t_ignore: always
 	$(BIN) $(VERB) > $@.0000.got \
 		--file ../alpha.json \
 			--ignore '{"files"}{"/etc/resolv.conf"}'
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 t_load_rules: always
 	$(BIN) $(VERB) --load-rules t_dump_rules.0010.got --dump-rules $@.0000.got
@@ -59,19 +57,15 @@ t_merge_args_files: always
 	$(COMPLEX_MERGE_01) --dump-blame $@.0010.blame.got > $@.0010.got
 	diff $@.0010.exp $@.0010.got
 	diff $@.0010.blame.exp $@.0010.blame.got
-	@echo === $@ PASS ===
 
 t_merge_loaded_rules: always
 	$(BIN) $(VERB) --dump-blame $@.0000.blame.got --load-rules t_dump_rules.0010.got > $@.0000.got
 	diff $@.0000.exp $@.0000.got
 	diff t_merge_args_files.0010.exp $@.0000.got # opts or rules - result must be the same
 	diff $@.0000.blame.exp $@.0000.blame.got
-	@echo === $@ PASS ===
 
 t_merge_embed_rules: always
 	$(BIN) $(VERB) --embed-rules '{__ndmerge__}{rules}' --load-rules t_dump_rules.0010.got > $@.0000.got
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
-
 
 include ../_common.mk

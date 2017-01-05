@@ -40,18 +40,15 @@ t_verbose: always
 t_brief:
 	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json --brief > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 t_brief_colors:
 	$(BIN) $(VERB) ../_data/bool.a.json ../_data/bool.b.json --brief --colors > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 # [5] here is added item, that's why empty STDOUT. But exit code must be 8 - diff exists after all
 t_brief_lastpathitem:
 	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json --path [1]{Edit}[5] --brief > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got # must be empty
-	@echo === $@ PASS ===
 
 t_show:
 	$(BIN) $(VERB) --show t_show.diff.json > $@.0000.got; $(VRFY_EXIT_8)
@@ -64,17 +61,14 @@ t_show_brief:
 t_term:
 	$(BIN) $(VERB) ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 t_term_colors:
 	$(BIN) $(VERB) --colors ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 t_term_full_headers:
 	$(BIN) $(VERB) ../alpha.json ../beta.json --full-headers > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 t_term_nopretty:
 	$(BIN) $(VERB) --nopretty ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got; $(VRFY_EXIT_8)
@@ -93,7 +87,6 @@ t_term_bool:
 t_term_quiet:
 	$(BIN) $(VERB) --quiet ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 t_term_text:
 	$(BIN) $(VERB) ../_data/deep-down-lorem.a.json ../_data/deep-down-lorem.b.json > $@.0000.got; $(VRFY_EXIT_8)
@@ -118,12 +111,10 @@ t_ignore:
 t_json:
 	$(BIN) $(VERB) --json ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 t_json_nopretty:
 	$(BIN) $(VERB) --nopretty --json ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 t_json_numbers:
 	$(BIN) $(VERB) --json ../_data/numbers.a.json ../_data/numbers.b.json > $@.0000.got; $(VRFY_EXIT_8)
@@ -132,7 +123,6 @@ t_json_numbers:
 t_path:
 	$(BIN) $(VERB) --path '{files}' ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
 
 t_path_utf8:
 	$(BIN) $(VERB) --path '{"текст"}' ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0000.got; $(VRFY_EXIT_8)
@@ -141,4 +131,3 @@ t_path_utf8:
 t_yaml:
 	$(BIN) $(VERB) --out-fmt yaml ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	@echo === $@ PASS ===
