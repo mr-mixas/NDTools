@@ -79,9 +79,67 @@ sub diff {
         noU => $self->{OPTS}->{full} ? 0 : 1,
     );
     if ($self->{OPTS}->{'out-fmt'} eq 'term') {
-        $self->_diff_texts or return undef;
+        $self->diff_texts or return undef;
     }
     return $self->{diff};
+}
+
+sub diff_texts {
+    my $self = shift;
+    log_debug { "Calculating diffs for text values" };
+    my $diff = $self->{diff};
+    my $t_opts = {
+        callback => sub {
+            my ($v, $p, $s, $r) = @_; # value, path, status, diff_ref
+            unless (exists ${$r}->{O}) {
+                log_error { "Incomplete diff passed (old value doesn't exists)" };
+                return undef;
+            }
+            my (@old, @new);
+            @old = split(/$\//, ${$r}->{O}) if (${$r}->{O} and not ref ${$r}->{O});
+            @new = split(/$\//, ${$r}->{N}) if (${$r}->{N} and not ref ${$r}->{N});
+            if (@old > 1 or @new > 1) {
+                push @old, undef; # traverse_sequences don't see sequence for trailing changed lines
+                push @new, undef; # so, put unchanged thing to the end and remove it later
+                Algorithm::Diff::traverse_sequences(
+                    \@old, \@new,
+                    {
+                        DISCARD_A => sub {
+                            if (exists ${$r}->{T} and exists ${$r}->{T}->[-1]->{R}) {
+                                push @{${$r}->{T}->[-1]->{R}}, $old[$_[0]];
+                            } else {
+                                push @{${$r}->{T}}, { R => [ $old[$_[0]] ] };
+                            }
+                        },
+                        DISCARD_B => sub {
+                            if (exists ${$r}->{T} and exists ${$r}->{T}->[-1]->{A}) {
+                                push @{${$r}->{T}->[-1]->{A}}, $new[$_[1]];
+                            } else {
+                                push @{${$r}->{T}}, { A => [ $new[$_[1]] ] };
+                            }
+                        },
+                        MATCH => sub {
+                            if (exists ${$r}->{T} and exists ${$r}->{T}->[-1]->{U}) {
+                                push @{${$r}->{T}->[-1]->{U}}, $old[$_[0]];
+                            } else {
+                                push @{${$r}->{T}}, { U => [ $old[$_[0]] ] };
+                            }
+                        },
+                    }
+                );
+
+                # erase common line added before
+                pop @{${$r}->{T}->[-1]->{U}};
+                pop @{${$r}->{T}} unless (@{${$r}->{T}->[-1]->{U}});
+
+                delete ${$r}->{O};
+                delete ${$r}->{N};
+            }
+            return 1;
+        },
+        statuses => [ 'N' ],
+    };
+    Struct::Diff::dtraverse($self->{diff}, $t_opts);
 }
 
 sub dump {
@@ -91,7 +149,7 @@ sub dump {
         my $t_opts = {
             callback => sub { $self->print_term_block(@_) },
             sortkeys => 1,
-            statuses => [ qw{R O N A TEXT_SDIFF} ],
+            statuses => [ qw{R O N A T} ],
         };
         Struct::Diff::dtraverse($self->{diff}, $t_opts);
     } elsif ($self->{OPTS}->{'out-fmt'} eq 'brief') {
@@ -210,8 +268,8 @@ sub print_term_block {
 
     # diff for value
     my $indt = sprintf "%" . @{$path} * 2 . "s", "";
-    if ($status eq 'TEXT_SDIFF') {
-        push @lines, $self->_term_text_diff($value, $indt);
+    if ($status eq 'T') {
+        push @lines, $self->term_text_diff($value, $indt);
     } else {
         $value = to_json($value, {allow_nonref => 1, canonical => 1, pretty => $self->{OPTS}->{pretty}})
             if (ref $value or not defined $value);
@@ -225,67 +283,22 @@ sub print_term_block {
     print join("\n", @lines) . "\n";
 }
 
-sub _diff_texts {
-    my $self = shift;
-    log_debug { "Calculating diffs for text values" };
-    my $diff = $self->{diff};
-    my $t_opts = {
-        callback => sub {
-            my ($v, $p, $s, $r) = @_; # value, path, status, diff_ref
-            unless (exists ${$r}->{O}) {
-                log_error { "Incomplete diff passed (old value doesn't exists)" };
-                return undef;
-            }
-            my (@old, @new);
-            @old = split(/$\//, ${$r}->{O}) if (${$r}->{O} and not ref ${$r}->{O});
-            @new = split(/$\//, ${$r}->{N}) if (${$r}->{N} and not ref ${$r}->{N});
-            if (@old > 1 or @new > 1) {
-                ${$r}->{TEXT_SDIFF} = Algorithm::Diff::sdiff(\@old, \@new);
-                delete ${$r}->{O};
-                delete ${$r}->{N};
-            }
-            return 1;
-        },
-        statuses => [ 'N' ],
-    };
-    Struct::Diff::dtraverse($self->{diff}, $t_opts);
-}
-
-sub _term_text_diff {
-    my ($self, $val, $ind) = @_;
-    my %colors = (
-        '-' => $self->{OPTS}->{term}->{line}->{R},
-        '+' => $self->{OPTS}->{term}->{line}->{A},
-        'u' => $self->{OPTS}->{term}->{line}->{U},
-    );
-    my %signs = (
-        '-' => $self->{OPTS}->{term}->{sign}->{R},
-        '+' => $self->{OPTS}->{term}->{sign}->{A},
-        'u' => $self->{OPTS}->{term}->{sign}->{U},
-    );
-
+sub term_text_diff {
+    my ($self, $diff, $indent) = @_;
     my @out;
-    my (@add, @rmv); # group consequent lines together
 
-    for my $line (@{$val}) {
-        if ($line->[0] eq 'c') {
-            push @rmv, $self->{OPTS}->{colors} ? # removed
-                colored($signs{'-'} . " " . $ind . $line->[1], $colors{'-'}) :
-                $signs{'-'} . " " . $ind . $line->[1];
-            push @add, $self->{OPTS}->{colors} ? # added
-                colored($signs{'+'} . " " . $ind . $line->[2], $colors{'+'}) :
-                $signs{'+'} . " " . $ind . $line->[2];
-        } else {
-            push @out, splice(@rmv), splice(@add); # 'c' period closed - flush 'buffers'
-
-            my $str = ($line->[0] eq '+') ? $line->[2] : $line->[1];
-            push @out, $self->{OPTS}->{colors} ?
-                colored($signs{$line->[0]} . " " . $ind . $str, $colors{$line->[0]}) :
-                $signs{$line->[0]} . " " . $ind . $str;
-        }
+    while (my $hunk = shift @{$diff}) {
+        my ($status, $lines) = each %{$hunk};
+        my $sign  = $self->{OPTS}->{term}->{sign}->{$status};
+        my $color = $self->{OPTS}->{term}->{line}->{$status};
+        push @out, map {
+            $self->{OPTS}->{colors} ?
+                colored($sign . " " . $indent . $_, $color) :
+                $sign . " " . $indent . $_
+        } @{$lines};
     }
 
-    return @out, @rmv, @add; # if 'c' period doesn't closed @rmv and @add will contain changed block
+    return @out;
 }
 
 1; # End of NDTools::NDDiff
