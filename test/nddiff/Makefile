@@ -20,6 +20,7 @@ test: \
 	t_term_text \
 	t_term_text_changed_seqs \
 	t_term_text_utf8 \
+	t_term_text_AR \
 	t_ignore \
 	t_json \
 	t_json_nopretty \
@@ -99,6 +100,10 @@ t_term_text_changed_seqs:
 
 t_term_text_utf8:
 	$(BIN) $(VERB) ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+
+t_term_text_AR:
+	$(BIN) $(VERB) ../_data/text-AR.a.json ../_data/text-AR.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
 t_ignore:
