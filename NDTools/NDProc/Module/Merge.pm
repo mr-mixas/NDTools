@@ -36,6 +36,13 @@ sub process {
     my ($self, $data, $opts, $source) = @_;
     push @{$opts->{path}}, '' unless (@{$opts->{path}});
 
+    if (exists $opts->{ignore}) {
+        for my $path (@{$opts->{ignore}}) {
+            log_debug { "Ignoring '$path'" };
+            spath($source, ps_parse($path), delete => 1);
+        }
+    }
+
     for my $path (@{$opts->{path}}) {
         log_info { "Merging with $opts->{source} ($opts->{style}, '$path')" };
         my $subst = st_copy($source, ps_parse($path));
