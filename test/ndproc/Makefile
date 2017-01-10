@@ -66,8 +66,9 @@ t_m_Insert_value:
 t_m_Merge:
 	cp ../alpha.json $@.0000.got
 	# sequently merge three files
-	$(BIN) $(VERB) --module Merge --source ../beta.json --source ../gamma.json $@.0000.got
+	$(BIN) $(VERB) --module Merge --source ../beta.json --source ../gamma.json $@.0000.got --dump-blame $@.0010.got
 	diff $@.0000.exp $@.0000.got
+	diff $@.0010.exp $@.0010.got # blame
 
 t_m_Remove:
 	cp ../_data/deep-down-lorem.a.json $@.0000.got
