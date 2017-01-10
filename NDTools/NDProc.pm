@@ -84,7 +84,7 @@ sub exec {
     for my $arg (@ARGV) {
         my $struct = $self->load_arg($arg);
         $self->{rules} = $self->resolve_rules($self->{rules});
-        my @blame = $self->process($struct, $self->{rules});
+        my @blame = $self->process(\$struct, $self->{rules});
         $self->dump_arg($arg, $struct);
         s_dump($self->{OPTS}->{blame}, undef, undef, \@blame)
             if (defined $self->{OPTS}->{blame});
@@ -149,13 +149,13 @@ sub process {
 
         log_debug { "Processing rule #$rcnt ($rule->{modname})" };
         my $module = $self->{MODS}->{$rule->{modname}}->new();
-        my $result = dclone($struct);
+        my $result = dclone(${$struct});
         my $source = exists $rule->{source} ? $self->{sources}->{$rule->{source}} : undef;
         $module->process($struct, $rule, $source);
         push @blame, {
             rule_number => $rcnt,
             comment => $rule->{comment},
-            %{dsplit(diff($result, $struct, noO => 1, noU => 1))},
+            %{dsplit(diff($result, ${$struct}, noO => 1, noU => 1))},
         };
         $rcnt++;
     }
