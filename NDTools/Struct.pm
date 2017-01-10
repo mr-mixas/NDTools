@@ -23,7 +23,7 @@ sub st_copy($;$) {
     my ($struct, $path) = @_;
     my $out = dclone($struct);
 
-    if ($path) {
+    if ($path and @{$path}) {
         # workaround, until spath will be able to return context for values (ie substrusture)
         spath($out, $path, delete => 1);
         my $diff = diff($struct, $out, noU => 1);
