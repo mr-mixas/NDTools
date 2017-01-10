@@ -4,8 +4,46 @@ use strict;
 use warnings FATAL => 'all';
 use parent "NDTools::NDProc::Module";
 
+use NDTools::INC;
+use Log::Log4Cli;
+use NDTools::Struct qw(st_copy st_merge);
+use Struct::Path qw(spath);
+use Struct::Path::PerlStyle qw(ps_parse);
+
 sub MODINFO { "Merge structures according provided rules" }
 sub VERSION { "0.01" }
+
+sub arg_opts {
+    my $self = shift;
+    return (
+        $self->SUPER::arg_opts(),
+        'ignore=s@' => \$self->{OPTS}->{ignore},
+        'source=s@' => \$self->{OPTS}->{source}, # will be resolved if multiple times used
+        'strict!'   => \$self->{OPTS}->{strict},
+        'style'     => \$self->{OPTS}->{style},
+    )
+}
+
+sub defaults {
+    my $self = shift;
+    return {
+        %{$self->SUPER::defaults()},
+        'style' => 'R_OVERRIDE',
+    };
+}
+
+sub process {
+    my ($self, $data, $opts, $source) = @_;
+    push @{$opts->{path}}, '' unless (@{$opts->{path}});
+
+    for my $path (@{$opts->{path}}) {
+        log_debug { "Merge ($opts->{style}) with $opts->{source} ('$path')" };
+        my $subst = st_copy($source, ps_parse($path));
+        my $rstyle = $opts->{style} || $self->{style};
+        $$data = st_merge(${$data}, $subst, style => $rstyle);
+    }
+}
+
 
 1; # End of NDTools::NDProc::Module::Merge
 
@@ -30,11 +68,15 @@ omitted. Paths '' or '{}' or '[]' means "whole" struct, and should be
 used as first merge target if whole struct must be merged and then
 some parts merged with other options. May be specified several times.
 
+=item B<--source> E<lt>uriE<gt>
+
+Source to merge with.
+
 =item B<--[no]strict>
 
 Fail if specified path doesn't exists in prerequisite. Enabled by default.
 
-=item B<--style> E<lt>L_OVERRIDE|R_OVERRIDEE<gt>
+=item B<--style> E<lt>styleE<gt>
 
 Merge style.
 
@@ -52,7 +94,7 @@ Default is B<R_OVERRIDE>
 
 =head1 SEE ALSO
 
-L<ndproc(1)>, L<ndproc-modules>
+L<ndproc(1)>, L<ndproc-modules(1)>
 
 L<nddiff(1)>, L<ndquery(1)>, L<Struct::Path::PerlStyle>
 
