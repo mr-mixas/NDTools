@@ -12,7 +12,7 @@ use NDTools::Slurp qw(s_dump s_load);
 use Storable qw(dclone);
 use Struct::Diff qw(diff dsplit);
 
-sub VERSION { '0.03' }
+sub VERSION { '0.04' }
 
 sub arg_opts {
     my $self = shift;
@@ -47,9 +47,7 @@ sub dump_arg {
 sub exec {
     my $self = shift;
 
-    #my $processor = NDTools::NDProc::Processor->new(@{$self->{OPTS}->{modpath}});
     $self->init_modules(@{$self->{OPTS}->{modpath}});
-
     if ($self->{OPTS}->{'list-modules'}) {
         map { printf "%-10s %-8s %s\n", @{$_} } $self->list_modules;
         die_info undef, 0;
@@ -85,6 +83,7 @@ sub exec {
 
     for my $arg (@ARGV) {
         my $struct = $self->load_arg($arg);
+        $self->{rules} = $self->resolve_rules($self->{rules});
         my @blame = $self->process($struct, $self->{rules});
         $self->dump_arg($arg, $struct);
         s_dump($self->{OPTS}->{blame}, undef, undef, \@blame)
@@ -130,10 +129,16 @@ sub load_arg {
     s_load($arg, undef);
 }
 
+sub load_source {
+    my ($self, $src) = @_;
+    s_load($src, undef);
+}
+
 sub process {
     my ($self, $struct, $rules) = @_;
     my $rcnt = 0; # rules counter
     my @blame;
+
     for my $rule (@{$rules}) {
         unless ($rule->{enabled}) {
             log_debug { "Rule #$rcnt ($rule->{modname}) is disabled, skip it "};
@@ -145,7 +150,8 @@ sub process {
         log_debug { "Processing rule #$rcnt ($rule->{modname})" };
         my $module = $self->{MODS}->{$rule->{modname}}->new();
         my $result = dclone($struct);
-        $module->process($struct, $rule);
+        my $source = exists $rule->{source} ? $self->{sources}->{$rule->{source}} : undef;
+        $module->process($struct, $rule, $source);
         push @blame, {
             rule_number => $rcnt,
             comment => $rule->{comment},
@@ -153,7 +159,35 @@ sub process {
         };
         $rcnt++;
     }
+
     return @blame;
+}
+
+sub resolve_rules {
+    my ($self, $rules) = @_;
+    my $result;
+
+    log_debug { "Resolving rules" };
+    for my $rule (@{$rules}) {
+        if (exists $rule->{source} and ref $rule->{source} eq 'ARRAY') {
+            for my $src (@{delete $rule->{source}}) {
+                my $new = { %{$rule} };
+                $new->{source} = $src;
+                push @{$result}, $new;
+            }
+        } else {
+            push @{$result}, $rule;
+        }
+    }
+
+    for my $rule (@{$result}) {
+        next unless (exists $rule->{source});
+        log_debug { "Loading prerequisite '$rule->{source}'" };
+        $self->{sources}->{$rule->{source}} =
+            $self->load_source($rule->{source});
+    }
+
+    return $result;
 }
 
 1; # End of NDTools::NDProc
