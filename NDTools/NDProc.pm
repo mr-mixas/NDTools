@@ -40,8 +40,15 @@ sub defaults {
 
 sub dump_arg {
     my ($self, $uri, $arg) = @_;
-    log_info { "Dumping '$arg'" };
+    log_debug { "Dumping structure to $uri" };
     s_dump($uri, undef, undef, $arg);
+}
+
+sub dump_blame {
+    my ($self, $blame) = @_;
+    return unless (defined $self->{OPTS}->{blame});
+    log_debug { "Dumping blame to '$self->{OPTS}->{blame}'" };
+    s_dump($self->{OPTS}->{blame}, undef, undef, $blame);
 }
 
 sub exec {
@@ -80,15 +87,8 @@ sub exec {
     }
 
     die_fatal "At least one argument expected", 1 unless (@ARGV);
-
-    for my $arg (@ARGV) {
-        my $struct = $self->load_arg($arg);
-        $self->{rules} = $self->resolve_rules($self->{rules});
-        my @blame = $self->process(\$struct, $self->{rules});
-        $self->dump_arg($arg, $struct);
-        s_dump($self->{OPTS}->{blame}, undef, undef, \@blame)
-            if (defined $self->{OPTS}->{blame});
-    }
+    $self->{rules} = $self->resolve_rules($self->{rules});
+    $self->process_args(@ARGV);
 
     die_info "All done", 0;
 }
@@ -125,38 +125,44 @@ sub list_modules {
 
 sub load_arg {
     my ($self, $arg) = @_;
-    log_info { "Loading '$arg'" };
+    log_debug { "Loading $arg" };
     s_load($arg, undef);
 }
 
-sub load_source {
-    my ($self, $src) = @_;
-    s_load($src, undef);
+*load_source = \&load_arg;
+
+sub process_args {
+    my $self = shift;
+    for my $arg (@_) {
+        my $struct = $self->load_arg($arg);
+        my @blame = $self->process_rules(\$struct, $self->{rules});
+        $self->dump_arg($arg, $struct);
+        $self->dump_blame(\@blame);
+    }
 }
 
-sub process {
+sub process_rules {
     my ($self, $struct, $rules) = @_;
     my $rcnt = 0; # rules counter
     my @blame;
 
     for my $rule (@{$rules}) {
         unless ($rule->{enabled}) {
-            log_debug { "Rule #$rcnt ($rule->{modname}) is disabled, skip it "};
+            log_debug { "Rule #$rcnt ($rule->{modname}) is disabled, skip it" };
             next;
         }
         die_fatal "Unknown module '$rule->{modname}' specified (rule #$rcnt)", 1
             unless (exists $self->{MODS}->{$rule->{modname}});
 
         log_debug { "Processing rule #$rcnt ($rule->{modname})" };
-        my $module = $self->{MODS}->{$rule->{modname}}->new();
         my $result = dclone(${$struct});
         my $source = exists $rule->{source} ? $self->{sources}->{$rule->{source}} : undef;
-        $module->process($struct, $rule, $source);
-        push @blame, {
-            rule_number => $rcnt,
-            comment => $rule->{comment},
-            %{dsplit(diff($result, ${$struct}, noO => 1, noU => 1))},
-        };
+        $self->{MODS}->{$rule->{modname}}->new->process($struct, $rule, $source);
+
+        my $changes = { rule_id => 0+$rcnt, %{dsplit(diff($result, ${$struct}, noO => 1, noU => 1))}};
+        map { $changes->{$_} = $rule->{$_} if defined $rule->{$_} } qw(comment source);
+        push @blame, $changes;
+
         $rcnt++;
     }
 
@@ -182,7 +188,7 @@ sub resolve_rules {
 
     for my $rule (@{$result}) {
         next unless (exists $rule->{source});
-        log_debug { "Loading prerequisite '$rule->{source}'" };
+        log_debug { "Loading prerequisite $rule->{source}" };
         $self->{sources}->{$rule->{source}} =
             $self->load_source($rule->{source});
     }

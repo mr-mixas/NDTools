@@ -37,7 +37,7 @@ sub process {
     push @{$opts->{path}}, '' unless (@{$opts->{path}});
 
     for my $path (@{$opts->{path}}) {
-        log_debug { "Merge ($opts->{style}) with $opts->{source} ('$path')" };
+        log_info { "Merging with $opts->{source} ($opts->{style}, '$path')" };
         my $subst = st_copy($source, ps_parse($path));
         my $rstyle = $opts->{style} || $self->{style};
         $$data = st_merge(${$data}, $subst, style => $rstyle);

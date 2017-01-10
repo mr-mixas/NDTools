@@ -30,7 +30,7 @@ sub configure {
 sub process {
     my ($self, $data, $opts) = @_;
     for my $path (@{$opts->{path}}) {
-        log_debug { 'Updating path "' . $path . '"' };
+        log_info { 'Updating path "' . $path . '"' };
 
         $path = eval { ps_parse($path) };
         die_fatal "Failed to parse path ($@)", 4 if ($@);

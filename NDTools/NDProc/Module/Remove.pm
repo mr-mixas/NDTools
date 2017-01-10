@@ -23,7 +23,7 @@ sub arg_opts {
 sub process {
     my ($self, $data, $opts) = @_;
     for my $path (@{$opts->{path}}) {
-        log_debug { 'Removing path "' . $path . '"' };
+        log_info { 'Removing path "' . $path . '"' };
         $path = eval { ps_parse($path) };
         die_fatal "Failed to parse path ($@)", 4 if ($@);
         eval { spath($data, $path, delete => 1, strict => $opts->{strict}) };
