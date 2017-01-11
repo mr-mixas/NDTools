@@ -40,7 +40,7 @@ sub defaults {
 
 sub dump_arg {
     my ($self, $uri, $arg) = @_;
-    log_debug { "Dumping structure to $uri" };
+    log_debug { "Dumping result to $uri" };
     s_dump($uri, undef, undef, $arg);
 }
 
@@ -108,7 +108,7 @@ sub get_mod_opts {
 sub init_modules {
     my $self = shift;
     for my $path (@_) {
-        log_trace { "Loooking for modules in $path" };
+        log_trace { "Indexing modules in $path" };
         for my $m (findsubmod $path) {
             $self->{MODS}->{(split('::', $m))[-1]} = $m;
         }
@@ -138,6 +138,7 @@ sub load_arg {
 sub process_args {
     my $self = shift;
     for my $arg (@_) {
+        log_info { "Processing $arg" };
         my $struct = $self->load_arg($arg);
         my @blame = $self->process_rules(\$struct, $self->{rules});
         $self->dump_arg($arg, $struct);
@@ -192,7 +193,6 @@ sub resolve_rules {
 
     for my $rule (@{$result}) {
         next unless (exists $rule->{source});
-        log_debug { "Loading prerequisite $rule->{source}" };
         $self->{sources}->{$rule->{source}} =
             $self->load_source($rule->{source});
     }
