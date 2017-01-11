@@ -30,7 +30,7 @@ sub configure {
 
 sub defaults {
     return {
-        enabled => 1,
+        disabled => undef,
         path => [],
     };
 }

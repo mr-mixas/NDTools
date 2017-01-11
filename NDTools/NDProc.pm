@@ -82,6 +82,10 @@ sub exec {
     }
 
     if ($self->{OPTS}->{'dump-rules'}) {
+        for my $rule (@{$self->{rules}}) {
+            # remove undefs - defaults will be used anyway
+            map { defined $rule->{$_} || delete $rule->{$_} } keys %{$rule};
+        }
         s_dump($self->{OPTS}->{'dump-rules'}, undef, undef, $self->{rules});
         die_info "All done", 0;
     }
@@ -109,7 +113,7 @@ sub init_modules {
             $self->{MODS}->{(split('::', $m))[-1]} = $m;
         }
     }
-    for my $m (keys %{$self->{MODS}}) {
+    for my $m (sort keys %{$self->{MODS}}) {
         log_trace { "Initializing module $m ($self->{MODS}->{$m})" };
         eval "require $self->{MODS}->{$m}";
         die_fatal "Failed to initialize module '$m' ($@)", 1 if ($@);
@@ -147,7 +151,7 @@ sub process_rules {
     my @blame;
 
     for my $rule (@{$rules}) {
-        unless ($rule->{enabled}) {
+        if ($rule->{disabled}) {
             log_debug { "Rule #$rcnt ($rule->{modname}) is disabled, skip it" };
             next;
         }

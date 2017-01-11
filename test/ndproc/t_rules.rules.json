@@ -1,26 +1,20 @@
 [
    {
-      "enabled" : 1,
       "modname" : "Remove",
       "path" : [
          "[1]{Edit}[5]"
       ],
-      "strict" : null
    },
    {
-      "enabled" : 1,
       "modname" : "Remove",
       "path" : [
          "[1]{Edit}[3]"
       ],
-      "strict" : null
    },
    {
-      "enabled" : 1,
       "modname" : "Remove",
       "path" : [
          "[1]{Edit}[1]"
       ],
-      "strict" : null
    }
 ]
