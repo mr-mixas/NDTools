@@ -18,6 +18,7 @@ sub arg_opts {
     return (
         $self->SUPER::arg_opts(),
         'ignore=s@' => \$self->{OPTS}->{ignore},
+        'merge=s'   => sub { push @{$self->{OPTS}->{merge}}, {path => $_[1]} },
         'source=s@' => \$self->{OPTS}->{source}, # will be resolved if multiple times used
         'strict!'   => \$self->{OPTS}->{strict},
         'style'     => \$self->{OPTS}->{style},
@@ -34,7 +35,6 @@ sub defaults {
 
 sub process {
     my ($self, $data, $opts, $source) = @_;
-    push @{$opts->{path}}, '' unless (@{$opts->{path}});
 
     if (exists $opts->{ignore}) {
         for my $path (@{$opts->{ignore}}) {
@@ -43,11 +43,17 @@ sub process {
         }
     }
 
-    for my $path (@{$opts->{path}}) {
-        log_info { "Merging with $opts->{source} ($opts->{style}, '$path')" };
-        my $subst = st_copy($source, ps_parse($path));
-        my $rstyle = $opts->{style} || $self->{style};
-        $$data = st_merge(${$data}, $subst, style => $rstyle);
+    map { unshift @{$opts->{merge}}, { path => $_ } } splice @{$opts->{path}}
+        if ($opts->{path}); # use merges specified via path as first merge subrules
+    # merge full source if no paths defined
+    push @{$opts->{merge}}, {} unless ($opts->{merge} and @{$opts->{merge}});
+
+    for my $m (@{$opts->{merge}}) {
+        $m->{path} = '' unless (defined $m->{path}); # merge whole source if path omitted
+        log_info { "Merging with $opts->{source} ($opts->{style}, '$m->{path}')" };
+        my $subst = st_copy($source, ps_parse($m->{path}));
+        my $rstyle = $m->{style} || $opts->{style} || $self->{style};
+        ${$data} = st_merge(${$data}, $subst, style => $rstyle);
     }
 }
 
@@ -68,7 +74,7 @@ Merge - merge structures according provided rules
 
 Skip specified structure parts. May be used several times.
 
-=item B<--path> E<lt>pathE<gt>
+=item B<--merge> E<lt>pathE<gt>
 
 Path in the structure to merge. Whole structure will be merged if
 omitted. Paths '' or '{}' or '[]' means "whole" struct, and should be
