@@ -1,3 +1,16 @@
+ndtools (0.4.0) unstable; urgency=low
+
+  * all: utf8 args supported
+  * all: depends bumped (Struct::Diff 0.85, Struct::Path::PerlStyle 0.44)
+  * nddiff: --full opt added (only changes in --json mode from now on)
+  * nddiff: --show opt added
+  * ndproc: process files in-place
+  * ndproc: rules resolving and resources support added
+  * ndproc: ndproc mods opt 'enabled' replaced by 'disabled'
+  * ndproc: Merge module added
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Thu, 12 Jan 2017 15:58:27 +0300
+
 ndtools (0.3.2) unstable; urgency=low
 
   * nddiff: text vals diff fixed (when last lines changed)
