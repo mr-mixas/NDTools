@@ -21,7 +21,13 @@ sub arg_opts {
         'merge=s'   => sub { push @{$self->{OPTS}->{merge}}, {path => $_[1]} },
         'source=s@' => \$self->{OPTS}->{source}, # will be resolved if multiple times used
         'strict!'   => \$self->{OPTS}->{strict},
-        'style'     => \$self->{OPTS}->{style},
+        'style=s'   => sub {
+            if (exists $self->{OPTS}->{merge} and @{$self->{OPTS}->{merge}}) {
+                $self->{OPTS}->{merge}->[-1]->{style} = $_[1];
+            } else {
+                $self->{OPTS}->{style} = $_[1];
+            }
+        },
     )
 }
 
@@ -50,10 +56,11 @@ sub process {
 
     for my $m (@{$opts->{merge}}) {
         $m->{path} = '' unless (defined $m->{path}); # merge whole source if path omitted
-        log_info { "Merging with $opts->{source} ($opts->{style}, '$m->{path}')" };
+        my $style = $m->{style} || $opts->{style} || $self->{style};
         my $subst = st_copy($source, ps_parse($m->{path}));
-        my $rstyle = $m->{style} || $opts->{style} || $self->{style};
-        ${$data} = st_merge(${$data}, $subst, style => $rstyle);
+
+        log_info { "Merging $opts->{source} ($style, $m->{path})" };
+        ${$data} = st_merge(${$data}, $subst, style => $style);
     }
 }
 
@@ -91,13 +98,14 @@ Fail if specified path doesn't exists in prerequisite. Enabled by default.
 
 =item B<--style> E<lt>styleE<gt>
 
-Merge style.
+Merge style. Positional opt - define rule default if used before --merge,
+per-merge opt otherwise.
 
 =over 8
 
 =item B<L_OVERRIDE>, B<R_OVERRIDE>
 
-Objects merged, lists overrided, left and right precedence.
+Objects merged, lists and scalars overrided, left and right precedence.
 
 =back
 
