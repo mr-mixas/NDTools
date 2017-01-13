@@ -68,6 +68,7 @@ Simply merge three files using module 'Merge':
  0   No errors occured.
  1   Generic error code.
  2   I/O Error.
+ 4   Path related errors.
 
 =head1 REPORTING BUGS
 

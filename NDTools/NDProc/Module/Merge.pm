@@ -11,7 +11,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.01" }
+sub VERSION { "0.02" }
 
 sub arg_opts {
     my $self = shift;
@@ -20,7 +20,13 @@ sub arg_opts {
         'ignore=s@' => \$self->{OPTS}->{ignore},
         'merge=s'   => sub { push @{$self->{OPTS}->{merge}}, {path => $_[1]} },
         'source=s@' => \$self->{OPTS}->{source}, # will be resolved if multiple times used
-        'strict!'   => \$self->{OPTS}->{strict},
+        'strict!'   => sub {
+            if (exists $self->{OPTS}->{merge} and @{$self->{OPTS}->{merge}}) {
+                $self->{OPTS}->{merge}->[-1]->{strict} = $_[1];
+            } else {
+                $self->{OPTS}->{strict} = $_[1]
+            }
+         },
         'style=s'   => sub {
             if (exists $self->{OPTS}->{merge} and @{$self->{OPTS}->{merge}}) {
                 $self->{OPTS}->{merge}->[-1]->{style} = $_[1];
@@ -35,6 +41,7 @@ sub defaults {
     my $self = shift;
     return {
         %{$self->SUPER::defaults()},
+        'strict' => 1,
         'style' => 'R_OVERRIDE',
     };
 }
@@ -56,6 +63,14 @@ sub process {
 
     for my $m (@{$opts->{merge}}) {
         $m->{path} = '' unless (defined $m->{path}); # merge whole source if path omitted
+        my $spath = ps_parse($m->{path});
+        my $exists = spath($source, $spath);
+        unless ($exists) {
+            die_fatal "No such path ($m->{path}) in $opts->{source}", 4
+                if(exists $m->{strict} ? $m->{strict} : $opts->{strict});
+            log_info { "Ignoring path $m->{path} (doesn't exists in $opts->{source})" };
+            next;
+        }
         my $style = $m->{style} || $opts->{style} || $self->{style};
         my $subst = st_copy($source, ps_parse($m->{path}));
 
@@ -94,7 +109,8 @@ Source to merge with.
 
 =item B<--[no]strict>
 
-Fail if specified path doesn't exists in prerequisite. Enabled by default.
+Fail if specified path doesn't exists in prerequisite. Positional - define
+rule default if used before --merge, per-merge opt otherwise. Enabled by default.
 
 =item B<--style> E<lt>styleE<gt>
 

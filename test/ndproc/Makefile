@@ -22,6 +22,9 @@ test: \
 	t_m_Merge \
 	t_m_Merge_ignore \
 	t_m_Merge_merge \
+	t_m_Merge_merge_path_not_exists_default \
+	t_m_Merge_merge_path_not_exists_nostrict \
+	t_m_Merge_merge_path_not_exists_strict \
 	t_m_Merge_merge_style \
 	t_m_Remove \
 	t_m_Remove_dump_rules \
@@ -82,6 +85,21 @@ t_m_Merge_merge:
 	cp ../alpha.json $@.0000.got
 	$(BIN) $(VERB) --module Merge --source ../beta.json $@.0000.got \
 		--merge "{files}" --merge "{mtime}"
+	diff $@.0000.exp $@.0000.got
+
+t_m_Merge_merge_path_not_exists_default:
+	cp ../alpha.json $@.0000.got
+	$(BIN) $(VERB) --module Merge --source ../beta.json --merge '{not_exists}' $@.0000.got; $(VRFY_EXIT_4)
+	diff ../alpha.json $@.0000.got # must remain unchanged
+
+t_m_Merge_merge_path_not_exists_strict:
+	cp ../alpha.json $@.0000.got
+	$(BIN) $(VERB) --module Merge --strict --source ../beta.json --merge '{not_exists}' $@.0000.got; $(VRFY_EXIT_4)
+	diff ../alpha.json $@.0000.got # must remain unchanged
+
+t_m_Merge_merge_path_not_exists_nostrict:
+	cp ../alpha.json $@.0000.got
+	$(BIN) $(VERB) --module Merge --strict --source ../beta.json --merge '{not_exists}' --nostrict --merge '{mtime}' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_m_Merge_merge_style:
