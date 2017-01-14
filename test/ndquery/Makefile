@@ -10,6 +10,7 @@ test: \
 	t_default \
 	t_insert \
 	t_list \
+	t_md5 \
 	t_out_fmt \
 	t_path \
 	t_utf8
@@ -38,6 +39,10 @@ t_list:
 	diff $@.0020.exp $@.0020.got
 	$(BIN) $(VERB) --colors --list ../_data/deep-down-lorem.a.json > $@.0030.got
 	diff $@.0030.exp $@.0030.got
+
+t_md5:
+	$(BIN) $(VERB) --md5 --path '{files}' ../alpha.json ../alpha.json ../beta.json ../gamma.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
 
 t_out_fmt:
 	$(BIN) $(VERB) --out-fmt yaml ../alpha.json > $@.0000.got

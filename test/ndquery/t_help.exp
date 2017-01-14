@@ -19,6 +19,9 @@ Options:
     --list|-l
         List structure's paths.
 
+    --md5 <JSON|YAML>
+        Calculate MD5 sum for structure.
+
     --out-fmt <JSON|YAML>
         Output format selector. JSON used by default.
 
@@ -43,4 +46,8 @@ Examples:
     List subpaths:
 
         ndquery --list --path '{some}{path}[2]' struct.json
+
+    Checksum for substructures:
+
+        ndquery --md5 --path '{some}{path}' struct.json another.json
 

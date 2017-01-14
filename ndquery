@@ -1,21 +1,25 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.10';
+my $VERSION = '0.11';
 
 use strict;
 use warnings FATAL => 'all';
 
 use NDTools::INC;
 
+use Digest::MD5 qw(md5_hex);
 use Encode::Locale qw(decode_argv);
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
 use Pod::Usage;
+use Storable qw(freeze);
 use Struct::Path qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
 use NDTools::Slurp qw(s_dump s_load);
+
+$Storable::canonical = 1; # sort hash keys on freeze()
 
 # defaults
 my $OPTS = {
@@ -33,6 +37,7 @@ GetOptions (
     },
     'insert=s' => \$OPTS->{insert},
     'list|l' => \$OPTS->{list},
+    'md5' => \$OPTS->{md5},
     'path|p=s' => \$OPTS->{path},
     'out-fmt=s' => \$OPTS->{'out-fmt'},
     'verbose|v:+' => \$Log::Log4Cli::LEVEL,
@@ -73,6 +78,10 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
                 print $cmn . ps_serialize(\@delta) . "\n";
                 $prev = $i->[0];
             }
+        }
+    } elsif ($OPTS->{md5}) {
+        for my $data (@out) {
+            print md5_hex(freeze(ref $data ? $data : \$data)). " ($file)\n";
         }
     } else {
         s_dump(\*STDOUT, $OPTS->{'out-fmt'}, undef, @out);
@@ -120,6 +129,10 @@ Load data from file and insert to structure using path as a pointer.
 
 List structure's paths.
 
+=item B<--md5> E<lt>JSON|YAMLE<gt>
+
+Calculate MD5 sum for structure.
+
 =item B<--out-fmt> E<lt>JSON|YAMLE<gt>
 
 Output format selector. JSON used by default.
@@ -151,6 +164,10 @@ Get specified path from document:
 List subpaths:
 
     ndquery --list --path '{some}{path}[2]' struct.json
+
+Checksum for substructures:
+
+    ndquery --md5 --path '{some}{path}' struct.json another.json
 
 =head1 EXIT STATUS
 
