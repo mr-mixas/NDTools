@@ -11,6 +11,7 @@ test: \
 	t_insert \
 	t_list \
 	t_md5 \
+	t_md5_nonref \
 	t_out_fmt \
 	t_path \
 	t_utf8
@@ -41,7 +42,11 @@ t_list:
 	diff $@.0030.exp $@.0030.got
 
 t_md5:
-	$(BIN) $(VERB) --md5 --path '{files}' ../alpha.json ../alpha.json ../beta.json ../gamma.json > $@.0000.got
+	$(BIN) $(VERB) --md5 ../_data/menu.a.json ../_data/menu.b.json ../_data/menu.a.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
+t_md5_nonref:
+	$(BIN) $(VERB) --md5 --path '[0]{File}[0]{label}' ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_out_fmt:
