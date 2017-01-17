@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.11" }
+sub VERSION { "0.12" }
 
 sub arg_opts {
     my $self = shift;
@@ -22,6 +22,7 @@ sub arg_opts {
         $self->SUPER::arg_opts(),
         'brief' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
         'colors!' => \$self->{OPTS}->{colors},
+        'ctx-text=i' => \$self->{OPTS}->{'ctx-text'},
         'full' => \$self->{OPTS}->{full},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
         'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
@@ -42,18 +43,21 @@ sub defaults {
     my $self = shift;
     my $out = {
         %{$self->SUPER::defaults()},
+        'ctx-text' => 3,
         'term' => {
             'line' => {
                 'A' => 'green',
                 'D' => 'yellow',
                 'U' => 'white',
                 'R' => 'red',
+                '@' => 'magenta',
             },
             'sign' => {
                 'A' => '>',
                 'D' => '!',
                 'U' => ' ',
                 'R' => '<',
+                '@' => ' ',
             },
         },
         'out-fmt' => 'term',
@@ -285,16 +289,46 @@ sub print_term_block {
 
 sub term_text_diff {
     my ($self, $diff, $indent) = @_;
-    my @out;
+    my (@out, @head_ctx, @tail_ctx, $pos);
 
     while (my $hunk = shift @{$diff}) {
         my ($status, $lines) = each %{$hunk};
         my $sign  = $self->{OPTS}->{term}->{sign}->{$status};
         my $color = $self->{OPTS}->{term}->{line}->{$status};
+        $pos += @{$lines};
+
+        if ($status eq 'U') {
+            if ($self->{OPTS}->{'ctx-text'}) {
+                @head_ctx = splice(@{$lines});                                  # before changes
+                @tail_ctx = splice(@head_ctx, 0, $self->{OPTS}->{'ctx-text'})   # after changes
+                    if (@out);
+                splice(@head_ctx, 0, @head_ctx - $self->{OPTS}->{'ctx-text'})
+                    if (@head_ctx > $self->{OPTS}->{'ctx-text'});
+
+                splice(@head_ctx) unless (@{$diff});
+
+                @head_ctx = map {
+                    my $l = $sign . " " . $indent . $_;
+                    $self->{OPTS}->{colors} ? colored($l, $color) : $l;
+                } @head_ctx;
+                @tail_ctx = map {
+                    my $l = $sign . " " . $indent . $_;
+                    $self->{OPTS}->{colors} ? colored($l, $color) : $l;
+                } @tail_ctx;
+            } else {
+                splice(@{$lines}); # purge or will be printed in the next block
+            }
+        }
+
+        push @out, splice @tail_ctx;
+        if (@head_ctx or (not $self->{OPTS}->{'ctx-text'} and $status eq 'U' and @{$diff}) or not @out) {
+            my $l = $self->{OPTS}->{term}->{sign}->{'@'} . " " . $indent . "@@ $pos,- -,- @@";
+            push @out, $self->{OPTS}->{colors} ? colored($l, $self->{OPTS}->{term}->{line}->{'@'}) : $l;
+        }
+        push @out, splice @head_ctx;
         push @out, map {
-            $self->{OPTS}->{colors} ?
-                colored($sign . " " . $indent . $_, $color) :
-                $sign . " " . $indent . $_
+            my $l = $sign . " " . $indent . $_;
+            $self->{OPTS}->{colors} ? colored($l, $color) : $l;
         } @{$lines};
     }
 

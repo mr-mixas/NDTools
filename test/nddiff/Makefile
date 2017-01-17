@@ -106,6 +106,32 @@ t_term_text_AR:
 	$(BIN) $(VERB) ../_data/text-AR.a.json ../_data/text-AR.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
+t_term_text_ctx:
+	$(BIN) $(VERB) --ctx-text 0 ../_data/text-changed-seqs.a.json ../_data/text-changed-seqs.b.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+	$(BIN) $(VERB) --ctx-text 1 ../_data/text-changed-seqs.a.json ../_data/text-changed-seqs.b.json > $@.0010.got; $(VRFY_EXIT_8)
+	diff $@.0010.exp $@.0010.got
+	$(BIN) $(VERB) --ctx-text 2 ../_data/text-changed-seqs.a.json ../_data/text-changed-seqs.b.json > $@.0020.got; $(VRFY_EXIT_8)
+	diff $@.0020.exp $@.0020.got
+	$(BIN) $(VERB) --ctx-text 3 ../_data/text-changed-seqs.a.json ../_data/text-changed-seqs.b.json > $@.0030.got; $(VRFY_EXIT_8)
+	diff $@.0030.exp $@.0030.got
+	$(BIN) $(VERB) --ctx-text 0 ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0040.got; $(VRFY_EXIT_8)
+	diff $@.0040.exp $@.0040.got
+	$(BIN) $(VERB) --ctx-text 1 ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0050.got; $(VRFY_EXIT_8)
+	diff $@.0050.exp $@.0050.got
+	$(BIN) $(VERB) --ctx-text 2 ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0060.got; $(VRFY_EXIT_8)
+	diff $@.0060.exp $@.0060.got
+	$(BIN) $(VERB) --ctx-text 3 ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0070.got; $(VRFY_EXIT_8)
+	diff $@.0070.exp $@.0070.got
+	$(BIN) $(VERB) --ctx-text 9 ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0080.got; $(VRFY_EXIT_8)
+	diff $@.0080.exp $@.0080.got
+	$(BIN) $(VERB) --ctx-text 0 ../_data/deep-down-lorem.a.json ../_data/deep-down-lorem.b.json > $@.0090.got; $(VRFY_EXIT_8)
+	diff $@.0090.exp $@.0090.got
+	$(BIN) $(VERB) --ctx-text 0 ../_data/text-AR.a.json ../_data/text-AR.b.json > $@.0100.got; $(VRFY_EXIT_8)
+	diff $@.0100.exp $@.0100.got
+	$(BIN) $(VERB) --ctx-text 1 ../_data/text-AR.a.json ../_data/text-AR.b.json > $@.0110.got; $(VRFY_EXIT_8)
+	diff $@.0110.exp $@.0110.got
+
 t_ignore:
 	$(BIN) $(VERB) --json --ignore 'unsupported_path_format' ../_data/menu.a.json ../_data/menu.b.json; $(VRFY_EXIT_1)
 	$(BIN) $(VERB) --json --full --ignore "{some}[5]{text}[0]{buried}[1]{'deep down'}{in}[0]{'the structure'}" ../_data/deep-down-lorem.a.json ../_data/deep-down-lorem.b.json > $@.0000.got;
