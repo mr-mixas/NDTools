@@ -28,6 +28,10 @@ Options:
     --path|-p <string>
         Path in the structure to deal with.
 
+    --raw-output
+        Dont't format result simple things (strings/numbers) - dump them as
+        is.
+
     --verbose|-v [int]
         Increase verbosity, max level - 4.
 

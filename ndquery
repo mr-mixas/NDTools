@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.12';
+my $VERSION = '0.13';
 
 use strict;
 use warnings FATAL => 'all';
@@ -38,6 +38,7 @@ GetOptions (
     'md5' => \$OPTS->{md5},
     'path|p=s' => \$OPTS->{path},
     'out-fmt=s' => \$OPTS->{'out-fmt'},
+    'raw-output' => \$OPTS->{'raw-output'},
     'verbose|v:+' => \$Log::Log4Cli::LEVEL,
     'version|V' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
@@ -82,7 +83,13 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
             print md5_hex(to_json($data, {canonical => 1, allow_nonref => 1})). " ($file)\n";
         }
     } else {
-        s_dump(\*STDOUT, $OPTS->{'out-fmt'}, undef, @out);
+        for my $data (@out) {
+            if ($OPTS->{'raw-output'} and not ref $data) {
+                print $data . "\n";
+            } else {
+                s_dump(\*STDOUT, $OPTS->{'out-fmt'}, undef, $data);
+            }
+        }
     }
 }
 
@@ -138,6 +145,10 @@ Output format selector. JSON used by default.
 =item B<--path|-p> E<lt>stringE<gt>
 
 Path in the structure to deal with.
+
+=item B<--raw-output>
+
+Dont't format result simple things (strings/numbers) - dump them as is.
 
 =item B<--verbose|-v> [int]
 

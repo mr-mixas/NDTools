@@ -14,6 +14,7 @@ test: \
 	t_md5_nonref \
 	t_out_fmt \
 	t_path \
+	t_raw_output \
 	t_utf8
 	@echo === ALL $(BIN) TESTS PASSED ===
 
@@ -58,6 +59,12 @@ t_path:
 	diff $@.0000.exp $@.0000.got
 	$(BIN) $(VERB) --path '[]' ../_data/menu.a.json > $@.0010.got
 	diff $@.0010.exp $@.0010.got
+
+t_raw_output:
+	$(BIN) $(VERB) --path '[0]{File}[1]' ../_data/menu.a.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got # will be JSON because it's a structure
+	$(BIN) $(VERB) --raw-output --path '[0]{File}[1]{label}' ../_data/menu.a.json > $@.0010.got
+	diff $@.0010.exp $@.0010.got # will be bare string
 
 t_utf8:
 	$(BIN) $(VERB) --path '{"текст"}' ../_data/text-utf8.a.json > $@.0000.got
