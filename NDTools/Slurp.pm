@@ -50,7 +50,7 @@ sub s_decode($$;$) {
 sub s_dump(@) {
     my ($uri, $fmt, $opts) = (shift, shift, shift);
     $fmt = s_fmt_by_uri($uri) unless (defined $fmt);
-    my $data = join($/, map { s_encode($_, $fmt, $opts) } @_);
+    my $data = join('', map { s_encode($_, $fmt, $opts) } @_);
     if (ref $uri eq 'GLOB') {
         print $uri $data;
     } else {
