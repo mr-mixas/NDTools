@@ -9,18 +9,24 @@ Options:
     --[no]colors
         On/Off colors for diff.
 
+    --ctx-text [int]
+        Amount of lines for multiline values context. Default is 3.
+
     --full
         Don't suppresss common items in JSON mode.
+
+    --full-headers
+        Print full headers (delta printed by default).
 
     --help|-h
         Print a help message and exit.
 
     --json
-        Use JSON as diff format.
+        Use JSON as output diff format.
 
     --ignore <path>
-        Ignore substructure. This path is used relatively to --path opt. May
-        be used several times.
+        Ignore substructure. Applied relatively to value, defined via --path
+        opt. May be used several times.
 
     --path <path>
         Define path to substructure to deal with. See detailed syntax

@@ -134,13 +134,9 @@ Load data from file and insert to structure using path as a pointer.
 
 List structure's paths.
 
-=item B<--md5> E<lt>JSON|YAMLE<gt>
+=item B<--md5>
 
 Calculate MD5 sum for structure.
-
-=item B<--out-fmt> E<lt>JSON|YAMLE<gt>
-
-Output format selector. JSON used by default.
 
 =item B<--path|-p> E<lt>stringE<gt>
 
@@ -185,7 +181,7 @@ Checksum for substructures:
  2   I/O Error.
  4   Path related errors.
 
-=head1 REPORTING BUGS
+=head1 BUGS
 
 Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
 
@@ -194,8 +190,6 @@ Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
 L<jq(1)>
 
 L<nddiff(1)>, L<ndpatch(1)>, L<ndproc(1)>
-
-L<Struct::Path>, L<Struct::Path::PerlStyle>
 
 =head1 LICENSE AND COPYRIGHT
 

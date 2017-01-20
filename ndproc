@@ -61,7 +61,7 @@ Print version and exit.
 
 Simply merge three files using module 'Merge':
 
-    ndproc -m Merge a.json b.json c.json
+    ndproc -m Merge a.json --source b.json --source c.json
 
 =head1 EXIT STATUS
 
@@ -70,7 +70,7 @@ Simply merge three files using module 'Merge':
  2   I/O Error.
  4   Path related errors.
 
-=head1 REPORTING BUGS
+=head1 BUGS
 
 Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
 
@@ -80,11 +80,9 @@ L<jq(1)>
 
 L<nddiff(1)>, L<ndpatch(1)>, L<ndquery(1)>
 
-L<Struct::Diff>, L<Struct::Path>, L<Struct::Path::PerlStyle>
-
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016 Michael Samoglyadov C<< <mixas at cpan.org> >>.
+Copyright 2016,2017 Michael Samoglyadov C<< <mixas at cpan.org> >>.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of GNU General Public License 3 or later versions.

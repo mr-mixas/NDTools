@@ -32,9 +32,17 @@ Show where differences has happend, but don't show what exactly changed.
 
 On/Off colors for diff.
 
+=item B<--ctx-text> [int]
+
+Amount of lines for multiline values context. Default is 3.
+
 =item B<--full>
 
 Don't suppresss common items in JSON mode.
+
+=item B<--full-headers>
+
+Print full headers (delta printed by default).
 
 =item B<--help|-h>
 
@@ -42,11 +50,12 @@ Print a help message and exit.
 
 =item B<--json>
 
-Use JSON as diff format.
+Use JSON as output diff format.
 
 =item B<--ignore> E<lt>pathE<gt>
 
-Ignore substructure. This path is used relatively to --path opt. May be used several times.
+Ignore substructure. Applied relatively to value, defined via
+--path opt. May be used several times.
 
 =item B<--path> E<lt>pathE<gt>
 
@@ -92,7 +101,7 @@ Machine-readable diff:
  2   I/O Error.
  8   Diff exists.
 
-=head1 REPORTING BUGS
+=head1 BUGS
 
 Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
 
@@ -102,11 +111,9 @@ L<diff(1)>, L<sdiff(1)>
 
 L<ndpatch(1)>, L<ndproc(1)>, L<ndquery(1)>
 
-L<Struct::Diff>, L<Struct::Path>, L<Struct::Path::PerlStyle>
-
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016 Michael Samoglyadov C<< <mixas at cpan.org> >>.
+Copyright 2016,2017 Michael Samoglyadov C<< <mixas at cpan.org> >>.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of GNU General Public License 3 or later versions.

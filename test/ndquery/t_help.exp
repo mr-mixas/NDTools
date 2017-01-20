@@ -19,11 +19,8 @@ Options:
     --list|-l
         List structure's paths.
 
-    --md5 <JSON|YAML>
+    --md5
         Calculate MD5 sum for structure.
-
-    --out-fmt <JSON|YAML>
-        Output format selector. JSON used by default.
 
     --path|-p <string>
         Path in the structure to deal with.

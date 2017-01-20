@@ -29,5 +29,5 @@ Options:
 Examples:
     Simply merge three files using module 'Merge':
 
-        ndproc -m Merge a.json b.json c.json
+        ndproc -m Merge a.json --source b.json --source c.json
 
