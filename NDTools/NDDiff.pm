@@ -91,7 +91,6 @@ sub diff {
 sub diff_texts {
     my $self = shift;
     log_debug { "Calculating diffs for text values" };
-    my $diff = $self->{diff};
     my $t_opts = {
         callback => sub {
             my ($v, $p, $s, $r) = @_; # value, path, status, diff_ref
@@ -132,7 +131,7 @@ sub diff_texts {
                     }
                 );
 
-                # erase common line added before
+                # erase common line added earlier
                 pop @{${$r}->{T}->[-1]->{U}};
                 pop @{${$r}->{T}} unless (@{${$r}->{T}->[-1]->{U}});
 
