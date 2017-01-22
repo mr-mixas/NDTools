@@ -59,6 +59,10 @@ t_path:
 	diff $@.0000.exp $@.0000.got
 	$(BIN) $(VERB) --path '[]' ../_data/menu.a.json > $@.0010.got
 	diff $@.0010.exp $@.0010.got
+	$(BIN) $(VERB) --path '[1]{Edit}[]{id}(eq "edit_paste")(<<)' ../_data/menu.a.json > $@.0020.got
+	diff $@.0020.exp $@.0020.got
+	$(BIN) $(VERB) --path '[1]{Edit}[](not defined)' ../_data/menu.a.json > $@.0030.got
+	diff $@.0030.exp $@.0030.got
 
 t_raw_output:
 	$(BIN) $(VERB) --path '[0]{File}[1]' ../_data/menu.a.json > $@.0000.got
