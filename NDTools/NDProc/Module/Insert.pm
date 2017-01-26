@@ -9,7 +9,7 @@ use Log::Log4Cli;
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub MODINFO { "Insert structure/value into another structure" }
+sub MODINFO { "Insert substructure/value into structure" }
 sub VERSION { "0.02" }
 
 sub arg_opts {
@@ -51,7 +51,7 @@ __END__
 
 =head1 NAME
 
-Insert - insert structure/value into another structure
+Insert - substructure/value into structure
 
 =head1 OPTIONS
 
@@ -59,7 +59,7 @@ Insert - insert structure/value into another structure
 
 =item B<--file|-f> E<lt>fileE<gt>
 
-Load structure from file.
+Load substructure from file.
 
 =item B<--path> E<lt>pathE<gt>
 

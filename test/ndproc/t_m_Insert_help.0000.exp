@@ -1,9 +1,9 @@
 Name:
-    Insert - insert structure/value into another structure
+    Insert - substructure/value into structure
 
 Options:
     --file|-f <file>
-        Load structure from file.
+        Load substructure from file.
 
     --path <path>
         Path in the structure to deal with. May be used several times.
