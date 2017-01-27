@@ -1,3 +1,14 @@
+ndtools (0.4.1) unstable; urgency=low
+
+  * all: depends bumped
+  * nddiff: --ctx-text opt added, 3 lines by default
+  * ndproc: --sfrict opt for Merge mod implemented
+  * ndproc: Insert and Remove mods fixed if multiple args used
+  * ndquery: --md5 opt added
+  * ndquery: --raw-output opt added
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Fri, 27 Jan 2017 14:56:53 +0300
+
 ndtools (0.4.0) unstable; urgency=low
 
   * all: utf8 args supported
