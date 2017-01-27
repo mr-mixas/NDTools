@@ -19,6 +19,7 @@ test: \
 	t_m_Insert_nopath \
 	t_m_Insert_file \
 	t_m_Insert_value \
+	t_m_Insert_value_multiargs \
 	t_m_Merge \
 	t_m_Merge_ignore \
 	t_m_Merge_merge \
@@ -26,9 +27,11 @@ test: \
 	t_m_Merge_merge_path_not_exists_nostrict \
 	t_m_Merge_merge_path_not_exists_strict \
 	t_m_Merge_merge_style \
+	t_m_Merge_multiargs \
 	t_m_Remove \
 	t_m_Remove_dump_rules \
 	t_m_Remove_help \
+	t_m_Remove_multiargs \
 	t_m_Remove__strict \
 	t_m_Remove_version \
 	t_m_Remove__dump_blame \
@@ -69,6 +72,13 @@ t_m_Insert_value:
 	$(BIN) $(VERB) --module Insert --path '{some}[1]{path}' --value 'string' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
+t_m_Insert_value_multiargs:
+	cp ../_data/bool.a.json $@.0000.got
+	cp ../_data/bool.b.json $@.0010.got
+	$(BIN) $(VERB) --module Insert --path '{some}[1]{path}' --value 'string' $@.0000.got $@.0010.got
+	diff $@.0000.exp $@.0000.got
+	diff $@.0010.exp $@.0010.got
+
 t_m_Merge:
 	cp ../alpha.json $@.0000.got
 	# sequently merge three files
@@ -86,6 +96,13 @@ t_m_Merge_merge:
 	$(BIN) $(VERB) --module Merge --source ../beta.json $@.0000.got \
 		--merge "{files}" --merge "{mtime}"
 	diff $@.0000.exp $@.0000.got
+
+t_m_Merge_multiargs:
+	cp ../alpha.json $@.0000.got
+	cp ../beta.json $@.0010.got
+	$(BIN) $(VERB) --module Merge --source ../gamma.json $@.0000.got $@.0010.got
+	diff $@.0000.exp $@.0000.got
+	diff $@.0010.exp $@.0010.got
 
 t_m_Merge_merge_path_not_exists_default:
 	cp ../alpha.json $@.0000.got
@@ -121,6 +138,13 @@ t_m_Remove_dump_rules:
 t_m_Remove_help:
 	$(BIN) --module Remove --help -h > $@.0000.got 2>&1
 	diff $@.0000.exp $@.0000.got
+
+t_m_Remove_multiargs:
+	cp ../_data/menu.a.json $@.0000.got
+	cp ../_data/menu.b.json $@.0010.got
+	$(BIN) $(VERB) --module Remove --path '[1]{Edit}[3..5]' $@.0000.got $@.0010.got
+	diff $@.0000.exp $@.0000.got
+	diff $@.0010.got $@.0010.got
 
 t_m_Remove__strict:
 	cp ../_data/deep-down-lorem.a.json $@.0000.got
