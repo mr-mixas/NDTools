@@ -12,20 +12,21 @@ use NDTools::Slurp qw(s_dump s_load);
 use Storable qw(dclone);
 use Struct::Diff qw(diff dsplit);
 
-sub VERSION { '0.04' }
+sub VERSION { '0.05' }
 
 sub arg_opts {
     my $self = shift;
-    return (
+    my %arg_opts = (
         $self->SUPER::arg_opts(),
         'dump-blame=s' => \$self->{OPTS}->{blame},
         'dump-rules=s' => \$self->{OPTS}->{'dump-rules'},
-        'help|h' => \$self->{OPTS}->{help}, # redefine parent's
         'list-modules|l' => \$self->{OPTS}->{'list-modules'},
         'module|m=s' => \$self->{OPTS}->{module},
         'rules=s' => sub { push @{$self->{rules}}, @{s_load($_[1], undef)} },
-        'version|V' => \$self->{OPTS}->{version}, # redefine parent's
-    )
+    );
+    delete $arg_opts{'help|h'};     # skip in first args parsing -- will be accessable for modules
+    delete $arg_opts{'version|V'};  # --"--
+    return %arg_opts;
 }
 
 sub configure {
@@ -60,25 +61,28 @@ sub exec {
         die_info undef, 0;
     }
 
-    # restore opts common for main program and mods
-    push @ARGV, '--help' if ($self->{OPTS}->{help});
-    push @ARGV, '--version' if ($self->{OPTS}->{version});
-
     if (defined $self->{OPTS}->{module}) {
-        push @{$self->{rules}}, $self->get_mod_opts($self->{OPTS}->{module});
-        $self->{rules}->[-1]->{modname} = $self->{OPTS}->{module};
-    } else {
-        # here we check rest args (passthrough used for single-module mode)
-        # to be sure there is no unsupported opts remain in args
-        my @rest_opts = (
-            'help|h' => sub { $self->usage; die_info undef, 0 },
-            'version|V' => sub { print $self->VERSION . "\n"; die_info undef, 0; },
-        );
-        my $p = Getopt::Long::Parser->new();
-        unless ($p->getoptions(@rest_opts)) {
-            $self->usage;
-            die_fatal "Unsupported opts passed", 1;
-        }
+        die_fatal "Unknown module '$self->{OPTS}->{module}' specified", 1
+            unless (exists $self->{MODS}->{$self->{OPTS}->{module}});
+        my $mod = $self->{MODS}->{$self->{OPTS}->{module}}->new();
+        push @{$self->{rules}}, {
+            %{$mod->parse_args()->get_opts()},
+            modname => $self->{OPTS}->{module},
+        };
+    }
+
+    # parse the rest of args (unrecognized by module (if was specified by args))
+    # to be sure there is no unsupported opts remain
+    my @rest_opts = (
+        'help|h' => sub { $self->usage; die_info undef, 0 },
+        'version|V' => sub { print $self->VERSION . "\n"; die_info undef, 0; },
+    );
+
+    my $p = Getopt::Long::Parser->new();
+    $p->configure('nopass_through'); # just to be sure
+    unless ($p->getoptions(@rest_opts)) {
+        $self->usage;
+        die_fatal "Unsupported opts passed", 1;
     }
 
     if ($self->{OPTS}->{'dump-rules'}) {
@@ -95,14 +99,6 @@ sub exec {
     $self->process_args(@ARGV);
 
     die_info "All done", 0;
-}
-
-sub get_mod_opts {
-    my ($self, $mod) = @_;
-    die_fatal "Unknown module '$mod' specified", 1
-        unless (exists $self->{MODS}->{$mod});
-    $mod = $self->{MODS}->{$mod}->new(); # will parse rest of args
-    return $mod->{OPTS};
 }
 
 sub init_modules {
