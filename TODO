@@ -1,9 +1,7 @@
-* nddiff --ctx-text <num>
-
 * nddiff --ctx-struct <num>
 
-* nddiff --show <file>
-    Visualize patch
+? nddiff --blame
+    sqweeze blame and diff provided struct with it
 
 * ndpatch --path <path>
     patch specified parts
@@ -18,8 +16,13 @@
 
 * ndproc
     --builtin-rules <path>
+    --list-sources <rules>
     --embed-rules <path>
     --embed-blame <path>
+    --ignore-rule <comma,separated,numbers,list>
+    tests -h -V noargs and so on for all modules
+    'optional' opt to mods opts %)
+    add method validate_opts to all modules
 
 * NDProc::Module::Insert
     --shift # disabled by default (shift list's tails when inserting new values)
