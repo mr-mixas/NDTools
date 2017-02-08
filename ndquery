@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.13';
+my $VERSION = '0.14';
 
 use strict;
 use warnings FATAL => 'all';
@@ -33,7 +33,6 @@ GetOptions (
         pod2usage(-exitval => 0, -output => \*STDERR,
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES', -verbose => 99)
     },
-    'insert=s' => \$OPTS->{insert},
     'list|l' => \$OPTS->{list},
     'md5' => \$OPTS->{md5},
     'path|p=s' => \$OPTS->{path},
@@ -51,19 +50,7 @@ die_fatal "Failed to parse path ($@)", 4 if ($@);
 for my $file (@ARGV ? @ARGV : \*STDIN) {
     log_debug { "Processing " . (ref $file ? "STDIN" : "file '$file'") };
     my $data = s_load($file, undef);
-
-    my @out; # orig structure may be splitted to many
-    if ($OPTS->{insert}) {
-        my $val = s_load($OPTS->{insert}, undef);
-        if (@{$path}) {
-            map { ${$_} = $val } spath($data, $path, expand => 1);
-            push @out, $data;
-        } else {
-            push @out, $val;
-        }
-    } else {
-        @out = spath($data, $path, deref => 1);
-    }
+    my @out = spath($data, $path, deref => 1); # orig structure may be splitted to many
 
     if ($OPTS->{list}) {
         for my $data (@out) {
@@ -125,10 +112,6 @@ Combined with B<--list> allows to define how much levels must be listed.
 =item B<--help|-h>
 
 Print a help message and exit.
-
-=item B<--insert> E<lt>fileE<gt>
-
-Load data from file and insert to structure using path as a pointer.
 
 =item B<--list|-l>
 
