@@ -8,10 +8,10 @@ use NDTools::INC;
 use Log::Log4Cli;
 use NDTools::Struct qw(st_copy st_merge);
 use Struct::Path qw(spath);
-use Struct::Path::PerlStyle qw(ps_parse);
+use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.02" }
+sub VERSION { "0.03" }
 
 sub arg_opts {
     my $self = shift;
@@ -64,18 +64,26 @@ sub process {
     for my $m (@{$opts->{merge}}) {
         $m->{path} = '' unless (defined $m->{path}); # merge whole source if path omitted
         my $spath = ps_parse($m->{path});
-        my $exists = spath($source, $spath);
-        unless ($exists) {
+
+        log_debug { "Resolving path '$m->{path}'" };
+        my @srcs = spath($source, $spath, paths => 1);
+        unless (@srcs) {
             die_fatal "No such path ($m->{path}) in $opts->{source}", 4
                 if(exists $m->{strict} ? $m->{strict} : $opts->{strict});
             log_info { "Ignoring path $m->{path} (doesn't exists in $opts->{source})" };
             next;
         }
-        my $style = $m->{style} || $opts->{style} || $self->{style};
-        my $subst = st_copy($source, ps_parse($m->{path}));
+        my @dsts = spath($data, $spath, paths => 1);
 
-        log_info { "Merging $opts->{source} ($style, $m->{path})" };
-        ${$data} = st_merge(${$data}, $subst, style => $style);
+        my $style = $m->{style} || $opts->{style} || $self->{style};
+        for my $src (@srcs) {
+            my @dsts = spath($data, $src->[0], paths => 1);
+            for my $dst (@dsts) {
+                log_info { "Merging $opts->{source} ($style, '" .
+                    ps_serialize($src->[0]) . "' => '" . ps_serialize($dst->[0]) . "')" };
+                ${$dst->[1]} = st_merge(${$dst->[1]}, ${$src->[1]}, style => $style);
+            }
+        }
     }
 }
 
