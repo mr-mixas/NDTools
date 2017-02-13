@@ -7,7 +7,7 @@ use parent qw(Exporter);
 
 use Hash::Merge qw(_merge_hashes);
 
-our $VERSION = '0.02'; # Don't forget to change in pod below
+our $VERSION = '0.03'; # Don't forget to change in pod below
 
 our @EXPORT = qw(
     L_OVERRIDE
@@ -28,7 +28,7 @@ use constant L_OVERRIDE => {
     'HASH' => {
         'SCALAR' => sub { $_[0] },
         'ARRAY'  => sub { $_[0] },
-        'HASH'   => sub { _merge_hashes( $_[1], $_[0] ) },
+        'HASH'   => sub { _merge_hashes( $_[0], $_[1] ) },
     },
 };
 
