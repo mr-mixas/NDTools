@@ -247,7 +247,7 @@ sub print_brief_block {
 
 sub print_term_block {
     my ($self, $value, $path, $status) = @_;
-    log_trace { ps_serialize($path) . ", " . $status . ":"};
+    log_trace { "'" . ps_serialize($path) . "' (" . $status . ")"};
 
     my @lines;
     my $color = $self->{OPTS}->{term}->{line}->{$status};
