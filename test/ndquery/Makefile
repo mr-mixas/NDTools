@@ -9,6 +9,7 @@ test: \
 	t_common \
 	t_default \
 	t_list \
+	t_list_values \
 	t_md5 \
 	t_md5_nonref \
 	t_out_fmt \
@@ -30,6 +31,12 @@ t_list:
 	diff $@.0020.exp $@.0020.got
 	$(BIN) $(VERB) --colors --list ../_data/deep-down-lorem.a.json > $@.0030.got
 	diff $@.0030.exp $@.0030.got
+
+t_list_values:
+	$(BIN) $(VERB) --list --values --vals ../_data/menu.a.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+	$(BIN) $(VERB) --depth 3 --list --values --vals ../_data/menu.a.json > $@.0010.got
+	diff $@.0010.exp $@.0010.got
 
 t_md5:
 	$(BIN) $(VERB) --md5 ../_data/menu.a.json ../_data/menu.b.json ../_data/menu.a.json > $@.0000.got

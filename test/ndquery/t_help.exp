@@ -26,6 +26,9 @@ Options:
         Dont't format result simple things (strings/numbers) - dump them as
         is.
 
+    --values|--vals
+        Values will be printed if combined with --list opt.
+
     --verbose|-v [int]
         Increase verbosity, max level - 4.
 

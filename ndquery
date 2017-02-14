@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.14';
+my $VERSION = '0.15';
 
 use strict;
 use warnings FATAL => 'all';
@@ -38,6 +38,7 @@ GetOptions (
     'path|p=s' => \$OPTS->{path},
     'out-fmt=s' => \$OPTS->{'out-fmt'},
     'raw-output' => \$OPTS->{'raw-output'},
+    'values|vals' => \$OPTS->{values},
     'verbose|v:+' => \$Log::Log4Cli::LEVEL,
     'version|V' => sub { print "$VERSION\n"; exit 0; },
 ) || pod2usage(-exitval => 1, -output  => \*STDERR);
@@ -61,7 +62,16 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
                 $cmn = ($cmn and @{$i->[0]} != @delta) ? [ @{$i->[0]}[0 .. $cmn - 1] ] : [];
                 $cmn = $OPTS->{colors} ?
                     colored(ps_serialize($cmn), $OPTS->{'color-common'}) : ps_serialize($cmn);
-                print $cmn . ps_serialize(\@delta) . "\n";
+                my $val = "";
+                if ($OPTS->{values}) {
+                    $val = " = ";
+                    if ($OPTS->{'raw-output'} and not ref $i->[1]) {
+                        $val .= $i->[1];
+                    } else {
+                        $val .= to_json($i->[1], {canonical => 1, allow_nonref => 1});
+                    }
+                }
+                print $cmn . ps_serialize(\@delta) . $val . "\n";
                 $prev = $i->[0];
             }
         }
@@ -128,6 +138,10 @@ Path in the structure to deal with.
 =item B<--raw-output>
 
 Dont't format result simple things (strings/numbers) - dump them as is.
+
+=item B<--values|--vals>
+
+Values will be printed if combined with --list opt.
 
 =item B<--verbose|-v> [int]
 
