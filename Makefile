@@ -35,7 +35,7 @@ NDTools/INC/Struct/Diff.pm:
 
 NDTools/INC/Struct/Path.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://api.metacpan.org/source/MIXAS/Struct-Path-0.61/lib/Struct/Path.pm"
+	wget -O $@ "http://api.metacpan.org/source/MIXAS/Struct-Path-0.62/lib/Struct/Path.pm"
 
 NDTools/INC/Struct/Path/PerlStyle.pm:
 	mkdir -p $(@D)
