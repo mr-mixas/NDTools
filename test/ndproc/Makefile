@@ -22,6 +22,7 @@ test: \
 	t_m_Insert_value_multiargs \
 	t_m_Merge \
 	t_m_Merge_ignore \
+	t_m_Merge_implicit_array_item \
 	t_m_Merge_merge \
 	t_m_Merge_merge_path_not_exists_default \
 	t_m_Merge_merge_path_not_exists_nostrict \
@@ -90,6 +91,26 @@ t_m_Merge_ignore:
 	cp ../alpha.json $@.0000.got
 	$(BIN) $(VERB) --module Merge --source ../beta.json --ignore "{files}{'/etc/hostname'}" $@.0000.got
 	diff $@.0000.exp $@.0000.got
+
+t_m_Merge_implicit_array_item:
+	cp ../_data/menu.a.json $@.0000.got
+	$(BIN) $(VERB) --module Merge --source ../_data/menu.b.json --path "[1]{Edit}[]{id}(eq 'edit_replace')(<<)" $@.0000.got
+	diff $@.0000.exp $@.0000.got
+	cp ../_data/menu.a.json $@.0010.got
+	$(BIN) $(VERB) --module Merge --source ../_data/menu.b.json --path "[1]{/Edit/}[]{id}(eq 'edit_replace')(<<)" $@.0010.got
+	diff $@.0010.exp $@.0010.got
+	cp ../_data/menu.a.json $@.0020.got
+	$(BIN) $(VERB) --module Merge --source ../_data/menu.b.json --path "[1]{/Edit/}" $@.0020.got
+	diff $@.0020.exp $@.0020.got
+	cp ../_data/menu.a.json $@.0030.got
+	$(BIN) $(VERB) --module Merge --source ../_data/menu.b.json --path "[]{/Edit/}" $@.0030.got
+	diff $@.0030.exp $@.0030.got
+	cp ../_data/menu.a.json $@.0040.got
+	$(BIN) $(VERB) --module Merge --source ../_data/menu.b.json --path "[]{/Edit/}[]{id}(eq 'edit_replace')(<<)" $@.0040.got
+	diff $@.0040.exp $@.0040.got
+	echo '[]' > $@.0050.got
+	$(BIN) $(VERB) --module Merge --source ../_data/menu.b.json --path "[]{/Edit/}[]{id}(eq 'edit_replace')(<<)" $@.0050.got
+	diff $@.0050.exp $@.0050.got
 
 t_m_Merge_merge:
 	cp ../alpha.json $@.0000.got

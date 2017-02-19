@@ -5,6 +5,7 @@ use warnings FATAL => 'all';
 use parent "NDTools::NDProc::Module";
 
 use NDTools::INC;
+use List::MoreUtils qw(before);
 use Log::Log4Cli;
 use NDTools::Struct qw(st_copy st_merge);
 use Struct::Path qw(spath);
@@ -46,6 +47,59 @@ sub defaults {
     };
 }
 
+sub is_implicit_step {
+    my $step = shift;
+
+    if (ref $step eq 'ARRAY') {
+        return 1 unless @{$step};
+    } elsif (ref $step eq 'HASH') {
+        return 1 if (exists $step->{keys} and not @{$step->{keys}});
+        return 1 if (exists $step->{regs} and @{$step->{regs}});
+    } else { # coderefs
+        return 1;
+    }
+
+    return undef;
+}
+
+sub map_paths {
+    my ($data, $srcs, $spath) = @_;
+
+    my @explicit = before { is_implicit_step($_) } @{$spath};
+    return spath($data, $spath, paths => 1, expand => 1)
+        if (@explicit == @{$spath}); # fully qualified path
+
+    my @out;
+
+    for my $src (@{$srcs}) {
+        my @e_path = @{$spath};
+        while (my $step = pop @e_path) {
+            if (ref $step eq 'ARRAY' and is_implicit_step($step)) {
+                if (my @tmp = spath($data, \@e_path, deref => 1, paths => 1)) {
+                    # expand last existed array, addressed by implicit step
+                    @e_path = ( @{$tmp[0][0]}, [ scalar @{$tmp[0][1]} ] );
+                    last;
+                }
+            } elsif (ref $step eq 'HASH' and is_implicit_step($step)) {
+                if (my @tmp = spath($data, [ @e_path, $step ], paths => 1)) {
+                    @e_path = @{$tmp[0][0]};
+                    last;
+                }
+            }
+        }
+
+        @e_path = @{$src->[0]}[0 .. $#explicit] unless (@e_path);
+        my @i_path = @{$src->[0]}[@e_path .. $#{$src->[0]}];
+
+        map { $_ = [0] if (ref $_ eq 'ARRAY') } @i_path; # drop array's indexes in implicit part of path
+        my $dst = (spath($data, [@e_path, @i_path], paths => 1, expand => 1))[0];
+
+        push @out, $dst;
+    }
+
+    return @out;
+}
+
 sub process {
     my ($self, $data, $opts, $source) = @_;
 
@@ -65,7 +119,7 @@ sub process {
         $m->{path} = '' unless (defined $m->{path}); # merge whole source if path omitted
         my $spath = ps_parse($m->{path});
 
-        log_debug { "Resolving path '$m->{path}'" };
+        log_debug { "Resolving paths '$m->{path}'" };
         my @srcs = spath($source, $spath, paths => 1);
         unless (@srcs) {
             die_fatal "No such path ($m->{path}) in $opts->{source}", 4
@@ -73,16 +127,14 @@ sub process {
             log_info { "Ignoring path $m->{path} (doesn't exists in $opts->{source})" };
             next;
         }
-        my @dsts = spath($data, $spath, paths => 1);
+        my @dsts = map_paths($data, \@srcs, $spath);
 
         my $style = $m->{style} || $opts->{style} || $self->{style};
         for my $src (@srcs) {
-            my @dsts = spath($data, $src->[0], paths => 1);
-            for my $dst (@dsts) {
-                log_info { "Merging $opts->{source} ($style, '" .
-                    ps_serialize($src->[0]) . "' => '" . ps_serialize($dst->[0]) . "')" };
-                ${$dst->[1]} = st_merge(${$dst->[1]}, ${$src->[1]}, style => $style);
-            }
+            my $dst = shift @dsts;
+            log_info { "Merging $opts->{source} ($style, '" .
+                ps_serialize($src->[0]) . "' => '" . ps_serialize($dst->[0]) . "')" };
+            ${$dst->[1]} = st_merge(${$dst->[1]}, ${$src->[1]}, style => $style);
         }
     }
 }
