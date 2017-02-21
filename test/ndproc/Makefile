@@ -111,6 +111,10 @@ t_m_Merge_implicit_array_item:
 	echo '[]' > $@.0050.got
 	$(BIN) $(VERB) --module Merge --source ../_data/menu.b.json --path "[]{/Edit/}[]{id}(eq 'edit_replace')(<<)" $@.0050.got
 	diff $@.0050.exp $@.0050.got
+	cp ../_data/menu.a.json $@.0060.got
+	$(BIN) $(VERB) --module Merge --source ../_data/menu.b.json --path "[]{/Edit/}[]{id}(eq 'edit_replace')(<<)" $@.0060.got
+	$(BIN) $(VERB) --module Merge --source ../_data/menu.b.json --path "[]{/Edit/}[]{id}(eq 'edit_replace')(<<)" $@.0060.got
+	diff $@.0060.exp $@.0060.got # double merge mustn't corrupt result
 
 t_m_Merge_merge:
 	cp ../alpha.json $@.0000.got

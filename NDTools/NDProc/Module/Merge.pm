@@ -12,7 +12,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.03" }
+sub VERSION { "0.04" }
 
 sub arg_opts {
     my $self = shift;
@@ -70,8 +70,14 @@ sub map_paths {
         if (@explicit == @{$spath}); # fully qualified path
 
     my @out;
+    my @dsts = spath($data, $spath, paths => 1);
 
     for my $src (@{$srcs}) {
+        if (@dsts) { # destination struct may match - use this paths beforehand
+            push @out, shift @dsts;
+            next;
+        }
+
         my @e_path = @{$spath};
         while (my $step = pop @e_path) {
             if (ref $step eq 'ARRAY' and is_implicit_step($step)) {
