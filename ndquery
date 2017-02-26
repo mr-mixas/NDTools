@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.15';
+my $VERSION = '0.16';
 
 use strict;
 use warnings FATAL => 'all';
@@ -13,10 +13,9 @@ use Getopt::Long qw(:config bundling);
 use JSON qw(to_json);
 use Log::Log4Cli;
 use Pod::Usage;
-use Struct::Path qw(slist spath spath_delta);
-use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
+use Struct::Path qw(slist spath_delta);
 use Term::ANSIColor qw(colored);
-
+use NDTools::Path qw(path path2str str2path);
 use NDTools::Slurp qw(s_dump s_load);
 
 # defaults
@@ -45,13 +44,10 @@ GetOptions (
 
 $OPTS->{colors} = -t STDOUT ? 1 : 0 unless (defined $OPTS->{colors});
 
-my $path = eval { ps_parse($OPTS->{path}) };
-die_fatal "Failed to parse path ($@)", 4 if ($@);
-
 for my $file (@ARGV ? @ARGV : \*STDIN) {
     log_debug { "Processing " . (ref $file ? "STDIN" : "file '$file'") };
     my $data = s_load($file, undef);
-    my @out = spath($data, $path, deref => 1); # orig structure may be splitted to many
+    my @out = path($data, $OPTS->{path}, deref => 1); # orig structure may be splitted to many
 
     if ($OPTS->{list}) {
         for my $data (@out) {
@@ -61,7 +57,7 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
                 my $cmn = @{$i->[0]} - @delta;
                 $cmn = ($cmn and @{$i->[0]} != @delta) ? [ @{$i->[0]}[0 .. $cmn - 1] ] : [];
                 $cmn = $OPTS->{colors} ?
-                    colored(ps_serialize($cmn), $OPTS->{'color-common'}) : ps_serialize($cmn);
+                    colored(path2str($cmn), $OPTS->{'color-common'}) : path2str($cmn);
                 my $val = "";
                 if ($OPTS->{values}) {
                     $val = " = ";
@@ -71,7 +67,7 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
                         $val .= to_json($i->[1], {canonical => 1, allow_nonref => 1});
                     }
                 }
-                print $cmn . ps_serialize(\@delta) . $val . "\n";
+                print $cmn . path2str(\@delta) . $val . "\n";
                 $prev = $i->[0];
             }
         }
