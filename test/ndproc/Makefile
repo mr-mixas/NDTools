@@ -11,6 +11,7 @@ test: \
 	t_common \
 	t_list_modules \
 	t_rules \
+	t_rules_builtin \
 	t_rules_redump \
 	t_m__UNKNOWN_via_args \
 	t_m__UNKNOWN_via_rules \
@@ -190,6 +191,11 @@ t_m_Remove__unsupported_opt:
 t_rules:
 	cp ../_data/menu.a.json $@.0000.got
 	$(BIN) $(VERB) --rules $@.rules.json $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
+t_rules_builtin:
+	cp $@.struct.json $@.0000.got
+	$(BIN) $(VERB) --builtin-rules '[3]{builtin}{rules}' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_rules_redump:

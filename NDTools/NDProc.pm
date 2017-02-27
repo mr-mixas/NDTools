@@ -11,13 +11,16 @@ use Module::Find qw(findsubmod);
 use NDTools::Slurp qw(s_dump s_load);
 use Storable qw(dclone);
 use Struct::Diff qw(diff dsplit);
+use Struct::Path qw(spath);
+use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.05' }
+sub VERSION { '0.06' }
 
 sub arg_opts {
     my $self = shift;
     my %arg_opts = (
         $self->SUPER::arg_opts(),
+        'builtin-rules=s' => \$self->{OPTS}->{'builtin-rules'},
         'dump-blame=s' => \$self->{OPTS}->{blame},
         'dump-rules=s' => \$self->{OPTS}->{'dump-rules'},
         'list-modules|l' => \$self->{OPTS}->{'list-modules'},
@@ -50,6 +53,18 @@ sub dump_blame {
     return unless (defined $self->{OPTS}->{blame});
     log_debug { "Dumping blame to '$self->{OPTS}->{blame}'" };
     s_dump($self->{OPTS}->{blame}, undef, undef, $blame);
+}
+
+sub embed_rules {
+    my ($self, $data, $path, $rules) = @_;
+
+    log_debug { "Saving rules to '$path'" };
+    my $spath = eval { ps_parse($path) };
+    die_fatal "Unable to parse path ($@)", 4 if ($@);
+    my $ref = eval { (spath($data, $spath))[0] };
+    die_fatal "Unable to lookup path ($@)", 4 if ($@);
+
+    ${$ref} = $rules;
 }
 
 sub exec {
@@ -95,7 +110,7 @@ sub exec {
     }
 
     die_fatal "At least one argument expected", 1 unless (@ARGV);
-    $self->{rules} = $self->resolve_rules($self->{rules});
+    $self->{resolved_rules} = $self->resolve_rules($self->{rules});
     $self->process_args(@ARGV);
 
     die_info "All done", 0;
@@ -131,12 +146,36 @@ sub load_arg {
 
 *load_source = \&load_arg;
 
+sub load_builtin_rules {
+    my ($self, $data, $path) = @_;
+
+    log_debug { "Loading builtin rules from '$path'" };
+    my $spath = eval { ps_parse($path) };
+    die_fatal "Unable to parse path ($@)", 4 if ($@);
+    my $rules = eval { (spath($data, $spath, deref => 1))[0] };
+    die_fatal "Unable to lookup path ($@)", 4 if ($@);
+
+    return $rules;
+}
+
 sub process_args {
     my $self = shift;
     for my $arg (@_) {
         log_info { "Processing $arg" };
         my $struct = $self->load_arg($arg);
-        my @blame = $self->process_rules(\$struct, $self->{rules});
+
+        if ($self->{OPTS}->{'builtin-rules'}) {
+            $self->{rules} = $self->load_builtin_rules($struct, $self->{OPTS}->{'builtin-rules'});
+            $self->{resolved_rules} = $self->resolve_rules($self->{rules});
+        }
+
+        my @blame = $self->process_rules(\$struct, $self->{resolved_rules});
+
+        if ($self->{OPTS}->{'builtin-rules'}) {
+            # original rules in structure may be changed while processing - restore them
+            $self->embed_rules($struct, $self->{OPTS}->{'builtin-rules'}, $self->{rules});
+        }
+
         $self->dump_arg($arg, $struct);
         $self->dump_blame(\@blame);
     }

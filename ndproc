@@ -23,6 +23,10 @@ Process nested data structures according provided rules
 
 =over 4
 
+=item B<--builtin-rules> E<lt>pathE<gt>
+
+Use builtin (in processed object) rules.
+
 =item B<--dump-blame> E<lt>fileE<gt>
 
 Dump blame to file.
