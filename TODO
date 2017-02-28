@@ -12,21 +12,25 @@
 * ndquery --replace
     Replace loaded file by output (canonize JSON etc)
 
+* ndquery --strict
+    Exit with 8 if specified path doesn't exists
+
 * ndquery: refactor to OO
 
 * ndproc
-    --builtin-rules <path>
     --list-sources <rules>
-    --embed-rules <path>
     --embed-blame <path>
     --ignore-rule <comma,separated,numbers,list>
     tests -h -V noargs and so on for all modules
     'optional' opt to mods opts %)
-    add method validate_opts to all modules
+    validate_rules method for all modules
+    STDIN/STDOUT processing
 
 * NDProc::Module::Insert
-    --shift # disabled by default (shift list's tails when inserting new values)
+    --method append|prepend|override|shift # define a way to add items to arrays (override by default)
 
 * NDProc::Module::Merge
+    --filter <path> # (combined with path) -- to implement fair pairwise merge (filter like "defined" used)
+    --pairwise <bool> # see above
 
 * NDProc::Module::Pipe
