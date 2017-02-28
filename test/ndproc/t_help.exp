@@ -11,6 +11,9 @@ Options:
     --dump-rules <file>
         Dump rules to file.
 
+    --embed-rules <path>
+        Embed used rules into processed structure, using provided path.
+
     --help|-h
         Print a help message and exit.
 

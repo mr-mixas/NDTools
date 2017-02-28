@@ -23,6 +23,7 @@ sub arg_opts {
         'builtin-rules=s' => \$self->{OPTS}->{'builtin-rules'},
         'dump-blame=s' => \$self->{OPTS}->{blame},
         'dump-rules=s' => \$self->{OPTS}->{'dump-rules'},
+        'embed-rules=s' => \$self->{OPTS}->{'embed-rules'},
         'list-modules|l' => \$self->{OPTS}->{'list-modules'},
         'module|m=s' => \$self->{OPTS}->{module},
         'rules=s' => sub { push @{$self->{rules}}, @{s_load($_[1], undef)} },
@@ -58,10 +59,10 @@ sub dump_blame {
 sub embed_rules {
     my ($self, $data, $path, $rules) = @_;
 
-    log_debug { "Saving rules to '$path'" };
+    log_debug { "Embedding rules to '$path'" };
     my $spath = eval { ps_parse($path) };
     die_fatal "Unable to parse path ($@)", 4 if ($@);
-    my $ref = eval { (spath($data, $spath))[0] };
+    my $ref = eval { (spath($data, $spath, expand => 1))[0]};
     die_fatal "Unable to lookup path ($@)", 4 if ($@);
 
     ${$ref} = $rules;
@@ -167,14 +168,14 @@ sub process_args {
         if ($self->{OPTS}->{'builtin-rules'}) {
             $self->{rules} = $self->load_builtin_rules($struct, $self->{OPTS}->{'builtin-rules'});
             $self->{resolved_rules} = $self->resolve_rules($self->{rules});
+            $self->{OPTS}->{'embed-rules'} = $self->{OPTS}->{'builtin-rules'}
+                if (not defined $self->{OPTS}->{'embed-rules'}); # restore - may change while processing
         }
 
         my @blame = $self->process_rules(\$struct, $self->{resolved_rules});
 
-        if ($self->{OPTS}->{'builtin-rules'}) {
-            # original rules in structure may be changed while processing - restore them
-            $self->embed_rules($struct, $self->{OPTS}->{'builtin-rules'}, $self->{rules});
-        }
+        $self->embed_rules($struct, $self->{OPTS}->{'embed-rules'}, $self->{rules})
+            if ($self->{OPTS}->{'embed-rules'});
 
         $self->dump_arg($arg, $struct);
         $self->dump_blame(\@blame);

@@ -12,6 +12,7 @@ test: \
 	t_list_modules \
 	t_rules \
 	t_rules_builtin \
+	t_rules_embed \
 	t_rules_redump \
 	t_m__UNKNOWN_via_args \
 	t_m__UNKNOWN_via_rules \
@@ -196,6 +197,11 @@ t_rules:
 t_rules_builtin:
 	cp $@.struct.json $@.0000.got
 	$(BIN) $(VERB) --builtin-rules '[3]{builtin}{rules}' $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
+t_rules_embed:
+	cp ../_data/menu.a.json $@.0000.got
+	$(BIN) $(VERB) --rules $@.rules.json --embed-rules '[3]{builtin}{rules}' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_rules_redump:
