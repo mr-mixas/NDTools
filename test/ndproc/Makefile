@@ -203,6 +203,8 @@ t_rules_embed:
 	cp ../_data/menu.a.json $@.0000.got
 	$(BIN) $(VERB) --rules $@.rules.json --embed-rules '[3]{builtin}{rules}' $@.0000.got
 	diff $@.0000.exp $@.0000.got
+	$(BIN) $(VERB) --builtin-rules '[3]{builtin}{rules}' $@.0000.got --dump-rules $@.0010.got
+	diff $@.rules.json $@.0010.got
 
 t_rules_redump:
 	$(BIN) $(VERB) --rules $@.0000.exp --dump-rules $@.0000.got

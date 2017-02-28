@@ -56,6 +56,15 @@ sub dump_blame {
     s_dump($self->{OPTS}->{blame}, undef, undef, $blame);
 }
 
+sub dump_rules {
+    my $self = shift;
+    for my $rule (@{$self->{rules}}) {
+        # remove undefs - defaults will be used anyway
+        map { defined $rule->{$_} || delete $rule->{$_} } keys %{$rule};
+    }
+    s_dump($self->{OPTS}->{'dump-rules'}, undef, undef, $self->{rules});
+}
+
 sub embed_rules {
     my ($self, $data, $path, $rules) = @_;
 
@@ -101,18 +110,13 @@ sub exec {
         die_fatal "Unsupported opts passed", 1;
     }
 
-    if ($self->{OPTS}->{'dump-rules'}) {
-        for my $rule (@{$self->{rules}}) {
-            # remove undefs - defaults will be used anyway
-            map { defined $rule->{$_} || delete $rule->{$_} } keys %{$rule};
-        }
-        s_dump($self->{OPTS}->{'dump-rules'}, undef, undef, $self->{rules});
-        die_info "All done", 0;
+    if ($self->{OPTS}->{'dump-rules'} and not @ARGV) {
+        $self->dump_rules();
+    } else {
+        die_fatal "At least one argument expected", 1 unless (@ARGV);
+        $self->{resolved_rules} = $self->resolve_rules($self->{rules});
+        $self->process_args(@ARGV);
     }
-
-    die_fatal "At least one argument expected", 1 unless (@ARGV);
-    $self->{resolved_rules} = $self->resolve_rules($self->{rules});
-    $self->process_args(@ARGV);
 
     die_info "All done", 0;
 }
@@ -170,6 +174,12 @@ sub process_args {
             $self->{resolved_rules} = $self->resolve_rules($self->{rules});
             $self->{OPTS}->{'embed-rules'} = $self->{OPTS}->{'builtin-rules'}
                 if (not defined $self->{OPTS}->{'embed-rules'}); # restore - may change while processing
+        }
+
+
+        if ($self->{OPTS}->{'dump-rules'}) {
+            $self->dump_rules();
+            next;
         }
 
         my @blame = $self->process_rules(\$struct, $self->{resolved_rules});
