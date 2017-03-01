@@ -114,7 +114,6 @@ sub exec {
         $self->dump_rules();
     } else {
         die_fatal "At least one argument expected", 1 unless (@ARGV);
-        $self->{resolved_rules} = $self->resolve_rules($self->{rules});
         $self->process_args(@ARGV);
     }
 
@@ -171,17 +170,17 @@ sub process_args {
 
         if ($self->{OPTS}->{'builtin-rules'}) {
             $self->{rules} = $self->load_builtin_rules($struct, $self->{OPTS}->{'builtin-rules'});
-            $self->{resolved_rules} = $self->resolve_rules($self->{rules});
+            # restore original rules - may be changed while processing structure
             $self->{OPTS}->{'embed-rules'} = $self->{OPTS}->{'builtin-rules'}
-                if (not defined $self->{OPTS}->{'embed-rules'}); # restore - may change while processing
+                if (not defined $self->{OPTS}->{'embed-rules'});
         }
-
 
         if ($self->{OPTS}->{'dump-rules'}) {
             $self->dump_rules();
             next;
         }
 
+        $self->{resolved_rules} = $self->resolve_rules($self->{rules}, $arg);
         my @blame = $self->process_rules(\$struct, $self->{resolved_rules});
 
         $self->embed_rules($struct, $self->{OPTS}->{'embed-rules'}, $self->{rules})
@@ -221,13 +220,13 @@ sub process_rules {
 }
 
 sub resolve_rules {
-    my ($self, $rules) = @_;
+    my ($self, $rules, $opt_src) = @_;
     my $result;
 
     log_debug { "Resolving rules" };
     for my $rule (@{$rules}) {
         if (exists $rule->{source} and ref $rule->{source} eq 'ARRAY') {
-            for my $src (@{delete $rule->{source}}) {
+            for my $src (@{$rule->{source}}) {
                 my $new = { %{$rule} };
                 $new->{source} = $src;
                 push @{$result}, $new;
@@ -239,6 +238,11 @@ sub resolve_rules {
 
     for my $rule (@{$result}) {
         next unless (exists $rule->{source});
+        unless (defined $rule->{source} and $rule->{source} ne '') {
+            # use processing doc as source
+            $rule->{source} = $opt_src;
+        }
+        next if (exists $self->{sources}->{$rule->{source}});
         $self->{sources}->{$rule->{source}} =
             $self->load_source($rule->{source});
     }

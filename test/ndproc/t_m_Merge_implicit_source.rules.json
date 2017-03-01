@@ -1,0 +1,40 @@
+[
+   {
+      "modname" : "Remove",
+      "path" : [
+         ""
+      ],
+      "strict" : 1
+   },
+   {
+      "modname" : "Merge",
+      "path" : [
+         "{files}"
+      ],
+      "source" : [
+         "../beta.json"
+      ],
+      "strict" : 1,
+      "style" : "R_OVERRIDE"
+   },
+   {
+      "modname" : "Merge",
+      "path" : [
+         "{files}"
+      ],
+      "source" : [
+         "../gamma.json"
+      ],
+      "strict" : 1,
+      "style" : "R_OVERRIDE"
+   },
+   {
+      "modname" : "Merge",
+      "path" : [
+         ""
+      ],
+      "source" : null, # merge to itself
+      "strict" : 1,
+      "style" : "L_OVERRIDE"
+   }
+]

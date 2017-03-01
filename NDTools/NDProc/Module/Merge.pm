@@ -171,7 +171,8 @@ some parts merged with other options. May be specified several times.
 
 =item B<--source> E<lt>uriE<gt>
 
-Source to merge with.
+Source to merge with. Processing structure will be used if not defined or
+empty string used.
 
 =item B<--[no]strict>
 

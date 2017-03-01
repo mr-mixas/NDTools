@@ -24,6 +24,7 @@ test: \
 	t_m_Insert_value_multiargs \
 	t_m_Merge \
 	t_m_Merge_ignore \
+	t_m_Merge_implicit_source \
 	t_m_Merge_implicit_array_item \
 	t_m_Merge_merge \
 	t_m_Merge_merge_path_not_exists_default \
@@ -92,6 +93,11 @@ t_m_Merge:
 t_m_Merge_ignore:
 	cp ../alpha.json $@.0000.got
 	$(BIN) $(VERB) --module Merge --source ../beta.json --ignore "{files}{'/etc/hostname'}" $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
+t_m_Merge_implicit_source:
+	cp ../alpha.json $@.0000.got
+	$(BIN) $(VERB) --rules $@.rules.json $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_m_Merge_implicit_array_item:
