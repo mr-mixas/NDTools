@@ -26,6 +26,9 @@ Options:
         Dont't format result simple things (strings/numbers) - dump them as
         is.
 
+    --[no]strict
+        Fail if unexisted path specified. Enabled by default.
+
     --values|--vals
         Values will be printed if combined with --list opt.
 

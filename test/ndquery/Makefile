@@ -15,8 +15,14 @@ test: \
 	t_out_fmt \
 	t_path \
 	t_raw_output \
+	t_strict \
 	t_utf8
 	@echo === ALL $(BIN) TESTS PASSED ===
+
+include ../_common.mk
+
+t_barebin:
+	$(BIN) $(VERB) </dev/null && false || true
 
 t_default:
 	$(BIN) $(VERB) ../alpha.json > $@.0000.got
@@ -66,11 +72,12 @@ t_raw_output:
 	$(BIN) $(VERB) --raw-output --path '[0]{File}[1]{label}' ../_data/menu.a.json > $@.0010.got
 	diff $@.0010.exp $@.0010.got # will be bare string
 
+t_strict:
+	$(BIN) $(VERB) --strict --path '[0]{NoTeXiStS}' ../_data/menu.a.json; $(VRFY_EXIT_8)
+	$(BIN) $(VERB) --nostrict --path '[0]{NoTeXiStS}' ../_data/menu.a.json > $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
 t_utf8:
 	$(BIN) $(VERB) --path '{"текст"}' ../_data/text-utf8.a.json > $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
-include ../_common.mk
-
-t_barebin:
-	$(BIN) $(VERB) </dev/null && false || true

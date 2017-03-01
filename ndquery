@@ -13,15 +13,16 @@ use Getopt::Long qw(:config bundling);
 use JSON qw(to_json);
 use Log::Log4Cli;
 use Pod::Usage;
-use Struct::Path qw(slist spath_delta);
+use Struct::Path qw(slist spath spath_delta);
+use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
-use NDTools::Path qw(path path2str str2path);
 use NDTools::Slurp qw(s_dump s_load);
 
 # defaults
 my $OPTS = {
     'color-common' => 'bold black',
     'path' => '', # empty means whole doc
+    'strict' => 1, # exit with 8 if unexisted path used
 };
 
 decode_argv(Encode::FB_CROAK);
@@ -37,6 +38,7 @@ GetOptions (
     'path|p=s' => \$OPTS->{path},
     'out-fmt=s' => \$OPTS->{'out-fmt'},
     'raw-output' => \$OPTS->{'raw-output'},
+    'strict!' => \$OPTS->{strict},
     'values|vals' => \$OPTS->{values},
     'verbose|v:+' => \$Log::Log4Cli::LEVEL,
     'version|V' => sub { print "$VERSION\n"; exit 0; },
@@ -47,7 +49,13 @@ $OPTS->{colors} = -t STDOUT ? 1 : 0 unless (defined $OPTS->{colors});
 for my $file (@ARGV ? @ARGV : \*STDIN) {
     log_debug { "Processing " . (ref $file ? "STDIN" : "file '$file'") };
     my $data = s_load($file, undef);
-    my @out = path($data, $OPTS->{path}, deref => 1); # orig structure may be splitted to many
+    my $spath = eval { ps_parse($OPTS->{path}) };
+    die_fatal "Failed to parse '$OPTS->{path}'", 4 if ($@);
+    my @out = spath($data, $spath, deref => 1);
+    unless (@out) {
+        die_fatal "Failed to lookup '$OPTS->{path}' in structure", 8 if ($OPTS->{strict});
+        next;
+    }
 
     if ($OPTS->{list}) {
         for my $data (@out) {
@@ -56,8 +64,8 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
                 my @delta = spath_delta($prev, $i->[0]);
                 my $cmn = @{$i->[0]} - @delta;
                 $cmn = ($cmn and @{$i->[0]} != @delta) ? [ @{$i->[0]}[0 .. $cmn - 1] ] : [];
-                $cmn = $OPTS->{colors} ?
-                    colored(path2str($cmn), $OPTS->{'color-common'}) : path2str($cmn);
+                $cmn = ps_serialize($cmn);
+                $cmn = $OPTS->{colors} ? colored($cmn, $OPTS->{'color-common'}) : $cmn;
                 my $val = "";
                 if ($OPTS->{values}) {
                     $val = " = ";
@@ -67,7 +75,7 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
                         $val .= to_json($i->[1], {canonical => 1, allow_nonref => 1});
                     }
                 }
-                print $cmn . path2str(\@delta) . $val . "\n";
+                print $cmn . ps_serialize(\@delta) . $val . "\n";
                 $prev = $i->[0];
             }
         }
@@ -135,6 +143,10 @@ Path in the structure to deal with.
 
 Dont't format result simple things (strings/numbers) - dump them as is.
 
+=item B<--[no]strict>
+
+Fail if unexisted path specified. Enabled by default.
+
 =item B<--values|--vals>
 
 Values will be printed if combined with --list opt.
@@ -173,6 +185,7 @@ Checksum for substructures:
  1   Generic error code.
  2   I/O Error.
  4   Path related errors.
+ 8   Path does not exists.
 
 =head1 BUGS
 
