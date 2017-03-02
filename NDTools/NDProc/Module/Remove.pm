@@ -10,7 +10,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Remove specified parts from structure" }
-sub VERSION { "0.02" }
+sub VERSION { "0.03" }
 
 sub arg_opts {
     my $self = shift;
@@ -23,9 +23,13 @@ sub arg_opts {
 sub process {
     my ($self, $data, $opts) = @_;
     for my $path (@{$opts->{path}}) {
-        log_info { 'Removing path "' . $path . '"' };
+        log_info { "Removing path '$path'" };
         my $spath = eval { ps_parse($path) };
         die_fatal "Failed to parse path ($@)", 4 if ($@);
+        unless (@{$spath}) {
+            ${$data} = undef;
+            next;
+        }
         eval { spath($data, $spath, delete => 1, strict => $opts->{strict}) };
         die_fatal "Failed to remove path ($@)", 4 if ($@);
     }

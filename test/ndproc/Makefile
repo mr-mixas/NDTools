@@ -34,6 +34,7 @@ test: \
 	t_m_Merge_multiargs \
 	t_m_Remove \
 	t_m_Remove_dump_rules \
+	t_m_Remove_full_doc \
 	t_m_Remove_help \
 	t_m_Remove_multiargs \
 	t_m_Remove__strict \
@@ -166,6 +167,11 @@ t_m_Remove:
 
 t_m_Remove_dump_rules:
 	$(BIN) $(VERB) --module Remove --path '{some}[0..5]' --dump-rules $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
+t_m_Remove_full_doc:
+	cp ../_data/menu.a.json $@.0000.got
+	$(BIN) $(VERB) --module Remove --strict --path '' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_m_Remove_help:
