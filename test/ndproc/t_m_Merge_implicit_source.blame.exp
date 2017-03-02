@@ -1,0 +1,35 @@
+[
+   {
+      "b" : null,
+      "rule_id" : 0
+   },
+   {
+      "b" : {
+         "files" : {
+            "/etc/cron.d/beta" : "* * * * * root sleep 5",
+            "/etc/hostname" : "beta",
+            "/etc/hosts" : "127.0.0.1    localhost",
+            "/etc/resolv.conf" : "nameserver 8.8.8.8"
+         }
+      },
+      "rule_id" : 1,
+      "source" : "../beta.json"
+   },
+   {
+      "b" : {
+         "files" : {
+            "/etc/hostname" : "gamma"
+         }
+      },
+      "rule_id" : 2,
+      "source" : "../gamma.json"
+   },
+   {
+      "b" : {
+         "fqdn" : "alpha.example.org",
+         "mtime" : 1462431001
+      },
+      "rule_id" : 3,
+      "source" : "t_m_Merge_implicit_source.0000.got"
+   }
+]

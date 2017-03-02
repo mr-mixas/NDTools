@@ -98,8 +98,9 @@ t_m_Merge_ignore:
 
 t_m_Merge_implicit_source:
 	cp ../alpha.json $@.0000.got
-	$(BIN) $(VERB) --rules $@.rules.json $@.0000.got
+	$(BIN) $(VERB) --rules $@.rules.json $@.0000.got --dump-blame $@.blame.got
 	diff $@.0000.exp $@.0000.got
+	diff $@.blame.exp $@.blame.got
 
 t_m_Merge_implicit_array_item:
 	cp ../_data/menu.a.json $@.0000.got

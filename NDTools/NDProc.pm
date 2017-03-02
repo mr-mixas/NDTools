@@ -211,7 +211,7 @@ sub process_rules {
 
         my $changes = { rule_id => 0+$rcnt, %{dsplit(diff($result, ${$struct}, noO => 1, noU => 1))}};
         map { $changes->{$_} = $rule->{$_} if defined $rule->{$_} } qw(comment source);
-        push @blame, $changes;
+        push @blame, dclone($changes);
 
         $rcnt++;
     }
