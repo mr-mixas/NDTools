@@ -12,7 +12,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.04" }
+sub VERSION { "0.05" }
 
 sub arg_opts {
     my $self = shift;
@@ -135,7 +135,7 @@ sub process {
         }
         my @dsts = map_paths($data, \@srcs, $spath);
 
-        my $style = $m->{style} || $opts->{style} || $self->{style};
+        my $style = $m->{style} || $opts->{style} || $self->{OPTS}->{style};
         for my $src (@srcs) {
             my $dst = shift @dsts;
             log_info { "Merging $opts->{source} ($style, '" .
@@ -144,7 +144,6 @@ sub process {
         }
     }
 }
-
 
 1; # End of NDTools::NDProc::Module::Merge
 
