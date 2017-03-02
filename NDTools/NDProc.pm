@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.06' }
+sub VERSION { '0.07' }
 
 sub arg_opts {
     my $self = shift;
@@ -205,7 +205,7 @@ sub process_rules {
             unless (exists $self->{MODS}->{$rule->{modname}});
 
         log_debug { "Processing rule #$rcnt ($rule->{modname})" };
-        my $result = dclone(${$struct});
+        my $result = ref ${$struct} ? dclone(${$struct}) : ${$struct};
         my $source = exists $rule->{source} ? $self->{sources}->{$rule->{source}} : undef;
         $self->{MODS}->{$rule->{modname}}->new->process($struct, $rule, $source);
 
