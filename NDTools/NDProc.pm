@@ -9,12 +9,12 @@ use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Module::Find qw(findsubmod);
 use NDTools::Slurp qw(s_dump s_load);
-use Storable qw(dclone);
+use Storable qw(dclone freeze thaw);
 use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.07' }
+sub VERSION { '0.08' }
 
 sub arg_opts {
     my $self = shift;
@@ -206,7 +206,7 @@ sub process_rules {
 
         log_debug { "Processing rule #$rcnt ($rule->{modname})" };
         my $result = ref ${$struct} ? dclone(${$struct}) : ${$struct};
-        my $source = exists $rule->{source} ? $self->{sources}->{$rule->{source}} : undef;
+        my $source = exists $rule->{source} ? thaw($self->{sources}->{$rule->{source}}) : undef;
         $self->{MODS}->{$rule->{modname}}->new->process($struct, $rule, $source);
 
         my $changes = { rule_id => 0+$rcnt, %{dsplit(diff($result, ${$struct}, noO => 1, noU => 1))}};
@@ -244,7 +244,7 @@ sub resolve_rules {
         }
         next if (exists $self->{sources}->{$rule->{source}});
         $self->{sources}->{$rule->{source}} =
-            $self->load_source($rule->{source});
+            freeze($self->load_source($rule->{source}));
     }
 
     return $result;
