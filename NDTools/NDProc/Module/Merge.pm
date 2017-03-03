@@ -164,14 +164,16 @@ Skip specified structure parts. May be used several times.
 =item B<--merge> E<lt>pathE<gt>
 
 Path in the structure to merge. Whole structure will be merged if
-omitted. Paths '' or '{}' or '[]' means "whole" struct, and should be
+omitted or empty. Paths '{}' or '[]' means all items, and should be
 used as first merge target if whole struct must be merged and then
-some parts merged with other options. May be specified several times.
+some parts merged with other options. Full syntax description available
+at metacpan <https://metacpan.org/pod/Struct::Path::PerlStyle#PATH-SYNTAX>.
+May be specified several times.
 
 =item B<--source> E<lt>uriE<gt>
 
-Source to merge with. Processing structure will be used if not defined or
-empty string used.
+Source to merge with. Processing structure will be used if option specified,
+but value not defined or empty. May be used several times.
 
 =item B<--[no]strict>
 
