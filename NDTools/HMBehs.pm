@@ -7,9 +7,9 @@ use parent qw(Exporter);
 
 use Hash::Merge qw(_merge_hashes);
 
-our $VERSION = '0.03'; # Don't forget to change in pod below
+our $VERSION = '0.04'; # Don't forget to change in pod below
 
-our @EXPORT = qw(
+our @EXPORT_OK = qw(
     L_OVERRIDE
     R_OVERRIDE
 );
@@ -31,6 +31,7 @@ use constant L_OVERRIDE => {
         'HASH'   => sub { _merge_hashes( $_[0], $_[1] ) },
     },
 };
+Hash::Merge::specify_behavior(L_OVERRIDE, "L_OVERRIDE");
 
 use constant R_OVERRIDE => {
     'SCALAR' => {
@@ -49,6 +50,7 @@ use constant R_OVERRIDE => {
         'HASH'   => sub { _merge_hashes( $_[0], $_[1] ) },
     },
 };
+Hash::Merge::specify_behavior(R_OVERRIDE, "R_OVERRIDE");
 
 1;
 
@@ -60,12 +62,12 @@ NDTools::HMBehs -- Collection of extra behaviors for HASH::Merge
 
 =head1 VERSION
 
-Version 0.02
+Version 0.04
 
 =head1 SYNOPSIS
 
     use Hash::Merge qw(merge);
-    use NDTools::HMBehs qw(R_OVERRIDE);
+    use NDTools::HMBehs;
 
     Hash::Merge::specify_behavior(R_OVERRIDE);
 

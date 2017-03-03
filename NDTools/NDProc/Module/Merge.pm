@@ -5,14 +5,15 @@ use warnings FATAL => 'all';
 use parent "NDTools::NDProc::Module";
 
 use NDTools::INC;
+use Hash::Merge qw();
+use NDTools::HMBehs qw();
 use List::MoreUtils qw(before);
 use Log::Log4Cli;
-use NDTools::Struct qw(st_copy st_merge);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.05" }
+sub VERSION { "0.06" }
 
 sub arg_opts {
     my $self = shift;
@@ -140,7 +141,8 @@ sub process {
             my $dst = shift @dsts;
             log_info { "Merging $opts->{source} ($style, '" .
                 ps_serialize($src->[0]) . "' => '" . ps_serialize($dst->[0]) . "')" };
-            ${$dst->[1]} = st_merge(${$dst->[1]}, ${$src->[1]}, style => $style);
+            Hash::Merge::set_behavior($style);
+            ${$dst->[1]} = Hash::Merge::merge(${$dst->[1]}, ${$src->[1]});
         }
     }
 }
