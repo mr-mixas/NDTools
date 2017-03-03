@@ -8,18 +8,19 @@ use NDTools::INC;
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Module::Find qw(findsubmod);
-use NDTools::Slurp qw(s_dump s_load);
+use NDTools::Slurp qw(s_decode s_dump s_encode s_load);
 use Storable qw(dclone freeze thaw);
 use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.08' }
+sub VERSION { '0.09' }
 
 sub arg_opts {
     my $self = shift;
     my %arg_opts = (
         $self->SUPER::arg_opts(),
+        'builtin-format=s' => \$self->{OPTS}->{'builtin-format'},
         'builtin-rules=s' => \$self->{OPTS}->{'builtin-rules'},
         'dump-blame=s' => \$self->{OPTS}->{blame},
         'dump-rules=s' => \$self->{OPTS}->{'dump-rules'},
@@ -39,7 +40,8 @@ sub configure {
 
 sub defaults {
     return {
-        modpath => [ "NDTools::NDProc::Module" ],
+        'builtin-format' => "", # raw
+        'modpath' => [ "NDTools::NDProc::Module" ],
     };
 }
 
@@ -74,7 +76,9 @@ sub embed_rules {
     my $ref = eval { (spath($data, $spath, expand => 1))[0]};
     die_fatal "Unable to lookup path ($@)", 4 if ($@);
 
-    ${$ref} = $rules;
+    ${$ref} = $self->{OPTS}->{'builtin-format'} ?
+        s_encode($rules, $self->{OPTS}->{'builtin-format'}) :
+        $rules;
 }
 
 sub exec {
@@ -159,7 +163,9 @@ sub load_builtin_rules {
     my $rules = eval { (spath($data, $spath, deref => 1))[0] };
     die_fatal "Unable to lookup path ($@)", 4 if ($@);
 
-    return $rules;
+    return $self->{OPTS}->{'builtin-format'} ?
+        s_decode($rules, $self->{OPTS}->{'builtin-format'}) :
+        $rules;
 }
 
 sub process_args {

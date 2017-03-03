@@ -12,6 +12,7 @@ test: \
 	t_list_modules \
 	t_rules \
 	t_rules_builtin \
+	t_rules_builtin_format \
 	t_rules_embed \
 	t_rules_redump \
 	t_m__UNKNOWN_via_args \
@@ -42,6 +43,11 @@ test: \
 	t_m_Remove__dump_blame \
 	t_m_Remove__unsupported_opt
 	@echo === ALL $(BIN) TESTS PASSED ===
+
+t_rules_builtin_format:
+	cp $@.struct.exp $@.0000.got
+	$(BIN) $(VERB) --builtin-format JSON --builtin-rules '[3]{builtin}{rules}' $@.0000.got
+	diff $@.0000.exp $@.0000.got
 
 t_list_modules:
 	$(BIN) $(VERB) --list-modules -l > $@.0000.got
