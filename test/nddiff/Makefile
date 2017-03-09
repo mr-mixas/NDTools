@@ -19,6 +19,7 @@ test: \
 	t_term_quiet \
 	t_term_text \
 	t_term_text_changed_seqs \
+	t_term_text_newlines \
 	t_term_text_utf8 \
 	t_term_text_AR \
 	t_ignore \
@@ -96,6 +97,10 @@ t_term_text:
 # check that sequences of changed lines grouped by removed and added blocks
 t_term_text_changed_seqs:
 	$(BIN) $(VERB) ../_data/text-changed-seqs.a.json ../_data/text-changed-seqs.b.json > $@.0000.got; $(VRFY_EXIT_8)
+	diff $@.0000.exp $@.0000.got
+
+t_term_text_newlines:
+	$(BIN) $(VERB) ../_data/text-newlines.a.json ../_data/text-newlines.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
 t_term_text_utf8:

@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.12" }
+sub VERSION { "0.13" }
 
 sub arg_opts {
     my $self = shift;
@@ -102,8 +102,9 @@ sub diff_texts {
             @old = split(/$\//, ${$r}->{O}) if (${$r}->{O} and not ref ${$r}->{O});
             @new = split(/$\//, ${$r}->{N}) if (${$r}->{N} and not ref ${$r}->{N});
             if (@old > 1 or @new > 1) {
-                push @old, undef; # traverse_sequences don't see sequence for trailing changed lines
-                push @new, undef; # so, put unchanged thing to the end and remove it later
+                push @old, "FIXME!"; # traverse_sequences don't see sequence for trailing changed lines
+                push @new, "FIXME!"; # so, put unchanged thing to the end and remove it later
+
                 Algorithm::Diff::traverse_sequences(
                     \@old, \@new,
                     {
