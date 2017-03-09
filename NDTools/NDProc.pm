@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.09' }
+sub VERSION { '0.10' }
 
 sub arg_opts {
     my $self = shift;
@@ -36,6 +36,10 @@ sub arg_opts {
 
 sub configure {
     my $self = shift;
+    if ($self->{OPTS}->{module} or ref $self->{rules} eq 'ARRAY' and @{$self->{rules}}) {
+        log_info { "Explicit rules used: builtin will be ignored" };
+        $self->{OPTS}->{'builtin-rules'} = undef;
+    }
 }
 
 sub defaults {
@@ -160,7 +164,7 @@ sub load_builtin_rules {
     log_debug { "Loading builtin rules from '$path'" };
     my $spath = eval { ps_parse($path) };
     die_fatal "Unable to parse path ($@)", 4 if ($@);
-    my $rules = eval { (spath($data, $spath, deref => 1))[0] };
+    my $rules = eval { (spath($data, $spath, deref => 1, strict => 1))[0] };
     die_fatal "Unable to lookup path ($@)", 4 if ($@);
 
     return $self->{OPTS}->{'builtin-format'} ?
