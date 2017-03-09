@@ -10,14 +10,28 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Insert substructure/value into structure" }
-sub VERSION { "0.03" }
+sub VERSION { "0.04" }
 
 sub arg_opts {
     my $self = shift;
     return (
         $self->SUPER::arg_opts(),
+        'boolean=s'   => sub {
+            require JSON;
+            if ($_[1] =~ /^true$/i) {
+                $self->{OPTS}->{value} = JSON::true;
+            } elsif ($_[1] =~ /^false$/i) {
+                $self->{OPTS}->{value} = JSON::false;
+            } elsif ($_[1]) {
+                $self->{OPTS}->{value} = JSON::true;
+            } else {
+                $self->{OPTS}->{value} = JSON::false;
+            }
+        },
         'file|f=s' => \$self->{OPTS}->{file},
-        'value=s' => \$self->{OPTS}->{value},
+        'null|undef' => sub { $self->{OPTS}->{value} = undef },
+        'number=f' => sub { $self->{OPTS}->{value} = 0 + $_[1] },
+        'string|value=s' => \$self->{OPTS}->{value},
     )
 }
 
@@ -57,17 +71,29 @@ Insert - substructure/value into structure
 
 =over 4
 
+=item B<--boolean> E<lt>true|false|1|0E<gt>
+
+Boolean value to insert.
+
 =item B<--file|-f> E<lt>fileE<gt>
 
 Load substructure from file.
+
+=item B<--null|--undef>
+
+Insert null value.
+
+=item B<--number> E<lt>numberE<gt>
+
+Number to insert.
 
 =item B<--path> E<lt>pathE<gt>
 
 Path in the structure to deal with. May be used several times.
 
-=item B<--value> E<lt>valueE<gt>
+=item B<--string> E<lt>stringE<gt>
 
-Value to insert. Meaningless when --file opt used.
+String to insert.
 
 =back
 

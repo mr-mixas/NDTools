@@ -18,11 +18,14 @@ test: \
 	t_m__UNKNOWN_via_args \
 	t_m__UNKNOWN_via_rules \
 	t_m_Insert \
+	t_m_Insert_boolean \
 	t_m_Insert_help \
 	t_m_Insert_nopath \
+	t_m_Insert_number \
 	t_m_Insert_file \
-	t_m_Insert_value \
-	t_m_Insert_value_multiargs \
+	t_m_Insert_undef \
+	t_m_Insert_string \
+	t_m_Insert_string_multiargs \
 	t_m_Merge \
 	t_m_Merge_ignore \
 	t_m_Merge_implicit_source \
@@ -64,6 +67,18 @@ t_m_Insert:
 	$(BIN) $(VERB) --module Insert --path '{some}[0..1]{path}' --path '{another}[1,0]{path}' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
+t_m_Insert_boolean:
+	echo "{}" > $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{true}'  --bool true  $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{false}' --bool false $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{True}'  --bool True  $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{False}' --bool False $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{1}'     --bool 1     $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{0}'     --bool 0     $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{" "}'   --bool " "   $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{""}'    --bool ""    $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
 t_m_Insert_help:
 	$(BIN) --module Insert --help -h 2>$@.0000.got
 	diff $@.0000.exp $@.0000.got
@@ -73,20 +88,35 @@ t_m_Insert_nopath:
 	$(BIN) $(VERB) --module Insert $@.0000.got
 	diff ../_data/bool.a.json $@.0000.got # no path -- no insert =)
 
+t_m_Insert_number:
+	echo "{}" > $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{int}'   --number 42      $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{float}' --number 3.1415  $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{E}'     --number 6.23E24 $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{neg}'   --number -1000   $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{pos}'   --number +1000   $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
 t_m_Insert_file:
 	cp ../_data/bool.a.json $@.0000.got
 	$(BIN) $(VERB) --module Insert --path '{some}[1]{path}' --file ../_data/text-utf8.a.json $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
-t_m_Insert_value:
-	cp ../_data/bool.a.json $@.0000.got
-	$(BIN) $(VERB) --module Insert --path '{some}[1]{path}' --value 'string' $@.0000.got
+t_m_Insert_undef:
+	echo "{}" > $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{undef}' --undef $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{null}'  --null  $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
-t_m_Insert_value_multiargs:
+t_m_Insert_string:
+	cp ../_data/bool.a.json $@.0000.got
+	$(BIN) $(VERB) --module Insert --path '{some}[1]{path}' --string 'string' $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
+t_m_Insert_string_multiargs:
 	cp ../_data/bool.a.json $@.0000.got
 	cp ../_data/bool.b.json $@.0010.got
-	$(BIN) $(VERB) --module Insert --path '{some}[1]{path}' --value 'string' $@.0000.got $@.0010.got
+	$(BIN) $(VERB) --module Insert --path '{some}[1]{path}' --string 'string' $@.0000.got $@.0010.got
 	diff $@.0000.exp $@.0000.got
 	diff $@.0010.exp $@.0010.got
 

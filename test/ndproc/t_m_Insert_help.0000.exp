@@ -2,12 +2,21 @@ Name:
     Insert - substructure/value into structure
 
 Options:
+    --boolean <true|false|1|0>
+        Boolean value to insert.
+
     --file|-f <file>
         Load substructure from file.
+
+    --null|--undef
+        Insert null value.
+
+    --number <number>
+        Number to insert.
 
     --path <path>
         Path in the structure to deal with. May be used several times.
 
-    --value <value>
-        Value to insert. Meaningless when --file opt used.
+    --string <string>
+        String to insert.
 

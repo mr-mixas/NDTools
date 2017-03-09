@@ -1,0 +1,10 @@
+{
+   "" : false,
+   " " : true,
+   "0" : false,
+   "1" : true,
+   "False" : false,
+   "True" : true,
+   "false" : false,
+   "true" : true
+}
