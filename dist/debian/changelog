@@ -1,3 +1,20 @@
+ndtools (0.4.2) unstable; urgency=low
+
+  * all: depends bumped
+  * nddiff: texts with multiple newlines diff fixed
+  * ndproc (Merge): hashes merge fixed for L_OVERRIDE beh
+  * ndproc (Merge): pairwise (paths src -> dst) merge
+  * ndproc (Merge): implicit paths merge supported
+  * ndproc (Merge): merge with global style opt fixed
+  * ndproc (Remove): full struct removal fixed (empty path used)
+  * ndproc: --builtin-rules, --builtin-format, --embed-rules opts added
+  * ndproc: undef resources supported (argument structure used)
+  * ndproc: blame fixed for nonref structs
+  * ndquery: --insert opt removed (redundant - ndproc should be used)
+  * ndquery: --values and --strict opts added
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Thu, 09 Mar 2017 13:12:36 +0300
+
 ndtools (0.4.1) unstable; urgency=low
 
   * all: depends bumped
