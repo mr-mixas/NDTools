@@ -1,6 +1,6 @@
 [
    {
-      "b" : {
+      "A" : {
          "files" : {
             "/etc/cron.d/beta" : "* * * * * root sleep 5",
             "/etc/hostname" : "beta"
@@ -12,7 +12,7 @@
       "source" : "../beta.json"
    },
    {
-      "b" : {
+      "A" : {
          "files" : {
             "/etc/hostname" : "gamma"
          },

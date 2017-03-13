@@ -1,10 +1,10 @@
 [
    {
-      "b" : null,
+      "A" : null,
       "rule_id" : 0
    },
    {
-      "b" : {
+      "A" : {
          "files" : {
             "/etc/cron.d/beta" : "* * * * * root sleep 5",
             "/etc/hostname" : "beta",
@@ -16,7 +16,7 @@
       "source" : "../beta.json"
    },
    {
-      "b" : {
+      "A" : {
          "files" : {
             "/etc/hostname" : "gamma"
          }
@@ -25,7 +25,7 @@
       "source" : "../gamma.json"
    },
    {
-      "b" : {
+      "A" : {
          "fqdn" : "alpha.example.org",
          "mtime" : 1462431001
       },
