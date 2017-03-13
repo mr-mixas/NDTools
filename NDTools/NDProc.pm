@@ -22,7 +22,7 @@ sub arg_opts {
         $self->SUPER::arg_opts(),
         'builtin-format=s' => \$self->{OPTS}->{'builtin-format'},
         'builtin-rules=s' => \$self->{OPTS}->{'builtin-rules'},
-        'dump-blame=s' => \$self->{OPTS}->{blame},
+        'dump-blame=s' => \$self->{OPTS}->{'dump-blame'},
         'dump-rules=s' => \$self->{OPTS}->{'dump-rules'},
         'embed-blame=s' => \$self->{OPTS}->{'embed-blame'},
         'embed-rules=s' => \$self->{OPTS}->{'embed-rules'},
@@ -58,9 +58,9 @@ sub dump_arg {
 
 sub dump_blame {
     my ($self, $blame) = @_;
-    return unless (defined $self->{OPTS}->{blame});
-    log_debug { "Dumping blame to '$self->{OPTS}->{blame}'" };
-    s_dump($self->{OPTS}->{blame}, undef, undef, $blame);
+    return unless (defined $self->{OPTS}->{'dump-blame'});
+    log_debug { "Dumping blame to '$self->{OPTS}->{'dump-blame'}'" };
+    s_dump($self->{OPTS}->{'dump-blame'}, undef, undef, $blame);
 }
 
 sub dump_rules {
@@ -176,10 +176,10 @@ sub process_args {
     my $self = shift;
     for my $arg (@_) {
         log_info { "Processing $arg" };
-        my $struct = $self->load_arg($arg);
+        my $data = $self->load_arg($arg);
 
         if ($self->{OPTS}->{'builtin-rules'}) {
-            $self->{rules} = $self->load_builtin_rules($struct, $self->{OPTS}->{'builtin-rules'});
+            $self->{rules} = $self->load_builtin_rules($data, $self->{OPTS}->{'builtin-rules'});
             # restore original rules - may be changed while processing structure
             $self->{OPTS}->{'embed-rules'} = $self->{OPTS}->{'builtin-rules'}
                 if (not defined $self->{OPTS}->{'embed-rules'});
@@ -191,25 +191,25 @@ sub process_args {
         }
 
         $self->{resolved_rules} = $self->resolve_rules($self->{rules}, $arg);
-        my @blame = $self->process_rules(\$struct, $self->{resolved_rules});
+        my @blame = $self->process_rules(\$data, $self->{resolved_rules});
 
         if ($self->{OPTS}->{'embed-blame'}) {
             log_debug { "Embedding blame to '$self->{OPTS}->{'embed-blame'}'" };
-            $self->embed($struct, $self->{OPTS}->{'embed-blame'}, \@blame);
+            $self->embed($data, $self->{OPTS}->{'embed-blame'}, \@blame);
         }
 
         if ($self->{OPTS}->{'embed-rules'}) {
             log_debug { "Embedding rules to '$self->{OPTS}->{'embed-rules'}'" };
-            $self->embed($struct, $self->{OPTS}->{'embed-rules'}, $self->{rules});
+            $self->embed($data, $self->{OPTS}->{'embed-rules'}, $self->{rules});
         }
 
-        $self->dump_arg($arg, $struct);
+        $self->dump_arg($arg, $data);
         $self->dump_blame(\@blame);
     }
 }
 
 sub process_rules {
-    my ($self, $struct, $rules) = @_;
+    my ($self, $data, $rules) = @_;
     my $rcnt = 0; # rules counter
     my @blame;
 
@@ -222,11 +222,11 @@ sub process_rules {
             unless (exists $self->{MODS}->{$rule->{modname}});
 
         log_debug { "Processing rule #$rcnt ($rule->{modname})" };
-        my $result = ref ${$struct} ? dclone(${$struct}) : ${$struct};
+        my $result = ref ${$data} ? dclone(${$data}) : ${$data};
         my $source = exists $rule->{source} ? thaw($self->{sources}->{$rule->{source}}) : undef;
-        $self->{MODS}->{$rule->{modname}}->new->process($struct, $rule, $source);
+        $self->{MODS}->{$rule->{modname}}->new->process($data, $rule, $source);
 
-        my $changes = { rule_id => 0+$rcnt, %{dsplit(diff($result, ${$struct}, noO => 1, noU => 1))}};
+        my $changes = { rule_id => 0+$rcnt, %{dsplit(diff($result, ${$data}, noO => 1, noU => 1))}};
         map { $changes->{$_} = $rule->{$_} if defined $rule->{$_} } qw(comment source);
         push @blame, dclone($changes);
 
