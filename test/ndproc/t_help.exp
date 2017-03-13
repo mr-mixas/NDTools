@@ -15,6 +15,9 @@ Options:
     --dump-rules <file>
         Dump rules to file.
 
+    --embed-blame <path>
+        Embed blame into processed structure, using provided path.
+
     --embed-rules <path>
         Embed used rules into processed structure, using provided path.
 

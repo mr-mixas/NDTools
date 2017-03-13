@@ -44,6 +44,7 @@ test: \
 	t_m_Remove__strict \
 	t_m_Remove_version \
 	t_m_Remove__dump_blame \
+	t_m_Remove__embed_blame \
 	t_m_Remove__unsupported_opt
 	@echo === ALL $(BIN) TESTS PASSED ===
 
@@ -233,6 +234,11 @@ t_m_Remove_version:
 t_m_Remove__dump_blame:
 	cp ../_data/menu.a.json $@.0010.got
 	$(BIN) $(VERB) --module Remove --path '[1]{Edit}[3..5]' --dump-blame $@.0000.got $@.0010.got
+	diff $@.0000.exp $@.0000.got
+
+t_m_Remove__embed_blame:
+	cp ../_data/menu.a.json $@.0000.got
+	$(BIN) $(VERB) --module Remove --path '[1]{Edit}[3..5]' --embed-blame '[1]{Edit}[3]{_blame_}' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_m_Remove__unsupported_opt:

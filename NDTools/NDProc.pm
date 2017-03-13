@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.10' }
+sub VERSION { '0.11' }
 
 sub arg_opts {
     my $self = shift;
@@ -24,6 +24,7 @@ sub arg_opts {
         'builtin-rules=s' => \$self->{OPTS}->{'builtin-rules'},
         'dump-blame=s' => \$self->{OPTS}->{blame},
         'dump-rules=s' => \$self->{OPTS}->{'dump-rules'},
+        'embed-blame=s' => \$self->{OPTS}->{'embed-blame'},
         'embed-rules=s' => \$self->{OPTS}->{'embed-rules'},
         'list-modules|l' => \$self->{OPTS}->{'list-modules'},
         'module|m=s' => \$self->{OPTS}->{module},
@@ -71,18 +72,17 @@ sub dump_rules {
     s_dump($self->{OPTS}->{'dump-rules'}, undef, undef, $self->{rules});
 }
 
-sub embed_rules {
-    my ($self, $data, $path, $rules) = @_;
+sub embed {
+    my ($self, $data, $path, $thing) = @_;
 
-    log_debug { "Embedding rules to '$path'" };
     my $spath = eval { ps_parse($path) };
-    die_fatal "Unable to parse path ($@)", 4 if ($@);
+    die_fatal "Unable to parse '$path' ($@)", 4 if ($@);
     my $ref = eval { (spath($data, $spath, expand => 1))[0]};
-    die_fatal "Unable to lookup path ($@)", 4 if ($@);
+    die_fatal "Unable to lookup '$path' ($@)", 4 if ($@);
 
     ${$ref} = $self->{OPTS}->{'builtin-format'} ?
-        s_encode($rules, $self->{OPTS}->{'builtin-format'}) :
-        $rules;
+        s_encode($thing, $self->{OPTS}->{'builtin-format'}) :
+        $thing;
 }
 
 sub exec {
@@ -193,8 +193,15 @@ sub process_args {
         $self->{resolved_rules} = $self->resolve_rules($self->{rules}, $arg);
         my @blame = $self->process_rules(\$struct, $self->{resolved_rules});
 
-        $self->embed_rules($struct, $self->{OPTS}->{'embed-rules'}, $self->{rules})
-            if ($self->{OPTS}->{'embed-rules'});
+        if ($self->{OPTS}->{'embed-blame'}) {
+            log_debug { "Embedding blame to '$self->{OPTS}->{'embed-blame'}'" };
+            $self->embed($struct, $self->{OPTS}->{'embed-blame'}, \@blame);
+        }
+
+        if ($self->{OPTS}->{'embed-rules'}) {
+            log_debug { "Embedding rules to '$self->{OPTS}->{'embed-rules'}'" };
+            $self->embed($struct, $self->{OPTS}->{'embed-rules'}, $self->{rules});
+        }
 
         $self->dump_arg($arg, $struct);
         $self->dump_blame(\@blame);

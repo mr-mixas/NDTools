@@ -40,6 +40,10 @@ Dump blame to file.
 
 Dump rules to file.
 
+=item B<--embed-blame> E<lt>pathE<gt>
+
+Embed blame into processed structure, using provided path.
+
 =item B<--embed-rules> E<lt>pathE<gt>
 
 Embed used rules into processed structure, using provided path.
