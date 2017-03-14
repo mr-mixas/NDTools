@@ -10,7 +10,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Insert substructure/value into structure" }
-sub VERSION { "0.04" }
+sub VERSION { "0.05" }
 
 sub arg_opts {
     my $self = shift;
@@ -70,6 +70,10 @@ Insert - substructure/value into structure
 =head1 OPTIONS
 
 =over 4
+
+=item B<--[no]blame>
+
+Blame calculaton toggle. Enabled by default.
 
 =item B<--boolean> E<lt>true|false|1|0E<gt>
 

@@ -2,6 +2,9 @@ Name:
     Insert - substructure/value into structure
 
 Options:
+    --[no]blame
+        Blame calculaton toggle. Enabled by default.
+
     --boolean <true|false|1|0>
         Boolean value to insert.
 

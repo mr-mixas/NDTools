@@ -10,7 +10,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Remove specified parts from structure" }
-sub VERSION { "0.03" }
+sub VERSION { "0.04" }
 
 sub arg_opts {
     my $self = shift;
@@ -46,6 +46,10 @@ Remove - remove specified parts from structure
 =head1 OPTIONS
 
 =over 4
+
+=item B<--[no]blame>
+
+Blame calculaton toggle. Enabled by default.
 
 =item B<--path> E<lt>pathE<gt>
 

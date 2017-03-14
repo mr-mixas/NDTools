@@ -18,6 +18,7 @@ sub VERSION { "n/a" }
 sub arg_opts {
     my $self = shift;
     return (
+        'blame!' => \$self->{OPTS}->{blame}, # just to set opt in rule
         'help|h' => sub { $self->usage(); die_info undef, 0 },
         'path=s@' => \$self->{OPTS}->{path},
         'version|V' => sub { print $self->VERSION . "\n"; die_info undef, 0; },

@@ -2,6 +2,9 @@ Name:
     Remove - remove specified parts from structure
 
 Options:
+    --[no]blame
+        Blame calculaton toggle. Enabled by default.
+
     --path <path>
         Path in the structure to remove. May be used several times.
 

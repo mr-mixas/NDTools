@@ -13,7 +13,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.06" }
+sub VERSION { "0.07" }
 
 sub arg_opts {
     my $self = shift;
@@ -158,6 +158,10 @@ Merge - merge structures according provided rules
 =head1 OPTIONS
 
 =over 4
+
+=item B<--[no]blame>
+
+Blame calculaton toggle. Enabled by default.
 
 =item B<--ignore> E<lt>pathE<gt>
 

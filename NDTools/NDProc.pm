@@ -45,6 +45,7 @@ sub configure {
 
 sub defaults {
     return {
+        'blame' => 1, # may be redefined per-rule
         'builtin-format' => "", # raw
         'modpath' => [ "NDTools::NDProc::Module" ],
     };
@@ -226,10 +227,14 @@ sub process_rules {
         my $source = exists $rule->{source} ? thaw($self->{sources}->{$rule->{source}}) : undef;
         $self->{MODS}->{$rule->{modname}}->new->process($data, $rule, $source);
 
-        my $changes = { rule_id => 0+$rcnt, %{dsplit(diff($result, ${$data}, noO => 1, noU => 1))}};
-        map { $changes->{$_} = $rule->{$_} if defined $rule->{$_} } qw(comment source);
-        $changes->{R} = delete $changes->{a} if (exists $changes->{a}); # more obvious
-        $changes->{A} = delete $changes->{b} if (exists $changes->{b}); # --"--
+        my $changes = { rule_id => 0 + $rcnt };
+        if (defined $rule->{blame} ? $rule->{blame} : $self->{OPTS}->{blame}) {
+            my $diff = dsplit(diff($result, ${$data}, noO => 1, noU => 1));
+            $changes->{R} = delete $diff->{a} if (exists $diff->{a}); # more obvious
+            $changes->{A} = delete $diff->{b} if (exists $diff->{b}); # --"--
+        }
+        map { $changes->{$_} = $rule->{$_} if (defined $rule->{$_}) }
+            qw(blame comment source); # preserve useful info
         push @blame, dclone($changes);
 
         $rcnt++;
