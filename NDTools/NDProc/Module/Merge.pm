@@ -9,11 +9,11 @@ use Hash::Merge qw();
 use NDTools::HMBehs qw();
 use List::MoreUtils qw(before);
 use Log::Log4Cli;
-use Struct::Path qw(spath);
+use Struct::Path qw(is_implicit_step spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.07" }
+sub VERSION { "0.08" }
 
 sub arg_opts {
     my $self = shift;
@@ -46,21 +46,6 @@ sub defaults {
         'strict' => 1,
         'style' => 'R_OVERRIDE',
     };
-}
-
-sub is_implicit_step {
-    my $step = shift;
-
-    if (ref $step eq 'ARRAY') {
-        return 1 unless @{$step};
-    } elsif (ref $step eq 'HASH') {
-        return 1 if (exists $step->{keys} and not @{$step->{keys}});
-        return 1 if (exists $step->{regs} and @{$step->{regs}});
-    } else { # coderefs
-        return 1;
-    }
-
-    return undef;
 }
 
 sub map_paths {
