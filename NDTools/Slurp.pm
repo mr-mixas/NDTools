@@ -49,6 +49,8 @@ sub s_decode($$;$) {
 
 sub s_dump(@) {
     my ($uri, $fmt, $opts) = (shift, shift, shift);
+    $uri = \*STDOUT if ($uri eq '-');
+
     $fmt = s_fmt_by_uri($uri) unless (defined $fmt);
     my $data = join('', map { s_encode($_, $fmt, $opts) } @_);
     if (ref $uri eq 'GLOB') {
@@ -92,6 +94,8 @@ sub s_fmt_by_uri($) {
 
 sub s_load($$;@) {
     my ($uri, $fmt, %opts) = @_;
+    $uri = \*STDIN if ($uri eq '-');
+
     my $data = eval { s_load_uri($uri) };
     die_fatal $@, 2 if $@;
     $fmt = s_fmt_by_uri($uri) unless (defined $fmt);

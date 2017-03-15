@@ -47,7 +47,8 @@ test: \
 	t_m_Remove__dump_blame \
 	t_m_Remove__embed_blame \
 	t_m_Remove__noblame \
-	t_m_Remove__unsupported_opt
+	t_m_Remove__unsupported_opt \
+	t_m_Remove__STDIN_STDOUT
 	@echo === ALL $(BIN) TESTS PASSED ===
 
 t_rules_builtin_format:
@@ -255,6 +256,10 @@ t_m_Remove__noblame:
 
 t_m_Remove__unsupported_opt:
 	$(BIN) --module Remove --unsupported-opt-test --path '[1]{Edit}[3..5]' ../_data/menu.a.json 2>/dev/null; $(VRFY_EXIT_1)
+
+t_m_Remove__STDIN_STDOUT:
+	cat ../alpha.json | $(BIN) $(VERB) --module Remove --path '{files}' - > $@.0000.got
+	diff $@.0000.exp $@.0000.got
 
 t_rules:
 	cp ../_data/menu.a.json $@.0000.got
