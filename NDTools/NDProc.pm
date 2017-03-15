@@ -256,7 +256,7 @@ sub resolve_rules {
                 push @{$result}, $new;
             }
         } else {
-            push @{$result}, $rule;
+            push @{$result}, { %{$rule} };
         }
     }
 
