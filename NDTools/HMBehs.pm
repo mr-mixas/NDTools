@@ -7,11 +7,14 @@ use parent qw(Exporter);
 
 use Hash::Merge qw(_merge_hashes);
 
-our $VERSION = '0.04'; # Don't forget to change in pod below
+our $VERSION = '0.05'; # Don't forget to change in pod below
 
 our @EXPORT_OK = qw(
     L_OVERRIDE
     R_OVERRIDE
+
+    L_REPLACE
+    R_REPLACE
 );
 
 use constant L_OVERRIDE => {
@@ -52,6 +55,44 @@ use constant R_OVERRIDE => {
 };
 Hash::Merge::specify_behavior(R_OVERRIDE, "R_OVERRIDE");
 
+use constant L_REPLACE => {
+    'SCALAR' => {
+        'SCALAR' => sub { $_[0] },
+        'ARRAY'  => sub { $_[0] },
+        'HASH'   => sub { $_[0] },
+    },
+    'ARRAY' => {
+        'SCALAR' => sub { $_[0] },
+        'ARRAY'  => sub { $_[0] },
+        'HASH'   => sub { $_[0] },
+    },
+    'HASH' => {
+        'SCALAR' => sub { $_[0] },
+        'ARRAY'  => sub { $_[0] },
+        'HASH'   => sub { $_[0] },
+    },
+};
+Hash::Merge::specify_behavior(L_REPLACE, "L_REPLACE");
+
+use constant R_REPLACE => {
+    'SCALAR' => {
+        'SCALAR' => sub { $_[1] },
+        'ARRAY'  => sub { $_[1] },
+        'HASH'   => sub { $_[1] },
+    },
+    'ARRAY' => {
+        'SCALAR' => sub { $_[1] },
+        'ARRAY'  => sub { $_[1] },
+        'HASH'   => sub { $_[1] },
+    },
+    'HASH' => {
+        'SCALAR' => sub { $_[1] },
+        'ARRAY'  => sub { $_[1] },
+        'HASH'   => sub { $_[1] },
+    },
+};
+Hash::Merge::specify_behavior(R_REPLACE, "R_REPLACE");
+
 1;
 
 __END__
@@ -62,7 +103,7 @@ NDTools::HMBehs -- Collection of extra behaviors for HASH::Merge
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =head1 SYNOPSIS
 
@@ -83,7 +124,11 @@ Nothing exports by default.
 
 =item L_OVERRIDE, R_OVERRIDE
 
-Merge hashes, override arrays: left and right precedence
+Merge hashes, override arrays and scalars: left and right precedence
+
+=item L_REPLACE, R_REPLACE
+
+Don't merge, simply replace one thing by another. Left and right precedence.
 
 =back
 
@@ -93,7 +138,7 @@ L<Hash::Merge>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016 Michael Samoglyadov.
+Copyright 2016,2017 Michael Samoglyadov.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
