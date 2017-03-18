@@ -24,13 +24,7 @@ sub arg_opts {
 sub process {
     my ($self, $data, $opts) = @_;
 
-    my @stash;
-    for my $path (@{$opts->{ignore}}) {
-        log_debug { "Preserving '$path'" };
-        my $spath = eval { ps_parse($path) };
-        die_fatal "Failed to parse path ($@)", 4 if ($@);
-        push @stash, spath($data, $spath, deref => 1, paths => 1);
-    }
+    $self->reserve_ignored($data, $opts->{ignore}) if ($opts->{ignore});
 
     for my $path (@{$opts->{path}}) {
         log_info { "Removing path '$path'" };
@@ -44,10 +38,7 @@ sub process {
         die_fatal "Failed to remove path ($@)", 4 if ($@);
     }
 
-    for my $s (@stash) {
-        log_debug { "Restoring '" . ps_serialize($s->[0]) . "'" };
-        ${(spath($data, $s->[0], expand => 1))[0]} = $s->[1];
-    }
+    $self->restore_ignored($data) if ($opts->{ignore});
 }
 
 1; # End of NDTools::NDProc::Module::Remove
