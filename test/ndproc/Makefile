@@ -135,6 +135,9 @@ t_m_Merge_ignore:
 	cp ../alpha.json $@.0000.got
 	$(BIN) $(VERB) --module Merge --source ../beta.json --ignore "{files}{'/etc/hostname'}" $@.0000.got
 	diff $@.0000.exp $@.0000.got
+	cp ../alpha.json $@.0010.got
+	$(BIN) $(VERB) --module Merge --source ../beta.json --style R_REPLACE --ignore "{fqdn}" $@.0010.got
+	diff $@.0010.exp $@.0010.got
 
 t_m_Merge_implicit_source:
 	cp ../alpha.json $@.0000.got

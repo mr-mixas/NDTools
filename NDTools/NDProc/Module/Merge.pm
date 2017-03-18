@@ -13,7 +13,7 @@ use Struct::Path qw(is_implicit_step spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.08" }
+sub VERSION { "0.09" }
 
 sub arg_opts {
     my $self = shift;
@@ -95,12 +95,7 @@ sub map_paths {
 sub process {
     my ($self, $data, $opts, $source) = @_;
 
-    if (exists $opts->{ignore}) {
-        for my $path (@{$opts->{ignore}}) {
-            log_debug { "Ignoring '$path'" };
-            spath($source, ps_parse($path), delete => 1);
-        }
-    }
+    $self->reserve_ignored($data, $opts->{ignore}) if ($opts->{ignore});
 
     map { unshift @{$opts->{merge}}, { path => $_ } } splice @{$opts->{path}}
         if ($opts->{path}); # use merges specified via path as first merge subrules
@@ -130,6 +125,8 @@ sub process {
             ${$dst->[1]} = Hash::Merge::merge(${$dst->[1]}, ${$src->[1]});
         }
     }
+
+    $self->restore_ignored($data) if ($opts->{ignore});
 }
 
 1; # End of NDTools::NDProc::Module::Merge
