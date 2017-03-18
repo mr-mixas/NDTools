@@ -11,6 +11,9 @@ use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Pod::Find qw(pod_where);
 use Pod::Usage;
+use Storable qw(dclone);
+use Struct::Path qw(spath);
+use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "n/a" }
 sub VERSION { "n/a" }
@@ -66,6 +69,26 @@ sub parse_args {
 
 sub process {
     log_fatal { "It works" };
+}
+
+sub reserve_ignored {
+    my ($self, $data, $pats) = @_;
+    for my $path (@{$pats}) {
+        log_debug { "Preserving ignored '$path'" };
+        my $spath = eval { ps_parse($path) };
+        die_fatal "Failed to parse path ($@)", 4 if ($@);
+        push @{$self->{ignored}},
+            map { $_ = dclone($_) } # immutable now
+            spath($data, $spath, deref => 1, paths => 1);
+    }
+}
+
+sub restore_ignored {
+    my ($self, $data) = @_;
+    for my $s (@{$self->{ignored}}) {
+        log_debug { "Restoring ignored '" . ps_serialize($s->[0]) . "'" };
+        ${(spath($data, $s->[0], expand => 1))[0]} = $s->[1];
+    }
 }
 
 sub usage {
