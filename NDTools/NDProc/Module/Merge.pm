@@ -13,7 +13,7 @@ use Struct::Path qw(is_implicit_step spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.09" }
+sub VERSION { "0.10" }
 
 sub arg_opts {
     my $self = shift;
@@ -29,6 +29,7 @@ sub arg_opts {
                 $self->{OPTS}->{strict} = $_[1]
             }
          },
+        'preserve=s@' => \$self->{OPTS}->{preserve},
         'style=s'   => sub {
             if (exists $self->{OPTS}->{merge} and @{$self->{OPTS}->{merge}}) {
                 $self->{OPTS}->{merge}->[-1]->{style} = $_[1];
@@ -95,7 +96,14 @@ sub map_paths {
 sub process {
     my ($self, $data, $opts, $source) = @_;
 
-    $self->reserve_ignored($data, $opts->{ignore}) if ($opts->{ignore});
+    if (exists $opts->{ignore}) {
+        for my $path (@{$opts->{ignore}}) {
+            log_debug { "Removing (ignore) from src '$path'" };
+            spath($source, ps_parse($path), delete => 1);
+        }
+    }
+
+    $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
 
     map { unshift @{$opts->{merge}}, { path => $_ } } splice @{$opts->{path}}
         if ($opts->{path}); # use merges specified via path as first merge subrules
@@ -126,7 +134,7 @@ sub process {
         }
     }
 
-    $self->restore_ignored($data) if ($opts->{ignore});
+    $self->restore_preserved($data) if ($opts->{preserve});
 }
 
 1; # End of NDTools::NDProc::Module::Merge
@@ -147,30 +155,32 @@ Blame calculaton toggle. Enabled by default.
 
 =item B<--ignore> E<lt>pathE<gt>
 
-Skip specified structure parts. May be used several times.
+Ignore part from source structure. Rule-wide option. May be used several times.
 
 =item B<--merge> E<lt>pathE<gt>
 
-Path in the structure to merge. Whole structure will be merged if
-omitted or empty. Paths '{}' or '[]' means all items, and should be
-used as first merge target if whole struct must be merged and then
-some parts merged with other options. Full syntax description available
-at metacpan <https://metacpan.org/pod/Struct::Path::PerlStyle#PATH-SYNTAX>.
-May be specified several times.
+Path in the source structure to merge. Whole structure will be merged if
+omitted or empty. May be specified several times.
+
+=item B<--preserve> E<lt>pathE<gt>
+
+Preserve specified parts from original structure. Rule-wide option. May be used
+several times.
 
 =item B<--source> E<lt>uriE<gt>
 
-Source to merge with. Processing structure will be used if option specified,
-but value not defined or empty. May be used several times.
+Source to merge with. Original processing structure will be used if option
+specified, but value not defined or empty. Rule-wide option. May be used several
+times.
 
 =item B<--[no]strict>
 
-Fail if specified path doesn't exists in prerequisite. Positional - define
+Fail if specified path doesn't exists in source structure. Positional opt - define
 rule default if used before --merge, per-merge opt otherwise. Enabled by default.
 
 =item B<--style> E<lt>styleE<gt>
 
-Merge style. Positional opt - define rule default if used before --merge,
+Merge style. Positional option - define rule default if used before --merge,
 per-merge opt otherwise.
 
 =over 8

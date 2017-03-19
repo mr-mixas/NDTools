@@ -71,7 +71,15 @@ sub process {
     log_fatal { "It works" };
 }
 
-sub reserve_ignored {
+sub restore_preserved {
+    my ($self, $data) = @_;
+    for my $s (@{$self->{ignored}}) {
+        log_debug { "Restoring ignored '" . ps_serialize($s->[0]) . "'" };
+        ${(spath($data, $s->[0], expand => 1))[0]} = $s->[1];
+    }
+}
+
+sub stash_preserved {
     my ($self, $data, $pats) = @_;
     for my $path (@{$pats}) {
         log_debug { "Preserving ignored '$path'" };
@@ -80,14 +88,6 @@ sub reserve_ignored {
         push @{$self->{ignored}},
             map { $_ = dclone($_) } # immutable now
             spath($data, $spath, deref => 1, paths => 1);
-    }
-}
-
-sub restore_ignored {
-    my ($self, $data) = @_;
-    for my $s (@{$self->{ignored}}) {
-        log_debug { "Restoring ignored '" . ps_serialize($s->[0]) . "'" };
-        ${(spath($data, $s->[0], expand => 1))[0]} = $s->[1];
     }
 }
 

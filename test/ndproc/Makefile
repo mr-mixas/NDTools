@@ -34,14 +34,15 @@ test: \
 	t_m_Merge_merge_path_not_exists_default \
 	t_m_Merge_merge_path_not_exists_nostrict \
 	t_m_Merge_merge_path_not_exists_strict \
+	t_m_Merge_preserve \
 	t_m_Merge_merge_style \
 	t_m_Merge_multiargs \
 	t_m_Remove \
 	t_m_Remove_dump_rules \
 	t_m_Remove_full_doc \
-	t_m_Remove_ignore \
 	t_m_Remove_help \
 	t_m_Remove_multiargs \
+	t_m_Remove_preserve \
 	t_m_Remove__strict \
 	t_m_Remove_version \
 	t_m_Remove__dump_blame \
@@ -135,9 +136,6 @@ t_m_Merge_ignore:
 	cp ../alpha.json $@.0000.got
 	$(BIN) $(VERB) --module Merge --source ../beta.json --ignore "{files}{'/etc/hostname'}" $@.0000.got
 	diff $@.0000.exp $@.0000.got
-	cp ../alpha.json $@.0010.got
-	$(BIN) $(VERB) --module Merge --source ../beta.json --style R_REPLACE --ignore "{fqdn}" $@.0010.got
-	diff $@.0010.exp $@.0010.got
 
 t_m_Merge_implicit_source:
 	cp ../alpha.json $@.0000.got
@@ -197,6 +195,11 @@ t_m_Merge_merge_path_not_exists_nostrict:
 	$(BIN) $(VERB) --module Merge --strict --source ../beta.json --merge '{not_exists}' --nostrict --merge '{mtime}' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
+t_m_Merge_preserve:
+	cp ../alpha.json $@.0000.got
+	$(BIN) $(VERB) --module Merge --source ../beta.json --style R_REPLACE --preserve "{fqdn}" $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
 t_m_Merge_merge_style:
 	cp ../alpha.json $@.0000.got
 	$(BIN) $(VERB) --module Merge --source ../beta.json $@.0000.got \
@@ -218,11 +221,6 @@ t_m_Remove_full_doc:
 	$(BIN) $(VERB) --module Remove --strict --path '' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
-t_m_Remove_ignore:
-	cp ../_data/menu.a.json $@.0000.got
-	$(BIN) $(VERB) --module Remove --strict --path '[]' --ignore '[]{}[]{id}' $@.0000.got
-	diff $@.0000.exp $@.0000.got
-
 t_m_Remove_help:
 	$(BIN) --module Remove --help -h > $@.0000.got 2>&1
 	diff $@.0000.exp $@.0000.got
@@ -233,6 +231,11 @@ t_m_Remove_multiargs:
 	$(BIN) $(VERB) --module Remove --path '[1]{Edit}[3..5]' $@.0000.got $@.0010.got
 	diff $@.0000.exp $@.0000.got
 	diff $@.0010.got $@.0010.got
+
+t_m_Remove_preserve:
+	cp ../_data/menu.a.json $@.0000.got
+	$(BIN) $(VERB) --module Remove --strict --path '[]' --preserve '[]{}[]{id}' $@.0000.got
+	diff $@.0000.exp $@.0000.got
 
 t_m_Remove__strict:
 	cp ../_data/deep-down-lorem.a.json $@.0000.got

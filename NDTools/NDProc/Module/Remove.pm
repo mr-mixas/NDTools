@@ -10,13 +10,13 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Remove specified parts from structure" }
-sub VERSION { "0.05" }
+sub VERSION { "0.06" }
 
 sub arg_opts {
     my $self = shift;
     return (
         $self->SUPER::arg_opts(),
-        'ignore=s@' => \$self->{OPTS}->{ignore},
+        'preserve=s@' => \$self->{OPTS}->{preserve},
         'strict' => \$self->{OPTS}->{strict},
     )
 }
@@ -24,7 +24,7 @@ sub arg_opts {
 sub process {
     my ($self, $data, $opts) = @_;
 
-    $self->reserve_ignored($data, $opts->{ignore}) if ($opts->{ignore});
+    $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
 
     for my $path (@{$opts->{path}}) {
         log_info { "Removing path '$path'" };
@@ -38,7 +38,7 @@ sub process {
         die_fatal "Failed to remove path ($@)", 4 if ($@);
     }
 
-    $self->restore_ignored($data) if ($opts->{ignore});
+    $self->restore_preserved($data) if ($opts->{preserve});
 }
 
 1; # End of NDTools::NDProc::Module::Remove
@@ -57,13 +57,13 @@ Remove - remove specified parts from structure
 
 Blame calculaton toggle. Enabled by default.
 
-=item B<--ignore> E<lt>pathE<gt>
-
-Preserve specified substructure. May be used several times.
-
 =item B<--path> E<lt>pathE<gt>
 
 Path in the structure to remove. May be used several times.
+
+=item B<--preserve> E<lt>pathE<gt>
+
+Preserve specified structure parts. May be used several times.
 
 =item B<--strict>
 
