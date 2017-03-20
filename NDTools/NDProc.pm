@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.13' }
+sub VERSION { '0.14' }
 
 sub arg_opts {
     my $self = shift;
@@ -37,7 +37,9 @@ sub arg_opts {
 
 sub configure {
     my $self = shift;
-    if ($self->{OPTS}->{module} or ref $self->{rules} eq 'ARRAY' and @{$self->{rules}}) {
+
+    $self->{rules} = [] unless (defined $self->{rules});
+    if ($self->{OPTS}->{module} or @{$self->{rules}}) {
         log_info { "Explicit rules used: builtin will be ignored" };
         $self->{OPTS}->{'builtin-rules'} = undef;
     }
@@ -191,7 +193,7 @@ sub process_args {
             next;
         }
 
-        $self->{resolved_rules} = $self->resolve_rules($self->{rules}, $arg);
+        $self->{resolved_rules} = $self->resolve_rules(dclone($self->{rules}), $arg);
         my @blame = $self->process_rules(\$data, $self->{resolved_rules});
 
         if ($self->{OPTS}->{'embed-blame'}) {
@@ -251,12 +253,12 @@ sub resolve_rules {
     for my $rule (@{$rules}) {
         if (exists $rule->{source} and ref $rule->{source} eq 'ARRAY') {
             for my $src (@{$rule->{source}}) {
-                my $new = { %{$rule} };
+                my $new = dclone($rule);
                 $new->{source} = $src;
                 push @{$result}, $new;
             }
         } else {
-            push @{$result}, { %{$rule} };
+            push @{$result}, $rule;
         }
     }
 
