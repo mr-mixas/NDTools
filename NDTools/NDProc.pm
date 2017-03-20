@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.12' }
+sub VERSION { '0.13' }
 
 sub arg_opts {
     my $self = shift;
@@ -261,6 +261,10 @@ sub resolve_rules {
     }
 
     for my $rule (@{$result}) {
+        # single path may be specified as string, convert it to list
+        $rule->{path}->[0] = delete $rule->{path}
+            if (exists $rule->{path} and not ref $rule->{path});
+
         next unless (exists $rule->{source});
         unless (defined $rule->{source} and $rule->{source} ne '') {
             # use processing doc as source

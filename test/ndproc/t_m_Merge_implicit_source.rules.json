@@ -9,12 +9,8 @@
    },
    {
       "modname" : "Merge",
-      "path" : [
-         "{files}"
-      ],
-      "source" : [
-         "../beta.json"
-      ],
+      "path" : "{files}",
+      "source" : "../beta.json",
       "strict" : 1,
       "style" : "R_OVERRIDE"
    },
