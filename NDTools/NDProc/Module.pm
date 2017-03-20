@@ -73,8 +73,8 @@ sub process {
 
 sub restore_preserved {
     my ($self, $data) = @_;
-    for my $s (@{$self->{ignored}}) {
-        log_debug { "Restoring ignored '" . ps_serialize($s->[0]) . "'" };
+    for my $s (@{$self->{_preserved}}) {
+        log_debug { "Restoring preserved '" . ps_serialize($s->[0]) . "'" };
         ${(spath($data, $s->[0], expand => 1))[0]} = $s->[1];
     }
 }
@@ -82,10 +82,10 @@ sub restore_preserved {
 sub stash_preserved {
     my ($self, $data, $pats) = @_;
     for my $path (@{$pats}) {
-        log_debug { "Preserving ignored '$path'" };
+        log_debug { "Preserving '$path'" };
         my $spath = eval { ps_parse($path) };
         die_fatal "Failed to parse path ($@)", 4 if ($@);
-        push @{$self->{ignored}},
+        push @{$self->{_preserved}},
             map { $_ = dclone($_) } # immutable now
             spath($data, $spath, deref => 1, paths => 1);
     }
