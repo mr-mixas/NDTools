@@ -105,10 +105,10 @@ sub exec {
         die_fatal "Unknown module '$self->{OPTS}->{module}' specified", 1
             unless (exists $self->{MODS}->{$self->{OPTS}->{module}});
         my $mod = $self->{MODS}->{$self->{OPTS}->{module}}->new();
-        push @{$self->{rules}}, {
-            %{$mod->parse_args()->get_opts()},
-            modname => $self->{OPTS}->{module},
-        };
+        for my $rule ($mod->parse_args()->get_opts()) {
+            $rule->{modname} = $self->{OPTS}->{module},
+            push @{$self->{rules}}, $rule;
+        }
     }
 
     # parse the rest of args (unrecognized by module (if was specified by args))
