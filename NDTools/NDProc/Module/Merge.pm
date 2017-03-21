@@ -20,19 +20,19 @@ sub arg_opts {
     return (
         $self->SUPER::arg_opts(),
         'ignore=s@' => \$self->{OPTS}->{ignore},
-        'merge=s'   => sub { push @{$self->{OPTS}->{merge}}, {path => $_[1]} },
+        'merge|path=s' => sub { push @{$self->{OPTS}->{path}}, {merge => $_[1]} },
         'source=s@' => \$self->{OPTS}->{source}, # will be resolved if multiple times used
         'strict!'   => sub {
-            if (exists $self->{OPTS}->{merge} and @{$self->{OPTS}->{merge}}) {
-                $self->{OPTS}->{merge}->[-1]->{strict} = $_[1];
+            if (exists $self->{OPTS}->{path} and @{$self->{OPTS}->{path}}) {
+                $self->{OPTS}->{path}->[-1]->{strict} = $_[1];
             } else {
                 $self->{OPTS}->{strict} = $_[1]
             }
          },
         'preserve=s@' => \$self->{OPTS}->{preserve},
         'style=s'   => sub {
-            if (exists $self->{OPTS}->{merge} and @{$self->{OPTS}->{merge}}) {
-                $self->{OPTS}->{merge}->[-1]->{style} = $_[1];
+            if (exists $self->{OPTS}->{path} and @{$self->{OPTS}->{path}}) {
+                $self->{OPTS}->{path}->[-1]->{style} = $_[1];
             } else {
                 $self->{OPTS}->{style} = $_[1];
             }
@@ -105,21 +105,21 @@ sub process {
 
     $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
 
-    map { unshift @{$opts->{merge}}, { path => $_ } } splice @{$opts->{path}}
-        if ($opts->{path}); # use merges specified via path as first merge subrules
     # merge full source if no paths defined
-    push @{$opts->{merge}}, {} unless ($opts->{merge} and @{$opts->{merge}});
+    push @{$opts->{path}}, {} unless ($opts->{path} and @{$opts->{path}});
+    # convert to canonical structure
+    map { $_ = { merge => $_ } unless (ref $_) } @{$opts->{path}};
 
-    for my $m (@{$opts->{merge}}) {
-        $m->{path} = '' unless (defined $m->{path}); # merge whole source if path omitted
-        my $spath = ps_parse($m->{path});
+    for my $m (@{$opts->{path}}) {
+        $m->{merge} = '' unless (defined $m->{merge}); # merge whole source if path omitted
+        my $spath = ps_parse($m->{merge});
 
-        log_debug { "Resolving paths '$m->{path}'" };
+        log_debug { "Resolving paths '$m->{merge}'" };
         my @srcs = spath($source, $spath, paths => 1);
         unless (@srcs) {
-            die_fatal "No such path ($m->{path}) in $opts->{source}", 4
+            die_fatal "No such path ($m->{merge}) in $opts->{source}", 4
                 if(exists $m->{strict} ? $m->{strict} : $opts->{strict});
-            log_info { "Ignoring path $m->{path} (doesn't exists in $opts->{source})" };
+            log_info { "Ignoring path $m->{merge} (doesn't exists in $opts->{source})" };
             next;
         }
         my @dsts = map_paths($data, \@srcs, $spath);
