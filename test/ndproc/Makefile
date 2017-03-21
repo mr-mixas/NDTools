@@ -9,6 +9,7 @@ include ../_common.mk
 
 test: \
 	t_common \
+	t_disable_module \
 	t_list_modules \
 	t_rules \
 	t_rules_builtin \
@@ -60,6 +61,17 @@ t_rules_builtin_format:
 t_list_modules:
 	$(BIN) $(VERB) --list-modules -l > $@.0000.got
 	diff $@.0000.exp $@.0000.got
+
+t_disable_module:
+	cp ../alpha.json $@.0000.got
+	$(BIN) $(VERB) --rules $@.rules.json --disable-module Insert $@.0000.got
+	diff $@.0000.exp $@.0000.got
+	cp ../alpha.json $@.0010.got
+	$(BIN) $(VERB) --rules $@.rules.json --disable-module Remove $@.0010.got
+	diff $@.0010.exp $@.0010.got
+	cp ../alpha.json $@.0020.got
+	$(BIN) $(VERB) --rules $@.rules.json --disable-module Insert --disable-module Remove $@.0020.got
+	diff ../alpha.json $@.0020.got
 
 t_m__UNKNOWN_via_args:
 	$(BIN) $(VERB) --module NoTeXiStEd; $(VRFY_EXIT_1)

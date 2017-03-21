@@ -32,6 +32,10 @@ will be used if omitted or empty.
 
 Use builtin (in processed object) rules.
 
+=item B<--disable-module> E<lt>modnameE<gt>
+
+Skip (don't process) rules for specified module. May be used several times.
+
 =item B<--dump-blame> E<lt>fileE<gt>
 
 Dump blame to file.

@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.14' }
+sub VERSION { '0.15' }
 
 sub arg_opts {
     my $self = shift;
@@ -22,6 +22,7 @@ sub arg_opts {
         $self->SUPER::arg_opts(),
         'builtin-format=s' => \$self->{OPTS}->{'builtin-format'},
         'builtin-rules=s' => \$self->{OPTS}->{'builtin-rules'},
+        'disable-module=s@' => \$self->{OPTS}->{'disable-module'},
         'dump-blame=s' => \$self->{OPTS}->{'dump-blame'},
         'dump-rules=s' => \$self->{OPTS}->{'dump-rules'},
         'embed-blame=s' => \$self->{OPTS}->{'embed-blame'},
@@ -43,6 +44,9 @@ sub configure {
         log_info { "Explicit rules used: builtin will be ignored" };
         $self->{OPTS}->{'builtin-rules'} = undef;
     }
+
+    $self->{OPTS}->{'disable-module'} =
+        { map { $_ => 1 } @{$self->{OPTS}->{'disable-module'}} };
 }
 
 sub defaults {
@@ -217,6 +221,10 @@ sub process_rules {
     my @blame;
 
     for my $rule (@{$rules}) {
+        if (exists $self->{OPTS}->{'disable-module'}->{$rule->{modname}}) {
+            log_debug { "Skip rule #$rcnt (module $rule->{modname} is disabled by args)" };
+            next;
+        }
         if ($rule->{disabled}) {
             log_debug { "Rule #$rcnt ($rule->{modname}) is disabled, skip it" };
             next;
@@ -238,7 +246,7 @@ sub process_rules {
         map { $changes->{$_} = $rule->{$_} if (defined $rule->{$_}) }
             qw(blame comment source); # preserve useful info
         push @blame, dclone($changes);
-
+    } continue {
         $rcnt++;
     }
 

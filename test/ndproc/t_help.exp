@@ -9,6 +9,10 @@ Options:
     --builtin-rules <path>
         Use builtin (in processed object) rules.
 
+    --disable-module <modname>
+        Skip (don't process) rules for specified module. May be used several
+        times.
+
     --dump-blame <file>
         Dump blame to file.
 
