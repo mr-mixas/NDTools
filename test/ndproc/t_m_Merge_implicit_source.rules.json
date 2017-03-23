@@ -19,9 +19,7 @@
       "path" : [
          "{files}"
       ],
-      "source" : [
-         "../gamma.json"
-      ],
+      "source" : "../gamma.json",
       "strict" : 1,
       "style" : "R_OVERRIDE"
    },

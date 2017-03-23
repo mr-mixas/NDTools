@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.15' }
+sub VERSION { '0.16' }
 
 sub arg_opts {
     my $self = shift;
@@ -197,7 +197,7 @@ sub process_args {
             next;
         }
 
-        $self->{resolved_rules} = $self->resolve_rules(dclone($self->{rules}), $arg);
+        $self->{resolved_rules} = $self->resolve_rules($self->{rules}, $arg);
         my @blame = $self->process_rules(\$data, $self->{resolved_rules});
 
         if ($self->{OPTS}->{'embed-blame'}) {
@@ -255,20 +255,9 @@ sub process_rules {
 
 sub resolve_rules {
     my ($self, $rules, $opt_src) = @_;
-    my $result;
+    my $result = dclone($rules);
 
     log_debug { "Resolving rules" };
-    for my $rule (@{$rules}) {
-        if (exists $rule->{source} and ref $rule->{source} eq 'ARRAY') {
-            for my $src (@{$rule->{source}}) {
-                my $new = dclone($rule);
-                $new->{source} = $src;
-                push @{$result}, $new;
-            }
-        } else {
-            push @{$result}, $rule;
-        }
-    }
 
     for my $rule (@{$result}) {
         # single path may be specified as string, convert it to list
