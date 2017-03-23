@@ -9,35 +9,55 @@ use Hash::Merge qw();
 use NDTools::HMBehs qw();
 use List::MoreUtils qw(before);
 use Log::Log4Cli;
+use Storable qw(dclone);
 use Struct::Path qw(is_implicit_step spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.10" }
+sub VERSION { "0.11" }
 
 sub arg_opts {
     my $self = shift;
     return (
         $self->SUPER::arg_opts(),
         'ignore=s@' => \$self->{OPTS}->{ignore},
-        'merge|path=s' => sub { push @{$self->{OPTS}->{path}}, {merge => $_[1]} },
-        'source=s@' => \$self->{OPTS}->{source}, # will be resolved if multiple times used
-        'strict!'   => sub {
-            if (exists $self->{OPTS}->{path} and @{$self->{OPTS}->{path}}) {
-                $self->{OPTS}->{path}->[-1]->{strict} = $_[1];
+        'merge|path=s' => sub {
+            if ($self->{rules} and @{$self->{rules}}) {
+                push @{$self->{rules}->[-1]->{path}}, { merge => $_[1] };
             } else {
-                $self->{OPTS}->{strict} = $_[1]
-            }
-         },
-        'preserve=s@' => \$self->{OPTS}->{preserve},
-        'style=s'   => sub {
-            if (exists $self->{OPTS}->{path} and @{$self->{OPTS}->{path}}) {
-                $self->{OPTS}->{path}->[-1]->{style} = $_[1];
-            } else {
-                $self->{OPTS}->{style} = $_[1];
+                push @{$self->{OPTS}->{path}}, { merge => $_[1] };
             }
         },
+        'source=s' => sub {
+            push @{$self->{rules}}, { source => $_[1] };
+         },
+        'strict!' => sub {
+            $self->set_path_related_opt($_[0], $_[1]),
+         },
+        'preserve=s@' => \$self->{OPTS}->{preserve},
+        'style=s' => sub {
+            $self->set_path_related_opt($_[0], $_[1])
+         },
     )
+}
+
+sub configure {
+    my $self = shift;
+    $self->{rules} = [] unless ($self->{rules});
+
+    # resolve rules
+    for my $rule (@{$self->{rules}}) {
+
+        # merge with global wide opts
+        my $globals = dclone($self->{OPTS});
+        unshift @{$rule->{path}}, @{delete $globals->{path}}
+            if ($globals->{path} and @{$globals->{path}});
+        $rule = { %{$globals}, %{$rule} };
+
+        # path as simple string if no no specific opts defined
+        map { $_ = $_->{merge} if (exists $_->{merge} and keys %{$_} == 1) }
+            @{$rule->{path}};
+    }
 }
 
 sub defaults {
@@ -47,6 +67,11 @@ sub defaults {
         'strict' => 1,
         'style' => 'R_OVERRIDE',
     };
+}
+
+sub get_opts {
+    my $self = shift;
+    return @{$self->{rules}};
 }
 
 sub map_paths {
@@ -135,6 +160,20 @@ sub process {
     }
 
     $self->restore_preserved($data) if ($opts->{preserve});
+}
+
+sub set_path_related_opt {
+    my ($self, $name, $val) = @_;
+
+    if ($self->{rules} and @{$self->{rules}}) {
+        if (exists $self->{rules}->[-1]->{path} and @{$self->{rules}->[-1]->{path}}) {
+            $self->{rules}->[-1]->{path}->[-1]->{$name} = $val; # per path
+        } else {
+            $self->{rules}->[-1]->{$name} = $val; # per rule
+        }
+    } else {
+        $self->{OPTS}->{$name} = $val; # global (whole ruleset wide)
+    }
 }
 
 1; # End of NDTools::NDProc::Module::Merge

@@ -144,6 +144,18 @@ t_m_Merge:
 	diff $@.0000.exp $@.0000.got
 	diff $@.0010.exp $@.0010.got # blame
 
+t_m_Merge_dump_rules:
+	$(BIN) $(VERB) --module Merge --dump-rules $@.0000.got
+	diff $@.0000.exp $@.0000.got
+	$(BIN) $(VERB) --module Merge --path {common} --dump-rules $@.0010.got \
+		--source ../beta.json --nostrict \
+			--path {fqdn} --style L_OVERRIDE \
+		--source ../gamma.json --style L_REPLACE \
+			--path {mtime} --style "R_REPLACE" \
+			--path {another} \
+			--path {one_more} --nostrict
+	diff $@.0010.exp $@.0010.got
+
 t_m_Merge_ignore:
 	cp ../alpha.json $@.0000.got
 	$(BIN) $(VERB) --module Merge --source ../beta.json --ignore "{files}{'/etc/hostname'}" $@.0000.got
