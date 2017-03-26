@@ -66,7 +66,7 @@ sub dump_arg {
 sub dump_blame {
     my ($self, $blame) = @_;
     return unless (defined $self->{OPTS}->{'dump-blame'});
-    log_debug { "Dumping blame to '$self->{OPTS}->{'dump-blame'}'" };
+    log_debug { "Dumping blame to $self->{OPTS}->{'dump-blame'}" };
     s_dump($self->{OPTS}->{'dump-blame'}, undef, undef, $blame);
 }
 
@@ -76,6 +76,7 @@ sub dump_rules {
         # remove undefs - defaults will be used anyway
         map { defined $rule->{$_} || delete $rule->{$_} } keys %{$rule};
     }
+    log_debug { "Dumping rules to $self->{OPTS}->{'dump-rules'}" };
     s_dump($self->{OPTS}->{'dump-rules'}, undef, undef, $self->{rules});
 }
 
@@ -102,7 +103,7 @@ sub exec {
     }
 
     if (defined $self->{OPTS}->{module}) {
-        die_fatal "Unknown module '$self->{OPTS}->{module}' specified", 1
+        die_fatal "Unknown module specified ($self->{OPTS}->{module})", 1
             unless (exists $self->{MODS}->{$self->{OPTS}->{module}});
         $self->init_module($self->{OPTS}->{module});
         my $mod = $self->{MODS}->{$self->{OPTS}->{module}}->new();
@@ -241,7 +242,7 @@ sub process_rules {
             log_debug { "Rule #$rcnt ($rule->{modname}) is disabled, skip it" };
             next;
         }
-        die_fatal "Unknown module '$rule->{modname}' specified (rule #$rcnt)", 1
+        die_fatal "Unknown module specified ($rule->{modname}; rule #$rcnt)", 1
             unless (exists $self->{MODS}->{$rule->{modname}});
 
         log_debug { "Processing rule #$rcnt ($rule->{modname})" };
