@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.16' }
+sub VERSION { '0.17' }
 
 sub arg_opts {
     my $self = shift;
@@ -95,7 +95,7 @@ sub embed {
 sub exec {
     my $self = shift;
 
-    $self->init_modules(@{$self->{OPTS}->{modpath}});
+    $self->index_modules(@{$self->{OPTS}->{modpath}});
     if ($self->{OPTS}->{'list-modules'}) {
         map { printf "%-10s %-8s %s\n", @{$_} } $self->list_modules;
         die_info undef, 0;
@@ -104,6 +104,7 @@ sub exec {
     if (defined $self->{OPTS}->{module}) {
         die_fatal "Unknown module '$self->{OPTS}->{module}' specified", 1
             unless (exists $self->{MODS}->{$self->{OPTS}->{module}});
+        $self->init_module($self->{OPTS}->{module});
         my $mod = $self->{MODS}->{$self->{OPTS}->{module}}->new();
         for my $rule ($mod->parse_args()->get_opts()) {
             $rule->{modname} = $self->{OPTS}->{module},
@@ -135,26 +136,37 @@ sub exec {
     die_info "All done", 0;
 }
 
-sub init_modules {
+sub index_modules {
     my $self = shift;
+
+    my $required = { map { $_->{modname} => 1 } @{$self->{rules}} };
+    $required->{$self->{OPTS}->{module}} = 1 if ($self->{OPTS}->{module});
+
     for my $path (@_) {
         log_trace { "Indexing modules in $path" };
         for my $m (findsubmod $path) {
             $self->{MODS}->{(split('::', $m))[-1]} = $m;
         }
     }
-    for my $m (sort keys %{$self->{MODS}}) {
-        log_trace { "Initializing module $m ($self->{MODS}->{$m})" };
-        eval "require $self->{MODS}->{$m}";
-        die_fatal "Failed to initialize module '$m' ($@)", 1 if ($@);
-    }
+
     return $self;
+}
+
+sub init_module {
+    my ($self, $mod) = @_;
+    return if ($self->{_initialized_mods}->{$mod});
+    log_trace { "Inititializing module $mod ($self->{MODS}->{$mod})" };
+    eval "require $self->{MODS}->{$mod}";
+    die_fatal "Failed to initialize module '$mod' ($@)", 1 if ($@);
+    $self->{_initialized_mods}->{$mod} = 1;
 }
 
 sub list_modules {
     my $self = shift;
-    return map { [ $_, $self->{MODS}->{$_}->VERSION, $self->{MODS}->{$_}->MODINFO ] }
-        sort keys %{$self->{MODS}};
+    return map {
+        $self->init_module($_);
+        [ $_, $self->{MODS}->{$_}->VERSION, $self->{MODS}->{$_}->MODINFO ]
+    } sort keys %{$self->{MODS}};
 }
 
 sub load_arg {
@@ -233,6 +245,8 @@ sub process_rules {
             unless (exists $self->{MODS}->{$rule->{modname}});
 
         log_debug { "Processing rule #$rcnt ($rule->{modname})" };
+        $self->init_module($rule->{modname});
+
         my $result = ref ${$data} ? dclone(${$data}) : ${$data};
         my $source = exists $rule->{source} ? thaw($self->{sources}->{$rule->{source}}) : undef;
         $self->{MODS}->{$rule->{modname}}->new->process($data, $rule, $source);
