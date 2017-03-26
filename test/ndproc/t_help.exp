@@ -3,8 +3,8 @@ Usage:
 
 Options:
     --builtin-format <""|JSON>
-        Defines format for builtin things (--builtin-rules, --embed-rules).
-        Raw structure will be used if omitted or empty.
+        Format for builtin things (--builtin-rules, --embed-rules). Raw
+        structure will be used if omitted or empty.
 
     --builtin-rules <path>
         Use builtin (in processed object) rules.
@@ -32,7 +32,7 @@ Options:
         List available modules.
 
     --module|-m <name>
-        Process using specified module.
+        Process structure using specified module.
 
     --rules <file>
         Load rules from specified file. May be used several times.
@@ -46,5 +46,9 @@ Options:
 Examples:
     Simply merge three files using module 'Merge':
 
-        ndproc -m Merge a.json --source b.json --source c.json
+        ndproc --module Merge a.json --source b.json --source c.json
+
+    Print usage for 'Merge' module:
+
+        ndproc --module Merge --help
 

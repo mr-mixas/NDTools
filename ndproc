@@ -25,7 +25,7 @@ Process nested data structures according provided rules
 
 =item B<--builtin-format> <""|JSON>
 
-Defines format for builtin things (--builtin-rules, --embed-rules). Raw structure
+Format for builtin things (--builtin-rules, --embed-rules). Raw structure
 will be used if omitted or empty.
 
 =item B<--builtin-rules> E<lt>pathE<gt>
@@ -62,7 +62,7 @@ List available modules.
 
 =item B<--module|-m> E<lt>nameE<gt>
 
-Process using specified module.
+Process structure using specified module.
 
 =item B<--rules> E<lt>fileE<gt>
 
@@ -82,7 +82,11 @@ Print version and exit.
 
 Simply merge three files using module 'Merge':
 
-    ndproc -m Merge a.json --source b.json --source c.json
+    ndproc --module Merge a.json --source b.json --source c.json
+
+Print usage for 'Merge' module:
+
+    ndproc --module Merge --help
 
 =head1 EXIT STATUS
 
