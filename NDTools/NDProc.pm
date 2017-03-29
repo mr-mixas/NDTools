@@ -39,6 +39,8 @@ sub arg_opts {
 sub configure {
     my $self = shift;
 
+    $self->index_modules();
+
     $self->{rules} = [] unless (defined $self->{rules});
     if ($self->{OPTS}->{module} or @{$self->{rules}}) {
         log_info { "Explicit rules used: builtin will be ignored" };
@@ -96,7 +98,6 @@ sub embed {
 sub exec {
     my $self = shift;
 
-    $self->index_modules(@{$self->{OPTS}->{modpath}});
     if ($self->{OPTS}->{'list-modules'}) {
         map { printf "%-10s %-8s %s\n", @{$_} } $self->list_modules;
         die_info undef, 0;
@@ -143,7 +144,7 @@ sub index_modules {
     my $required = { map { $_->{modname} => 1 } @{$self->{rules}} };
     $required->{$self->{OPTS}->{module}} = 1 if ($self->{OPTS}->{module});
 
-    for my $path (@_) {
+    for my $path (@{$self->{OPTS}->{modpath}}) {
         log_trace { "Indexing modules in $path" };
         for my $m (findsubmod $path) {
             $self->{MODS}->{(split('::', $m))[-1]} = $m;
@@ -210,8 +211,7 @@ sub process_args {
             next;
         }
 
-        $self->{resolved_rules} = $self->resolve_rules($self->{rules}, $arg);
-        my @blame = $self->process_rules(\$data, $self->{resolved_rules});
+        my @blame = $self->resolve_rules($arg)->process_rules(\$data);
 
         if ($self->{OPTS}->{'embed-blame'}) {
             log_debug { "Embedding blame to '$self->{OPTS}->{'embed-blame'}'" };
@@ -229,11 +229,11 @@ sub process_args {
 }
 
 sub process_rules {
-    my ($self, $data, $rules) = @_;
+    my ($self, $data) = @_;
     my $rcnt = 0; # rules counter
     my @blame;
 
-    for my $rule (@{$rules}) {
+    for my $rule (@{$self->{resolved_rules}}) {
         if (exists $self->{OPTS}->{'disable-module'}->{$rule->{modname}}) {
             log_debug { "Skip rule #$rcnt (module $rule->{modname} is disabled by args)" };
             next;
@@ -269,12 +269,12 @@ sub process_rules {
 }
 
 sub resolve_rules {
-    my ($self, $rules, $opt_src) = @_;
-    my $result = dclone($rules);
+    my ($self, $opt_src) = @_;
 
     log_debug { "Resolving rules" };
+    $self->{resolved_rules} = dclone($self->{rules});
 
-    for my $rule (@{$result}) {
+    for my $rule (@{$self->{resolved_rules}}) {
         # single path may be specified as string, convert it to list
         $rule->{path}->[0] = delete $rule->{path}
             if (exists $rule->{path} and not ref $rule->{path});
@@ -289,7 +289,7 @@ sub resolve_rules {
             freeze($self->load_source($rule->{source}));
     }
 
-    return $result;
+    return $self;
 }
 
 1; # End of NDTools::NDProc
