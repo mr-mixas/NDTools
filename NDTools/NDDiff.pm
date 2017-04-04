@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.13" }
+sub VERSION { "0.14" }
 
 sub arg_opts {
     my $self = shift;
@@ -88,6 +88,29 @@ sub diff {
     return $self->{diff};
 }
 
+sub _lcsidx2ranges {
+    my ($in_a, $in_b) = @_;
+    my @out_a = [ shift @{$in_a} ];
+    my @out_b = [ shift @{$in_b} ];
+
+    while (@{$in_a} or @{$in_b}) {
+        my $i_a = shift @{$in_a};
+        my $i_b = shift @{$in_b};
+        if (
+            ($i_a - $out_a[-1][-1] < 2) and
+            ($i_b - $out_b[-1][-1] < 2)
+        ) { # update ranges - both sequences are continous
+            $out_a[-1][1] = $i_a;
+            $out_b[-1][1] = $i_b;
+        } else { # new ranges
+            push @out_a, [ $i_a ];
+            push @out_b, [ $i_b ];
+        }
+    }
+
+    return \@out_a, \@out_b;
+}
+
 sub diff_texts {
     my $self = shift;
     log_debug { "Calculating diffs for text values" };
@@ -98,46 +121,28 @@ sub diff_texts {
                 log_error { "Incomplete diff passed (old value doesn't exists)" };
                 return undef;
             }
-            my (@old, @new);
-            @old = split(/$\//, ${$r}->{O}) if (${$r}->{O} and not ref ${$r}->{O});
-            @new = split(/$\//, ${$r}->{N}) if (${$r}->{N} and not ref ${$r}->{N});
+
+            my @old = split(/$\//, ${$r}->{O}) if (${$r}->{O} and not ref ${$r}->{O});
+            my @new = split(/$\//, ${$r}->{N}) if (${$r}->{N} and not ref ${$r}->{N});
+
             if (@old > 1 or @new > 1) {
-                push @old, "FIXME!"; # traverse_sequences don't see sequence for trailing changed lines
-                push @new, "FIXME!"; # so, put unchanged thing to the end and remove it later
-
-                Algorithm::Diff::traverse_sequences(
-                    \@old, \@new,
-                    {
-                        DISCARD_A => sub {
-                            if (exists ${$r}->{T} and exists ${$r}->{T}->[-1]->{R}) {
-                                push @{${$r}->{T}->[-1]->{R}}, $old[$_[0]];
-                            } else {
-                                push @{${$r}->{T}}, { R => [ $old[$_[0]] ] };
-                            }
-                        },
-                        DISCARD_B => sub {
-                            if (exists ${$r}->{T} and exists ${$r}->{T}->[-1]->{A}) {
-                                push @{${$r}->{T}->[-1]->{A}}, $new[$_[1]];
-                            } else {
-                                push @{${$r}->{T}}, { A => [ $new[$_[1]] ] };
-                            }
-                        },
-                        MATCH => sub {
-                            if (exists ${$r}->{T} and exists ${$r}->{T}->[-1]->{U}) {
-                                push @{${$r}->{T}->[-1]->{U}}, $old[$_[0]];
-                            } else {
-                                push @{${$r}->{T}}, { U => [ $old[$_[0]] ] };
-                            }
-                        },
-                    }
-                );
-
-                # erase common line added earlier
-                pop @{${$r}->{T}->[-1]->{U}};
-                pop @{${$r}->{T}} unless (@{${$r}->{T}->[-1]->{U}});
-
                 delete ${$r}->{O};
                 delete ${$r}->{N};
+
+                my ($o, $n) = _lcsidx2ranges(Algorithm::Diff::LCSidx \@old, \@new);
+                my ($po, $pn) = (0, 0); # current positions in splitted texts
+
+                while (@{$o} or @{$n}) {
+                    my ($ro, $rn) = (shift @{$o}, shift @{$n}); # current ranges (indexes for common sequence)
+                    push @{${$r}->{T}}, { R => [ @old[$po .. $ro->[0] - 1] ] } if ($ro->[0] > $po);
+                    push @{${$r}->{T}}, { A => [ @new[$pn .. $rn->[0] - 1] ] } if ($rn->[0] > $pn);
+                    push @{${$r}->{T}}, { U => [ @new[$rn->[0] .. $rn->[-1]] ] };
+                    $po = $ro->[-1] + 1;
+                    $pn = $rn->[-1] + 1;
+                }
+
+                push @{${$r}->{T}}, { R => [ @old[$po .. $#old] ] } if ($po <= $#old); # collect tailing removed
+                push @{${$r}->{T}}, { A => [ @new[$pn .. $#new] ] } if ($pn <= $#new); # collect tailing added
             }
             return 1;
         },
