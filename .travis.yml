@@ -11,7 +11,7 @@ perl:
   - "5.8"
 install:
   - cpanm Algorithm::Diff
-  - cpanm Encode
+  - cpanm Encode::Locale
   - cpanm Module::Find
   - cpanm Hash::Merge
   - cpanm JSON
