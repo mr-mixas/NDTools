@@ -116,6 +116,8 @@ t_term_text_utf8:
 t_term_text_AR:
 	$(BIN) $(VERB) ../_data/text-AR.a.json ../_data/text-AR.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
+	$(BIN) $(VERB) ../_data/text-AR.b.json ../_data/text-AR.a.json > $@.0010.got; $(VRFY_EXIT_8)
+	diff $@.0010.exp $@.0010.got
 
 t_term_text_ctx:
 	$(BIN) $(VERB) --ctx-text 0 ../_data/text-changed-seqs.a.json ../_data/text-changed-seqs.b.json > $@.0000.got; $(VRFY_EXIT_8)
