@@ -10,6 +10,8 @@ perl:
   - "5.10"
   - "5.8"
 install:
+  - cpanm Algorithm::Diff
+  - cpanm Encode
   - cpanm Module::Find
   - cpanm Hash::Merge
   - cpanm JSON
