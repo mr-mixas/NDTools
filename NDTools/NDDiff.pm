@@ -122,12 +122,17 @@ sub diff_texts {
                 return undef;
             }
 
-            my @old = split(/$\//, ${$r}->{O}) if (${$r}->{O} and not ref ${$r}->{O});
-            my @new = split(/$\//, ${$r}->{N}) if (${$r}->{N} and not ref ${$r}->{N});
+            my @old = split($/, ${$r}->{O}, -1) if (${$r}->{O} and not ref ${$r}->{O});
+            my @new = split($/, ${$r}->{N}, -1) if (${$r}->{N} and not ref ${$r}->{N});
 
             if (@old > 1 or @new > 1) {
                 delete ${$r}->{O};
                 delete ${$r}->{N};
+
+                if ($old[-1] eq '' and $new[-1] eq '') {
+                    pop @old; # because split by newline and -1 for LIMIT
+                    pop @new; # -"-
+                }
 
                 my ($o, $n) = _lcsidx2ranges(Algorithm::Diff::LCSidx \@old, \@new);
                 my ($po, $pn) = (0, 0); # current positions in splitted texts

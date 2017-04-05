@@ -102,8 +102,12 @@ t_term_text_changed_seqs:
 t_term_text_newlines:
 	$(BIN) $(VERB) ../_data/text-newlines.a.json ../_data/text-newlines.b.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
-	#$(BIN) $(VERB) ../_data/text-newlines2.a.json ../_data/text-newlines2.b.json > $@.0010.got; $(VRFY_EXIT_8)
-	#diff $@.0010.exp $@.0010.got # FIXME
+	$(BIN) $(VERB) ../_data/text-newlines.b.json ../_data/text-newlines.a.json > $@.0010.got; $(VRFY_EXIT_8)
+	diff $@.0010.exp $@.0010.got
+	$(BIN) $(VERB) ../_data/text-newlines2.a.json ../_data/text-newlines2.b.json > $@.0020.got; $(VRFY_EXIT_8)
+	diff $@.0020.exp $@.0020.got
+	$(BIN) $(VERB) ../_data/text-newlines2.b.json ../_data/text-newlines2.a.json > $@.0030.got; $(VRFY_EXIT_8)
+	diff $@.0030.exp $@.0030.got
 
 t_term_text_utf8:
 	$(BIN) $(VERB) ../_data/text-utf8.a.json ../_data/text-utf8.b.json > $@.0000.got; $(VRFY_EXIT_8)
