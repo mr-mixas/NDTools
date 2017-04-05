@@ -21,12 +21,12 @@ Options:
     --help|-h
         Print a help message and exit.
 
-    --json
-        Use JSON as output diff format.
-
     --ignore <path>
         Ignore substructure. Applied relatively to value, defined via --path
         opt. May be used several times.
+
+    --json
+        Use JSON as output diff format.
 
     --path <path>
         Define path to substructure to deal with. See detailed syntax

@@ -48,14 +48,14 @@ Print full headers (delta printed by default).
 
 Print a help message and exit.
 
-=item B<--json>
-
-Use JSON as output diff format.
-
 =item B<--ignore> E<lt>pathE<gt>
 
 Ignore substructure. Applied relatively to value, defined via
 --path opt. May be used several times.
+
+=item B<--json>
+
+Use JSON as output diff format.
 
 =item B<--path> E<lt>pathE<gt>
 
