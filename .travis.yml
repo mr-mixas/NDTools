@@ -13,7 +13,7 @@ install:
   - cpanm Algorithm::Diff
   - cpanm Encode::Locale
   - cpanm Hash::Merge
-  - cpanm IPC::Run`
+  - cpanm IPC::Run
   - cpanm JSON
   - cpanm Module::Find
   - cpanm PPI
