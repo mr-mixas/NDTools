@@ -28,6 +28,7 @@ test: \
 	t_m_Insert_string \
 	t_m_Insert_string_multiargs \
 	t_m_Merge \
+	t_m_Merge_dump_rules \
 	t_m_Merge_ignore \
 	t_m_Merge_implicit_source \
 	t_m_Merge_implicit_array_item \
