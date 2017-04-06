@@ -12,9 +12,11 @@ perl:
 install:
   - cpanm Algorithm::Diff
   - cpanm Encode::Locale
-  - cpanm Module::Find
   - cpanm Hash::Merge
+  - cpanm IPC::Run`
   - cpanm JSON
+  - cpanm Module::Find
+  - cpanm PPI
   - cpanm YAML::XS
   - make depends
 script:
