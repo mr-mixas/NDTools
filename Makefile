@@ -4,6 +4,8 @@ CWD := $(shell pwd -P)
 export PATH := $(CWD):$(PATH)
 export PERL5LIB := $(CWD)
 
+TEST_JOBS ?= 4
+
 .PHONY: all clean depends dist test veryclean
 
 all: dist
@@ -22,6 +24,7 @@ dist:
 	make -C dist deb
 
 test: depends
+	prove --jobs $(TEST_JOBS) t/*.t
 	make -C test
 	@echo ===== ALL TESTS PASSED =====
 
