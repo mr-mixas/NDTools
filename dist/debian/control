@@ -9,7 +9,7 @@ Vcs-Browser: https://github.com/mr-mixas/NDTools.git
 
 Package: ndtools
 Architecture: all
-Depends: ${misc:Depends}, ${perl:Depends}, libalgorithm-diff-perl, libencode-locale-perl, libhash-merge-perl, libjson-perl, liblist-moreutils-perl, libmodule-find-perl, libppi-perl, libyaml-libyaml-perl
+Depends: ${misc:Depends}, ${perl:Depends}, libalgorithm-diff-perl, libencode-locale-perl, libhash-merge-perl, libipc-run3-perl, libjson-perl, liblist-moreutils-perl, libmodule-find-perl, libppi-perl, libyaml-libyaml-perl
 Description: CLI tools for nested structures
  JSON inspect/process/diff tools
 
