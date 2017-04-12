@@ -232,6 +232,11 @@ t_m_Merge_merge_style:
 		--merge "{mtime}"
 	diff $@.0000.exp $@.0000.got
 
+t_m_Pipe:
+	cp ../alpha.json $@.0000.got
+	$(BIN) $(VERB) --module Pipe --path '{files}' --cmd 'sed "s/1/42/g"' $@.0000.got
+	diff $@.0000.exp $@.0000.got
+
 t_m_Remove:
 	cp ../_data/deep-down-lorem.a.json $@.0000.got
 	$(BIN) $(VERB) --module Remove --path '{some}[0..5]' $@.0000.got
