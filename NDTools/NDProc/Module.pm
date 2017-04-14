@@ -22,9 +22,9 @@ sub arg_opts {
     my $self = shift;
     return (
         'blame!' => \$self->{OPTS}->{blame}, # just to set opt in rule
-        'help|h' => sub { $self->usage(); die_info undef, 0 },
+        'help|h' => sub { $self->usage(); exit 0 },
         'path=s@' => \$self->{OPTS}->{path},
-        'version|V' => sub { print $self->VERSION . "\n"; die_info undef, 0; },
+        'version|V' => sub { print $self->VERSION . "\n"; exit 0 },
     )
 }
 

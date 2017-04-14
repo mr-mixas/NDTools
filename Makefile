@@ -30,7 +30,7 @@ test: depends
 
 NDTools/INC/Log/Log4Cli.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://api.metacpan.org/source/MIXAS/Log-Log4Cli-0.15/lib/Log/Log4Cli.pm"
+	wget -O $@ "http://api.metacpan.org/source/MIXAS/Log-Log4Cli-0.16/lib/Log/Log4Cli.pm"
 
 NDTools/INC/Struct/Diff.pm:
 	mkdir -p $(@D)

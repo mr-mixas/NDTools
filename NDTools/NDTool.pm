@@ -14,10 +14,10 @@ sub VERSION { "n/a" }
 sub arg_opts {
     my $self = shift;
     return (
-        'help|h' => sub { $self->usage; die_info undef, 0 },
+        'help|h' => sub { $self->usage; exit 0 },
         'pretty!' => \$self->{OPTS}->{pretty},
         'verbose|v:+' => \$Log::Log4Cli::LEVEL,
-        'version|V' => sub { print $self->VERSION . "\n"; exit 0; },
+        'version|V' => sub { print $self->VERSION . "\n"; exit 0 },
     );
 }
 

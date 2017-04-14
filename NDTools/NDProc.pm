@@ -117,8 +117,8 @@ sub exec {
     # parse the rest of args (unrecognized by module (if was specified by args))
     # to be sure there is no unsupported opts remain
     my @rest_opts = (
-        'help|h' => sub { $self->usage; die_info undef, 0 },
-        'version|V' => sub { print $self->VERSION . "\n"; die_info undef, 0; },
+        'help|h' => sub { $self->usage; exit 0 },
+        'version|V' => sub { print $self->VERSION . "\n"; exit 0 },
     );
 
     my $p = Getopt::Long::Parser->new();
