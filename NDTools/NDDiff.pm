@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.14" }
+sub VERSION { "0.15" }
 
 sub arg_opts {
     my $self = shift;
@@ -36,7 +36,10 @@ sub arg_opts {
 
 sub configure {
     my $self = shift;
-    $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0 unless (defined $self->{OPTS}->{colors});
+    $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0
+        unless (defined $self->{OPTS}->{colors});
+
+    return $self;
 }
 
 sub defaults {
@@ -93,7 +96,7 @@ sub _lcsidx2ranges {
     my @out_a = [ shift @{$in_a} ];
     my @out_b = [ shift @{$in_b} ];
 
-    while (@{$in_a} or @{$in_b}) {
+    while (@{$in_a}) {
         my $i_a = shift @{$in_a};
         my $i_b = shift @{$in_b};
         if (
@@ -137,8 +140,8 @@ sub diff_texts {
                 my ($o, $n) = _lcsidx2ranges(Algorithm::Diff::LCSidx \@old, \@new);
                 my ($po, $pn) = (0, 0); # current positions in splitted texts
 
-                while (@{$o} or @{$n}) {
-                    my ($ro, $rn) = (shift @{$o}, shift @{$n}); # current ranges (indexes for common sequence)
+                while (@{$o}) {
+                    my ($ro, $rn) = (shift @{$o}, shift @{$n}); # current common sequence ranges
                     push @{${$r}->{T}}, { R => [ @old[$po .. $ro->[0] - 1] ] } if ($ro->[0] > $po);
                     push @{${$r}->{T}}, { A => [ @new[$pn .. $rn->[0] - 1] ] } if ($rn->[0] > $pn);
                     push @{${$r}->{T}}, { U => [ @new[$rn->[0] .. $rn->[-1]] ] };
@@ -202,9 +205,13 @@ sub list {
 sub load {
     my $self = shift;
     if ($self->{OPTS}->{show}) {
-        die_fatal "One argument expected (--show) used", 1 unless (@_ == 1);
-    } else {
-        die_fatal "Two arguments expected for diff", 1 unless (@_ == 2);
+        unless (@_ == 1) {
+            log_error { "One argument expected (--show) used" };
+            return undef;
+        }
+    } elsif (@_ != 2) {
+        log_error { "Two arguments expected for diff" };
+        return undef;
     }
 
     for my $i (@_) {
