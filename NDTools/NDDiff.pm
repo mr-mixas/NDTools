@@ -93,6 +93,8 @@ sub diff {
 
 sub _lcsidx2ranges {
     my ($in_a, $in_b) = @_;
+    return [], [] unless (@{$in_a});
+
     my @out_a = [ shift @{$in_a} ];
     my @out_b = [ shift @{$in_b} ];
 
