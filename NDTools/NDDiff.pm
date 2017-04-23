@@ -163,6 +163,7 @@ sub diff_texts {
 
 sub dump {
     my $self = shift;
+
     log_debug { "Dumping results" };
     if ($self->{OPTS}->{'out-fmt'} eq 'term') {
         my $t_opts = {
@@ -181,7 +182,8 @@ sub dump {
     } else {
         s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, {pretty => $self->{OPTS}->{pretty}}, $self->{diff});
     }
-    return 1
+
+    return $self;
 }
 
 sub exec {
@@ -206,6 +208,7 @@ sub list {
 
 sub load {
     my $self = shift;
+
     if ($self->{OPTS}->{show}) {
         unless (@_ == 1) {
             log_error { "One argument expected (--show) used" };
@@ -238,7 +241,8 @@ sub load {
         }
         $self->add($data);
     }
-    return 1;
+
+    return $self;
 }
 
 sub load_uri {
