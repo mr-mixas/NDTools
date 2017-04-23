@@ -7,9 +7,14 @@ use parent qw(Exporter);
 use Data::Dumper qw();
 
 our @EXPORT = qw(
+    t_ab_cmp
     t_dir
     t_dump
 );
+
+sub t_ab_cmp {
+    return "GOT: " . t_dump(shift) . ";\nEXP: " . t_dump(shift) . ";";
+}
 
 # called within t-file returns it's personal test dir (ie /path/to/00-test.t.d for /path/to/00-test.t)
 sub t_dir {
