@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use parent "NDTools::NDTool";
 
 use Algorithm::Diff;
-use JSON qw(to_json);
+use JSON qw();
 use NDTools::INC;
 use NDTools::Slurp qw(s_dump s_load);
 use Log::Log4Cli;
@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.15" }
+sub VERSION { "0.16" }
 
 sub arg_opts {
     my $self = shift;
@@ -86,7 +86,7 @@ sub diff {
         noU => $self->{OPTS}->{full} ? 0 : 1,
     );
     if ($self->{OPTS}->{'out-fmt'} eq 'term') {
-        $self->diff_texts or return undef;
+        $self->diff_term or return undef;
     }
     return $self->{diff};
 }
@@ -116,7 +116,7 @@ sub _lcsidx2ranges {
     return \@out_a, \@out_b;
 }
 
-sub diff_texts {
+sub diff_term {
     my $self = shift;
     log_debug { "Calculating diffs for text values" };
     my $t_opts = {
@@ -294,23 +294,39 @@ sub print_term_block {
     }
 
     # diff for value
-    my $indt = sprintf "%" . @{$path} * 2 . "s", "";
-    if ($status eq 'T') {
-        push @lines, $self->term_text_diff($value, $indt);
-    } else {
-        $value = to_json($value, {allow_nonref => 1, canonical => 1, pretty => $self->{OPTS}->{pretty}})
-            if (ref $value or not defined $value);
-        for my $line (split("\n", $value)) {
-            $line = "$dsign $indt" . $line;
-            $line = colored($line, $color) if ($self->{OPTS}->{colors});
-            push @lines, $line;
-        }
-    }
+    my $indent = sprintf "%" . @{$path} * 2 . "s", "";
+    push @lines, $self->term_value_diff($value, $status, $indent);
 
     print join("\n", @lines) . "\n";
 }
 
-sub term_text_diff {
+sub term_value_diff {
+    my ($self, $value, $status, $indent) = @_;
+
+    return $self->term_value_diff_text($value, $indent)
+        if ($status eq 'T');
+
+    return $self->term_value_diff_default($value, $status, $indent);
+}
+
+sub term_value_diff_default {
+    my ($self, $value, $status, $indent) = @_;
+    my @out;
+
+    $value = JSON->new->allow_nonref->canonical->pretty($self->{OPTS}->{pretty})->encode($value)
+        if (ref $value or not defined $value);
+
+    for my $line (split($/, $value)) {
+        substr($line, 0, 0, $self->{OPTS}->{term}->{sign}->{$status} . $indent . " ");
+        $line = colored($line, $self->{OPTS}->{term}->{line}->{$status})
+            if ($self->{OPTS}->{colors});
+        push @out, $line;
+    }
+
+    return @out;
+}
+
+sub term_value_diff_text {
     my ($self, $diff, $indent) = @_;
     my (@out, @head_ctx, @tail_ctx, $pos);
 
