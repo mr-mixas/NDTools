@@ -17,6 +17,7 @@ install:
   - cpanm JSON
   - cpanm Module::Find
   - cpanm PPI
+  - cpanm Test::File::Contents
   - cpanm YAML::XS
   - make depends
 script:
