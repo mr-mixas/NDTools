@@ -63,9 +63,8 @@ sub s_dump(@) {
 
 sub s_dump_file($$) {
     my ($file, $data) = @_;
-    open(FH, '>', $file) or croak "Failed to open file '$file' ($!)";
-    print FH $data;
-    close(FH);
+    open(my $fh, '>', $file) or croak "Failed to open file '$file' ($!)";
+    print $fh $data;
 }
 
 sub s_encode($$;$) {
@@ -108,9 +107,8 @@ sub s_load_uri($) {
     if (ref $uri eq 'GLOB') {
         $data = do { local $/; <$uri> };
     } else {
-        open(FH, '<', $uri) or croak "Failed to open file '$uri' ($!)";
-        $data = do { local $/; <FH> }; # load whole file
-        close(FH);
+        open(my $fh, '<', $uri) or croak "Failed to open file '$uri' ($!)";
+        $data = do { local $/; <$fh> }; # load whole file
     }
     return $data;
 }
