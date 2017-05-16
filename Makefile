@@ -24,7 +24,8 @@ dist:
 	make -C dist deb
 
 test: depends
-	prove --jobs $(TEST_JOBS) t/*.t t/bin/*.t
+	prove t/*.t t/lib/*.t
+	prove --jobs $(TEST_JOBS) t/bin/*.t
 	make -C test
 	@echo ===== ALL TESTS PASSED =====
 
