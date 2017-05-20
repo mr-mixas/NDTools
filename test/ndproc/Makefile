@@ -10,17 +10,11 @@ include ../_common.mk
 test: \
 	t_common \
 	t_disable_module \
-	t_list_modules \
-	t_rules \
-	t_rules_builtin \
 	t_rules_builtin_format \
 	t_rules_embed \
-	t_rules_redump \
-	t_m__UNKNOWN_via_args \
 	t_m__UNKNOWN_via_rules \
 	t_m_Insert \
 	t_m_Insert_boolean \
-	t_m_Insert_help \
 	t_m_Insert_nopath \
 	t_m_Insert_number \
 	t_m_Insert_file \
@@ -42,7 +36,6 @@ test: \
 	t_m_Remove \
 	t_m_Remove_dump_rules \
 	t_m_Remove_full_doc \
-	t_m_Remove_help \
 	t_m_Remove_multiargs \
 	t_m_Remove_preserve \
 	t_m_Remove__strict \
@@ -59,10 +52,6 @@ t_rules_builtin_format:
 	$(BIN) $(VERB) --builtin-format JSON --builtin-rules '[3]{builtin}{rules}' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
-t_list_modules:
-	$(BIN) $(VERB) --list-modules -l > $@.0000.got
-	diff $@.0000.exp $@.0000.got
-
 t_disable_module:
 	cp ../alpha.json $@.0000.got
 	$(BIN) $(VERB) --rules $@.rules.json --disable-module Insert $@.0000.got
@@ -73,9 +62,6 @@ t_disable_module:
 	cp ../alpha.json $@.0020.got
 	$(BIN) $(VERB) --rules $@.rules.json --disable-module Insert --disable-module Remove $@.0020.got
 	diff ../alpha.json $@.0020.got
-
-t_m__UNKNOWN_via_args:
-	$(BIN) $(VERB) --module NoTeXiStEd; $(VRFY_EXIT_1)
 
 t_m__UNKNOWN_via_rules:
 	$(BIN) $(VERB) --rules $@.rules.json ../_data/menu.a.json; $(VRFY_EXIT_1)
@@ -95,10 +81,6 @@ t_m_Insert_boolean:
 	$(BIN) $(VERB) --module Insert --path '{0}'     --bool 0     $@.0000.got
 	$(BIN) $(VERB) --module Insert --path '{" "}'   --bool " "   $@.0000.got
 	$(BIN) $(VERB) --module Insert --path '{""}'    --bool ""    $@.0000.got
-	diff $@.0000.exp $@.0000.got
-
-t_m_Insert_help:
-	$(BIN) --module Insert --help -h 2>$@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_m_Insert_nopath:
@@ -251,10 +233,6 @@ t_m_Remove_full_doc:
 	$(BIN) $(VERB) --module Remove --strict --path '' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
-t_m_Remove_help:
-	$(BIN) --module Remove --help -h > $@.0000.got 2>&1
-	diff $@.0000.exp $@.0000.got
-
 t_m_Remove_multiargs:
 	cp ../_data/menu.a.json $@.0000.got
 	cp ../_data/menu.b.json $@.0010.got
@@ -297,23 +275,9 @@ t_m_Remove__STDIN_STDOUT:
 	cat ../alpha.json | $(BIN) $(VERB) --module Remove --path '{files}' - > $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
-t_rules:
-	cp ../_data/menu.a.json $@.0000.got
-	$(BIN) $(VERB) --rules $@.rules.json $@.0000.got
-	diff $@.0000.exp $@.0000.got
-
-t_rules_builtin:
-	cp $@.struct.json $@.0000.got
-	$(BIN) $(VERB) --builtin-rules '[3]{builtin}{rules}' $@.0000.got
-	diff $@.0000.exp $@.0000.got
-
 t_rules_embed:
 	cp ../_data/menu.a.json $@.0000.got
 	$(BIN) $(VERB) --rules $@.rules.json --embed-rules '[3]{builtin}{rules}' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 	$(BIN) $(VERB) --builtin-rules '[3]{builtin}{rules}' $@.0000.got --dump-rules $@.0010.got
 	diff $@.rules.json $@.0010.got
-
-t_rules_redump:
-	$(BIN) $(VERB) --rules $@.0000.exp --dump-rules $@.0000.got
-	diff $@.0000.exp $@.0000.got

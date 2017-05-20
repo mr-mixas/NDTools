@@ -1,4 +1,0 @@
-Insert     0.05     Insert substructure/value into structure
-Merge      0.11     Merge structures according provided rules
-Pipe       0.01     Modify structure using external process
-Remove     0.06     Remove specified parts from structure
