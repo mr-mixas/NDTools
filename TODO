@@ -9,21 +9,29 @@ ndpatch --path <path>
 ndquery
     --ignore <path> # Ignore desired parts
     --replace # Replace loaded file by output (canonize JSON etc)
+    --grep
     Refactor to OO
 
 ndproc
     --list-sources <rules>
-    --ignore-rule <comma,separated,numbers,list>
-    --sqweeze-blame # make blame as small as possible (get rid of intermediate data)
-    tests -h -V noargs and so on for all modules
+    --disable-rule <comma,separated,numbers,list>
+    --sqweeze-blame|--dedup-blame # make blame as small as possible (get rid of intermediate data)
+    tests -h -V, --dump-rules, noargs and so on for all modules
+    PATH DEFINITION to all mods docs
     'optional' opt to mods opts %)
     validate_rules method for all modules
-    STDIN/STDOUT processing
+
+NDProc::Module
+    complete rule using defaults if not all vital opts provided
+    also - non default opts only when dump rules
 
 NDProc::Module::Insert
+    --ignore <path> (or --preserve ?)
     --method append|override|prepend|shift # define a way to add items to arrays (override by default)
 
 NDProc::Module::Merge
     --match <path> # (combined with path) -- to implement fair pairwise merge (filter like "defined" used)
+    make per-merge path opt to be able as list
 
-NDProc::Module::Pipe
+NDProc::Module::Copy
+    --path --to --move
