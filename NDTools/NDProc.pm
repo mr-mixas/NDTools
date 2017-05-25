@@ -14,7 +14,7 @@ use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.17' }
+sub VERSION { '0.18' }
 
 sub arg_opts {
     my $self = shift;
@@ -29,7 +29,7 @@ sub arg_opts {
         'embed-rules=s' => \$self->{OPTS}->{'embed-rules'},
         'list-modules|l' => \$self->{OPTS}->{'list-modules'},
         'module|m=s' => \$self->{OPTS}->{module},
-        'rules=s' => sub { push @{$self->{rules}}, @{s_load($_[1], undef)} },
+        'rules=s@' => \$self->{OPTS}->{rules},
     );
     delete $arg_opts{'help|h'};     # skip in first args parsing -- will be accessable for modules
     delete $arg_opts{'version|V'};  # --"--
@@ -41,7 +41,10 @@ sub configure {
 
     $self->index_modules();
 
-    $self->{rules} = [] unless (defined $self->{rules});
+    $self->{rules} = [];
+    map { push @{$self->{rules}}, @{s_load($_, undef)} } @{$self->{OPTS}->{rules}}
+        if ($self->{OPTS}->{rules});
+
     if ($self->{OPTS}->{module} or @{$self->{rules}}) {
         log_info { "Explicit rules used: builtin will be ignored" };
         $self->{OPTS}->{'builtin-rules'} = undef;
