@@ -1,3 +1,12 @@
+ndtools (0.4.4) unstable; urgency=low
+
+  * nddiff: crashes fixed on totally different texts
+  * ndproc: Pipe mod added
+  * ndproc: fail correctly for --rules I/O errors
+  * libs updated: Log::Log4Cli => 0.16; Struct::Path => 0.65
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Thu, 01 Jun 2017 00:12:16 +0300
+
 ndtools (0.4.3) unstable; urgency=low
 
   * all: depends bumped
