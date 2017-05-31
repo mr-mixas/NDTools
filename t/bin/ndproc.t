@@ -4,7 +4,7 @@ use warnings FATAL => 'all';
 use Capture::Tiny qw(capture);
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 21;
+use Test::More tests => 27;
 
 use lib "t";
 use NDToolsTest;
@@ -13,11 +13,27 @@ chdir t_dir or die "Failed to change test dir";
 
 my (@args, $out, $err, $exit);
 
+### essential tests
+
+@args = qw/ndproc/;
+($out, $err, $exit) = capture { system(@args) };
+is($out, '', "Check STDOUT for '@args'");
+like($err, qr/FATAL] At least one argument expected/, "Check STDERR for '@args'");
+is($exit >> 8, 1, "Check exit code for '@args'");
+
+@args = qw/ndproc -vv -v4 --verbose --verbose 4 -V/;
+($out, $err, $exit) = capture { system(@args) };
+like($out, qr/^\d+\.\d+/, "Check STDOUT for '@args'");
+like($err, qr/TRACE] /, "Check STDERR for '@args'");
+is($exit >> 8, 0, "Check exit code for '@args'");
+
 @args = qw/ndproc -h --help/;
 ($out, $err, $exit) = capture { system(@args) };
 is($out, '', "Check STDOUT for '@args'");
 file_contents_eq_or_diff('help.exp', $err, "Check STDERR for '@args'");
 is($exit >> 8, 0, "Check exit code for '@args'");
+
+### bin specific tests
 
 @args = qw/ndproc -l --list-modules/;
 ($out, $err, $exit) = capture { system(@args) };

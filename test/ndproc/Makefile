@@ -8,7 +8,6 @@ all: test clean
 include ../_common.mk
 
 test: \
-	t_common \
 	t_disable_module \
 	t_rules_builtin_format \
 	t_rules_embed \
