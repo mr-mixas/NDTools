@@ -6,7 +6,6 @@ VERB=-vvv
 all: test clean
 
 test: \
-	t_common \
 	t_brief \
 	t_brief_colors \
 	t_brief_lastpathitem \
@@ -34,10 +33,6 @@ test: \
 	@echo === ALL $(BIN) TESTS PASSED ===
 
 include ../_common.mk
-
-# redefine from common - diff requires two arguments
-t_verbose: always
-	$(BIN) -vv -v2 --verbose --verbose 3 ../alpha.json ../alpha.json >/dev/null 2>&1 #check aliases and args
 
 t_brief:
 	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json --brief > $@.0000.got; $(VRFY_EXIT_8)

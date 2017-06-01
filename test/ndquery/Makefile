@@ -6,7 +6,6 @@ VERB=-vvvv
 all: test clean
 
 test: \
-	t_common \
 	t_default \
 	t_list \
 	t_list_values \
@@ -20,9 +19,6 @@ test: \
 	@echo === ALL $(BIN) TESTS PASSED ===
 
 include ../_common.mk
-
-t_barebin:
-	$(BIN) $(VERB) </dev/null && false || true
 
 t_default:
 	$(BIN) $(VERB) ../alpha.json > $@.0000.got

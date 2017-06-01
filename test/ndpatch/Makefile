@@ -8,7 +8,6 @@ all: test clean
 include ../_common.mk
 
 test: \
-	t_common \
 	t_patch \
 	t_patch__STDIN
 	@echo === ALL $(BIN) TESTS PASSED ===
@@ -23,5 +22,3 @@ t_patch__STDIN:
 	cat $@.0000.patch | $(BIN) $(VERB) $@.0000.got
 	diff ../_data/menu.a.json $@.0000.got
 
-t_verbose: always
-	echo '{}' | $(BIN) -vv -v2 --verbose --verbose 3 ../alpha.json >/dev/null 2>&1 #check aliases and args
