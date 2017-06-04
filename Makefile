@@ -10,9 +10,12 @@ TEST_JOBS ?= 4
 
 all: dist
 
-clean:
+clean: clean_test
 	make -C test clean
 	make -C dist veryclean
+
+clean_test:
+	rm -f t/*/*.d/*.got
 
 depends: \
 	NDTools/INC/Log/Log4Cli.pm \
