@@ -3,7 +3,8 @@ use warnings FATAL => 'all';
 
 use Capture::Tiny qw(capture);
 use Test::File::Contents;
-use Test::More tests => 9;
+#use Test::More tests => 24;
+use Test::More;
 
 use lib "t";
 use NDToolsTest;
@@ -34,3 +35,59 @@ is($exit >> 8, 0, "Check exit code for '@cmd'");
 
 ### bin specific tests
 
+@cmd = qw(nddiff --brief ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('brief.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+@cmd = qw(nddiff --brief --colors ../../../test/_data/bool.a.json ../../../test/_data/bool.b.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('brief-colors.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+# [5] here is added item, that's why empty STDOUT. But exit code must be 8 - diff exists after all
+@cmd = qw(nddiff --brief --path [1]{Edit}[5] ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
+($out, $err, $exit) = capture { system(@cmd) };
+is($out, '', "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+@cmd = qw(nddiff --colors ../../../test/alpha.json ../../../test/beta.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('term-colors.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+@cmd = qw(nddiff --full-headers ../../../test/alpha.json ../../../test/beta.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('term-full_headers.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+@cmd = qw(nddiff --nopretty ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('term-nopretty.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+@cmd = qw(nddiff --nopretty ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('term-nopretty.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+@cmd = qw(nddiff ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('term-_array-00.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+@cmd = qw(nddiff ../../../test/_data/menu.b.json ../../../test/_data/menu.a.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('term-_array-01.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+done_testing();

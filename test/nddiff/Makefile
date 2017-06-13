@@ -6,14 +6,6 @@ VERB=-vvv
 all: test clean
 
 test: \
-	t_brief \
-	t_brief_colors \
-	t_brief_lastpathitem \
-	t_term \
-	t_term_colors \
-	t_term_full_headers \
-	t_term_nopretty \
-	t_term_arrays \
 	t_term_bool \
 	t_term_quiet \
 	t_term_text \
@@ -34,19 +26,6 @@ test: \
 
 include ../_common.mk
 
-t_brief:
-	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json --brief > $@.0000.got; $(VRFY_EXIT_8)
-	diff $@.0000.exp $@.0000.got
-
-t_brief_colors:
-	$(BIN) $(VERB) ../_data/bool.a.json ../_data/bool.b.json --brief --colors > $@.0000.got; $(VRFY_EXIT_8)
-	diff $@.0000.exp $@.0000.got
-
-# [5] here is added item, that's why empty STDOUT. But exit code must be 8 - diff exists after all
-t_brief_lastpathitem:
-	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json --path [1]{Edit}[5] --brief > $@.0000.got; $(VRFY_EXIT_8)
-	diff $@.0000.exp $@.0000.got # must be empty
-
 t_show:
 	$(BIN) $(VERB) --show t_show.diff.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
@@ -55,27 +34,6 @@ t_show_brief:
 	$(BIN) $(VERB) --brief --show t_show.diff.json > $@.0000.got; $(VRFY_EXIT_8)
 	diff $@.0000.exp $@.0000.got
 
-t_term:
-	$(BIN) $(VERB) ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
-	diff $@.0000.exp $@.0000.got
-
-t_term_colors:
-	$(BIN) $(VERB) --colors ../alpha.json ../beta.json > $@.0000.got; $(VRFY_EXIT_8)
-	diff $@.0000.exp $@.0000.got
-
-t_term_full_headers:
-	$(BIN) $(VERB) ../alpha.json ../beta.json --full-headers > $@.0000.got; $(VRFY_EXIT_8)
-	diff $@.0000.exp $@.0000.got
-
-t_term_nopretty:
-	$(BIN) $(VERB) --nopretty ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got; $(VRFY_EXIT_8)
-	diff $@.0000.exp $@.0000.got
-
-t_term_arrays:
-	$(BIN) $(VERB) ../_data/menu.a.json ../_data/menu.b.json > $@.0000.got; $(VRFY_EXIT_8)
-	diff $@.0000.exp $@.0000.got
-	$(BIN) $(VERB) ../_data/menu.b.json ../_data/menu.a.json > $@.0010.got; $(VRFY_EXIT_8)
-	diff $@.0010.exp $@.0010.got
 
 t_term_bool:
 	$(BIN) $(VERB) --nopretty ../_data/bool.a.json ../_data/bool.b.json > $@.0000.got; $(VRFY_EXIT_8)
