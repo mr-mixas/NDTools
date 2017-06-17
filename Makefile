@@ -34,7 +34,7 @@ test: depends
 
 NDTools/INC/Log/Log4Cli.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://api.metacpan.org/source/MIXAS/Log-Log4Cli-0.16/lib/Log/Log4Cli.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Log-Log4Cli-0.16/lib/Log/Log4Cli.pm"
 
 NDTools/INC/Struct/Diff.pm:
 	mkdir -p $(@D)
@@ -42,7 +42,7 @@ NDTools/INC/Struct/Diff.pm:
 
 NDTools/INC/Struct/Path.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://api.metacpan.org/source/MIXAS/Struct-Path-0.65/lib/Struct/Path.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Path-0.65/lib/Struct/Path.pm"
 
 NDTools/INC/Struct/Path/PerlStyle.pm:
 	mkdir -p $(@D)
