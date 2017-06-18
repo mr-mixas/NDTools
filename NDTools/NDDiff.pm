@@ -9,12 +9,12 @@ use JSON qw();
 use NDTools::INC;
 use NDTools::Slurp qw(s_dump s_load);
 use Log::Log4Cli;
-use Struct::Diff qw();
+use Struct::Diff 0.88 qw();
 use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.16" }
+sub VERSION { "0.17" }
 
 sub arg_opts {
     my $self = shift;
@@ -118,47 +118,61 @@ sub _lcsidx2ranges {
 
 sub diff_term {
     my $self = shift;
+
     log_debug { "Calculating diffs for text values" };
-    my $t_opts = {
-        callback => sub {
-            my ($v, $p, $s, $r) = @_; # value, path, status, diff_ref
-            unless (exists ${$r}->{O}) {
-                log_error { "Incomplete diff passed (old value doesn't exists)" };
-                return undef;
+
+    my $dref;       # ref to diff
+    my ($o, $n);    # LCS ranges
+    my ($po, $pn);  # current positions in splitted texts
+    my ($ro, $rn);  # current LCS range
+    my @list = Struct::Diff::list_diff($self->{diff});
+
+    while (@list) {
+        (undef, $dref) = splice @list, 0, 2;
+
+        next unless (exists ${$dref}->{N});
+        unless (exists ${$dref}->{O}) {
+            log_error { "Incomplete diff passed (old value is absent)" };
+            return undef;
+        }
+
+        my @old = split($/, ${$dref}->{O}, -1)
+            if (${$dref}->{O} and not ref ${$dref}->{O});
+        my @new = split($/, ${$dref}->{N}, -1)
+            if (${$dref}->{N} and not ref ${$dref}->{N});
+
+        if (@old > 1 or @new > 1) {
+            delete ${$dref}->{O};
+            delete ${$dref}->{N};
+
+            if ($old[-1] eq '' and $new[-1] eq '') {
+                pop @old; # because split by newline and -1 for LIMIT
+                pop @new; # -"-
             }
 
-            my @old = split($/, ${$r}->{O}, -1) if (${$r}->{O} and not ref ${$r}->{O});
-            my @new = split($/, ${$r}->{N}, -1) if (${$r}->{N} and not ref ${$r}->{N});
+            ($o, $n) = _lcsidx2ranges(Algorithm::Diff::LCSidx \@old, \@new);
+            ($po, $pn) = (0, 0);
 
-            if (@old > 1 or @new > 1) {
-                delete ${$r}->{O};
-                delete ${$r}->{N};
-
-                if ($old[-1] eq '' and $new[-1] eq '') {
-                    pop @old; # because split by newline and -1 for LIMIT
-                    pop @new; # -"-
-                }
-
-                my ($o, $n) = _lcsidx2ranges(Algorithm::Diff::LCSidx \@old, \@new);
-                my ($po, $pn) = (0, 0); # current positions in splitted texts
-
-                while (@{$o}) {
-                    my ($ro, $rn) = (shift @{$o}, shift @{$n}); # current common sequence ranges
-                    push @{${$r}->{T}}, { R => [ @old[$po .. $ro->[0] - 1] ] } if ($ro->[0] > $po);
-                    push @{${$r}->{T}}, { A => [ @new[$pn .. $rn->[0] - 1] ] } if ($rn->[0] > $pn);
-                    push @{${$r}->{T}}, { U => [ @new[$rn->[0] .. $rn->[-1]] ] };
-                    $po = $ro->[-1] + 1;
-                    $pn = $rn->[-1] + 1;
-                }
-
-                push @{${$r}->{T}}, { R => [ @old[$po .. $#old] ] } if ($po <= $#old); # collect tailing removed
-                push @{${$r}->{T}}, { A => [ @new[$pn .. $#new] ] } if ($pn <= $#new); # collect tailing added
+            while (@{$o}) {
+                ($ro, $rn) = (shift @{$o}, shift @{$n});
+                push @{${$dref}->{T}}, { R => [ @old[$po .. $ro->[0] - 1] ] }
+                    if ($ro->[0] > $po);
+                push @{${$dref}->{T}}, { A => [ @new[$pn .. $rn->[0] - 1] ] }
+                    if ($rn->[0] > $pn);
+                push @{${$dref}->{T}}, { U => [ @new[$rn->[0] .. $rn->[-1]] ] };
+                $po = $ro->[-1] + 1;
+                $pn = $rn->[-1] + 1;
             }
-            return 1;
-        },
-        statuses => [ 'N' ],
-    };
-    Struct::Diff::dtraverse($self->{diff}, $t_opts);
+
+            # collect tailing added/removed
+            push @{${$dref}->{T}}, { R => [ @old[$po .. $#old] ] }
+                if ($po <= $#old);
+            push @{${$dref}->{T}}, { A => [ @new[$pn .. $#new] ] }
+                if ($pn <= $#new);
+        }
+    }
+
+    return $self;
 }
 
 sub dump {
@@ -166,24 +180,44 @@ sub dump {
 
     log_debug { "Dumping results" };
     if ($self->{OPTS}->{'out-fmt'} eq 'term') {
-        my $t_opts = {
-            callback => sub { $self->print_term_block(@_) },
-            sortkeys => 1,
-            statuses => [ qw{R O N A T} ],
-        };
-        Struct::Diff::dtraverse($self->{diff}, $t_opts);
+        $self->dump_term();
     } elsif ($self->{OPTS}->{'out-fmt'} eq 'brief') {
-        my $t_opts = {
-            callback => sub { $self->print_brief_block(@_) },
-            sortkeys => 1,
-            statuses => [ qw{R N A} ],
-        };
-        Struct::Diff::dtraverse($self->{diff}, $t_opts);
+        $self->dump_brief();
     } else {
         s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, {pretty => $self->{OPTS}->{pretty}}, $self->{diff});
     }
 
     return $self;
+}
+
+sub dump_brief {
+    my $self = shift;
+
+    my ($path, $dref, $tag);
+    my @list = Struct::Diff::list_diff($self->{diff}, sort => 1);
+
+    while (@list) {
+        ($path, $dref) = splice @list, 0, 2;
+        for $tag (qw{R N A}) {
+            $self->print_brief_block($path, $tag)
+                if (exists ${$dref}->{$tag});
+        }
+    }
+}
+
+sub dump_term {
+    my $self = shift;
+
+    my ($path, $dref, $tag);
+    my @list = Struct::Diff::list_diff($self->{diff}, sort => 1);
+
+    while (@list) {
+        ($path, $dref) = splice @list, 0, 2;
+        for $tag (qw{R O N A T}) {
+            $self->print_term_block(${$dref}->{$tag}, $path, $tag)
+                if (exists ${$dref}->{$tag});
+        }
+    }
 }
 
 sub exec {
@@ -252,7 +286,7 @@ sub load_uri {
 }
 
 sub print_brief_block {
-    my ($self, $value, $path, $status) = @_;
+    my ($self, $path, $status) = @_;
 
     return unless (@{$path}); # nothing to show
 

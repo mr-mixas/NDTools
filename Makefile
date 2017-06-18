@@ -38,7 +38,7 @@ NDTools/INC/Log/Log4Cli.pm:
 
 NDTools/INC/Struct/Diff.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Diff-0.86/lib/Struct/Diff.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Diff-0.88/lib/Struct/Diff.pm"
 
 NDTools/INC/Struct/Path.pm:
 	mkdir -p $(@D)
