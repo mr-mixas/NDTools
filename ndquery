@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-my $VERSION = '0.17';
+my $VERSION = '0.18';
 
 use strict;
 use warnings FATAL => 'all';
@@ -59,24 +59,27 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
 
     if ($OPTS->{list}) {
         for my $data (@out) {
-            my $prev;
-            for my $i (slist($data, depth => $OPTS->{depth})) {
-                my @delta = spath_delta($prev, $i->[0]);
-                my $cmn = @{$i->[0]} - @delta;
-                $cmn = ($cmn and @{$i->[0]} != @delta) ? [ @{$i->[0]}[0 .. $cmn - 1] ] : [];
-                $cmn = ps_serialize($cmn);
-                $cmn = $OPTS->{colors} ? colored($cmn, $OPTS->{'color-common'}) : $cmn;
-                my $val = "";
+            my ($base, @delta, $line, $path, $prev, $value);
+            my @list = slist($data, depth => $OPTS->{depth});
+            while (@list) {
+                ($path, $value) = splice @list, 0, 2;
+
+                @delta = spath_delta($prev, $path);
+                $base = @{$path} - @delta;
+                $base = ($base and @{$path} != @delta) ? [ @{$path}[0 .. $base - 1] ] : [];
+                $base = ps_serialize($base);
+                $base = $OPTS->{colors} ? colored($base, $OPTS->{'color-common'}) : $base;
+                $line = "";
                 if ($OPTS->{values}) {
-                    $val = " = ";
-                    if ($OPTS->{'raw-output'} and not ref ${$i->[1]}) {
-                        $val .= ${$i->[1]};
+                    $line = " = ";
+                    if ($OPTS->{'raw-output'} and not ref ${$value}) {
+                        $line .= ${$value};
                     } else {
-                        $val .= to_json(${$i->[1]}, {canonical => 1, allow_nonref => 1});
+                        $line .= to_json(${$value}, {canonical => 1, allow_nonref => 1});
                     }
                 }
-                print $cmn . ps_serialize(\@delta) . $val . "\n";
-                $prev = $i->[0];
+                print $base . ps_serialize(\@delta) . $line . "\n";
+                $prev = $path;
             }
         }
     } elsif ($OPTS->{md5}) {

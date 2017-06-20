@@ -84,9 +84,12 @@ sub map_paths {
     my @out;
     my @dsts = spath($data, $spath, paths => 1);
 
-    for my $src (@{$srcs}) {
+    $srcs = [ @{$srcs} ];
+    while (@{$srcs}) {
+        my ($sp, $sr) = splice @{$srcs}, 0, 2;
+
         if (@dsts) { # destination struct may match - use this paths beforehand
-            push @out, shift @dsts;
+            push @out, splice @dsts, 0, 2;
             next;
         }
 
@@ -95,24 +98,22 @@ sub map_paths {
             if (ref $step eq 'ARRAY' and is_implicit_step($step)) {
                 if (my @tmp = spath($data, \@e_path, deref => 1, paths => 1)) {
                     # expand last existed array, addressed by implicit step
-                    @e_path = ( @{$tmp[0][0]}, [ scalar @{$tmp[0][1]} ] );
+                    @e_path = ( @{$tmp[0]}, [ scalar @{$tmp[1]} ] );
                     last;
                 }
             } elsif (ref $step eq 'HASH' and is_implicit_step($step)) {
                 if (my @tmp = spath($data, [ @e_path, $step ], paths => 1)) {
-                    @e_path = @{$tmp[0][0]};
+                    @e_path = @{$tmp[0]};
                     last;
                 }
             }
         }
 
-        @e_path = @{$src->[0]}[0 .. $#explicit] unless (@e_path);
-        my @i_path = @{$src->[0]}[@e_path .. $#{$src->[0]}];
+        @e_path = @{$sp}[0 .. $#explicit] unless (@e_path);
+        my @i_path = @{$sp}[@e_path .. $#{$sp}];
 
         map { $_ = [0] if (ref $_ eq 'ARRAY') } @i_path; # drop array's indexes in implicit part of path
-        my $dst = (spath($data, [@e_path, @i_path], paths => 1, expand => 1))[0];
-
-        push @out, $dst;
+        push @out, spath($data, [@e_path, @i_path], paths => 1, expand => 1);
     }
 
     return @out;
@@ -150,12 +151,13 @@ sub process {
         my @dsts = map_paths($data, \@srcs, $spath);
 
         my $style = $m->{style} || $opts->{style} || $self->{OPTS}->{style};
-        for my $src (@srcs) {
-            my $dst = shift @dsts;
+        while (@srcs) {
+            my ($sp, $sr) = splice @srcs, 0, 2;
+            my ($dp, $dr) = splice @dsts, 0, 2;
             log_info { "Merging $opts->{source} ($style, '" .
-                ps_serialize($src->[0]) . "' => '" . ps_serialize($dst->[0]) . "')" };
+                ps_serialize($sp) . "' => '" . ps_serialize($dp) . "')" };
             Hash::Merge::set_behavior($style);
-            ${$dst->[1]} = Hash::Merge::merge(${$dst->[1]}, ${$src->[1]});
+            ${$dr} = Hash::Merge::merge(${$dr}, ${$sr});
         }
     }
 

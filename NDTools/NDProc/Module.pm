@@ -73,20 +73,23 @@ sub process {
 
 sub restore_preserved {
     my ($self, $data) = @_;
-    for my $s (@{$self->{_preserved}}) {
-        log_debug { "Restoring preserved '" . ps_serialize($s->[0]) . "'" };
-        ${(spath($data, $s->[0], expand => 1))[0]} = $s->[1];
+
+    while (@{$self->{_preserved}}) {
+        my ($path, $value) = splice @{$self->{_preserved}}, 0, 2;
+        log_debug { "Restoring preserved '" . ps_serialize($path) . "'" };
+        ${(spath($data, $path, expand => 1))[0]} = $value;
     }
 }
 
 sub stash_preserved {
-    my ($self, $data, $pats) = @_;
-    for my $path (@{$pats}) {
+    my ($self, $data, $paths) = @_;
+
+    for my $path (@{$paths}) {
         log_debug { "Preserving '$path'" };
         my $spath = eval { ps_parse($path) };
         die_fatal "Failed to parse path ($@)", 4 if ($@);
         push @{$self->{_preserved}},
-            map { $_ = dclone($_) } # immutable now
+            map { $_ = ref $_ ? dclone($_) : $_ } # immutable now
             spath($data, $spath, deref => 1, paths => 1);
     }
 }
