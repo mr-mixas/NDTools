@@ -53,7 +53,8 @@ for my $file (@ARGV ? @ARGV : \*STDIN) {
     die_fatal "Failed to parse '$OPTS->{path}'", 4 if ($@);
     my @out = spath($data, $spath, deref => 1);
     unless (@out) {
-        die_fatal "Failed to lookup '$OPTS->{path}' in structure", 8 if ($OPTS->{strict});
+        die_fatal "Failed to lookup '$OPTS->{path}' in the structure", 8
+            if ($OPTS->{strict});
         next;
     }
 
