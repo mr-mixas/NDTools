@@ -5,11 +5,11 @@ use warnings FATAL => 'all';
 use parent "NDTools::NDTool";
 
 use NDTools::INC;
-use NDTools::Slurp qw(s_dump s_load);
+use NDTools::Slurp qw(s_dump);
 use Log::Log4Cli;
 use Struct::Diff qw();
 
-sub VERSION { '0.02' };
+sub VERSION { '0.03' };
 
 sub arg_opts {
     my $self = shift;
@@ -47,16 +47,10 @@ sub exec {
 }
 
 sub load_patch {
-    my ($self, $uri) = @_;
-    log_debug { "Loading patch from " . (ref $uri ? "STDIN" : "'$uri'")};
-    s_load($uri, undef);
+    shift->load_uri(@_);
 }
 
-sub load_struct {
-    my ($self, $uri) = @_;
-    log_debug { "Loading structure from $uri" };
-    s_load($uri, undef);
-}
+*load_struct = \&load_patch;
 
 sub patch {
     my ($self, $struct, $patch) = @_;

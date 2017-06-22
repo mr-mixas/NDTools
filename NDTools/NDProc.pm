@@ -8,13 +8,13 @@ use NDTools::INC;
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Module::Find qw(findsubmod);
-use NDTools::Slurp qw(s_decode s_dump s_encode s_load);
+use NDTools::Slurp qw(s_decode s_dump s_encode);
 use Storable qw(dclone freeze thaw);
 use Struct::Diff qw(diff dsplit);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.18' }
+sub VERSION { '0.19' }
 
 sub arg_opts {
     my $self = shift;
@@ -42,7 +42,7 @@ sub configure {
     $self->index_modules();
 
     $self->{rules} = [];
-    map { push @{$self->{rules}}, @{s_load($_, undef)} } @{$self->{OPTS}->{rules}}
+    map { push @{$self->{rules}}, @{$self->load_uri($_)} } @{$self->{OPTS}->{rules}}
         if ($self->{OPTS}->{rules});
 
     if ($self->{OPTS}->{module} or @{$self->{rules}}) {
@@ -175,9 +175,7 @@ sub list_modules {
 }
 
 sub load_arg {
-    my ($self, $arg) = @_;
-    log_debug { "Loading $arg" };
-    s_load($arg, undef);
+    shift->load_uri(@_);
 }
 
 *load_source = \&load_arg;

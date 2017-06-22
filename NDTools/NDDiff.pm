@@ -7,14 +7,14 @@ use parent "NDTools::NDTool";
 use Algorithm::Diff;
 use JSON qw();
 use NDTools::INC;
-use NDTools::Slurp qw(s_dump s_load);
+use NDTools::Slurp qw(s_dump);
 use Log::Log4Cli;
 use Struct::Diff 0.88 qw();
 use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.17" }
+sub VERSION { "0.18" }
 
 sub arg_opts {
     my $self = shift;
@@ -277,12 +277,6 @@ sub load {
     }
 
     return $self;
-}
-
-sub load_uri {
-    my ($self, $uri) = @_;
-    log_debug { "Loading $uri" };
-    s_load($uri, undef) or return undef;
 }
 
 sub print_brief_block {

@@ -9,12 +9,12 @@ use NDTools::INC;
 use Digest::MD5 qw(md5_hex);
 use JSON qw();
 use Log::Log4Cli;
-use NDTools::Slurp qw(s_dump s_load);
+use NDTools::Slurp qw(s_dump);
 use Struct::Path 0.70 qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.19' };
+sub VERSION { '0.20' };
 
 sub arg_opts {
     my $self = shift;
@@ -68,7 +68,7 @@ sub exec {
     my $self = shift;
 
     for my $uri (@ARGV ? @ARGV : \*STDIN) {
-        my @data = $self->load($uri, undef);
+        my @data = $self->load_uri($uri);
 
         if (defined $self->{OPTS}->{path}) {
             my $spath = eval { ps_parse($self->{OPTS}->{path}) };
@@ -125,13 +125,6 @@ sub list {
 
         print join("\n", @out) . "\n";
     }
-}
-
-sub load {
-    my ($self, $uri) = @_;
-
-    log_debug { "Loading structure from " . (ref $uri ? "STDIN" : "'$uri'") };
-    s_load($uri, undef);
 }
 
 sub md5 {

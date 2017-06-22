@@ -5,6 +5,7 @@ use warnings FATAL => 'all';
 
 use Encode::Locale qw(decode_argv);
 use NDTools::INC;
+use NDTools::Slurp qw(s_load);
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
 use Pod::Usage;
@@ -29,6 +30,12 @@ sub defaults {
     return {
         'pretty' => 1,
     };
+}
+
+sub load_uri {
+    my ($self, $uri) = @_;
+    log_trace { ref $uri ? "Reading from STDIN" : "Loading '$uri'" };
+    s_load($uri, undef) or return undef;
 }
 
 sub new {
