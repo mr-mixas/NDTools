@@ -42,7 +42,7 @@ NDTools/INC/Struct/Diff.pm:
 
 NDTools/INC/Struct/Path.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Path-0.70/lib/Struct/Path.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Path-0.71/lib/Struct/Path.pm"
 
 NDTools/INC/Struct/Path/PerlStyle.pm:
 	mkdir -p $(@D)
