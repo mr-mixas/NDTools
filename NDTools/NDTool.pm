@@ -9,6 +9,7 @@ use NDTools::Slurp qw(s_load);
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
 use Pod::Usage;
+use Struct::Path 0.71 qw(spath);
 
 sub VERSION { "n/a" }
 
@@ -30,6 +31,25 @@ sub defaults {
     return {
         'pretty' => 1,
     };
+}
+
+sub grep {
+    my ($self, $data, $spath) = @_; # $data is a list if data entries
+
+    my @out;
+    for my $i (@{$data}) {
+        my @found = eval { spath($i, $spath, deref => 1, paths => 1) };
+
+        my $tmp;
+        while (@found) {
+            my ($p, $r) = splice @found, 0, 2;
+            spath(\$tmp, $p, assign => $r, expand => 'append');
+        }
+
+        push @out, $tmp;
+    }
+
+    return @out;
 }
 
 sub load_uri {
