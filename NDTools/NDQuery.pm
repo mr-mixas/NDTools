@@ -10,11 +10,11 @@ use Digest::MD5 qw(md5_hex);
 use JSON qw();
 use Log::Log4Cli;
 use NDTools::Slurp qw(s_dump);
-use Struct::Path 0.70 qw(slist spath spath_delta);
+use Struct::Path 0.71 qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.20' };
+sub VERSION { '0.21' };
 
 sub arg_opts {
     my $self = shift;
@@ -23,6 +23,7 @@ sub arg_opts {
         $self->SUPER::arg_opts(),
         'colors!' => \$self->{OPTS}->{colors},
         'depth|d=i' => \$self->{OPTS}->{depth},
+        'grep=s' => \$self->{OPTS}->{grep},
         'list|l' => \$self->{OPTS}->{list},
         'md5' => \$self->{OPTS}->{md5},
         'path|p=s' => \$self->{OPTS}->{path},
@@ -79,6 +80,12 @@ sub exec {
                     if ($self->{OPTS}->{strict});
                 next;
             }
+        }
+
+        if (defined $self->{OPTS}->{grep}) {
+            my $spath = eval { ps_parse($self->{OPTS}->{grep}) };
+            die_fatal "Failed to parse '$self->{OPTS}->{grep}'", 4 if ($@);
+            @data = $self->grep(\@data, $spath);
         }
 
         if ($self->{OPTS}->{list}) {

@@ -10,6 +10,9 @@ Options:
         Combined with --list allows to define how much levels must be
         listed.
 
+    --grep <path>
+        Grep specified by path elements from structure.
+
     --help|-h
         Print a help message and exit.
 
@@ -19,7 +22,7 @@ Options:
     --md5
         Calculate MD5 sum for structure.
 
-    --path|-p <string>
+    --path|-p <path>
         Path in the structure to deal with.
 
     --raw-output
