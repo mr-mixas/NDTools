@@ -6,11 +6,11 @@ use parent "NDTools::NDProc::Module";
 
 use NDTools::INC;
 use Log::Log4Cli;
-use Struct::Path qw(spath);
+use Struct::Path 0.71 qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Insert substructure/value into structure" }
-sub VERSION { "0.05" }
+sub VERSION { "0.06" }
 
 sub arg_opts {
     my $self = shift;
@@ -49,12 +49,8 @@ sub process {
         my $spath = eval { ps_parse($path) };
         die_fatal "Failed to parse path ($@)", 4 if ($@);
 
-        my @places = eval { spath($data, $spath, expand => 1) };
-        die_fatal "Failed to resolve path ($@)", 4 if ($@);
-
-        for my $place (@places) {
-            $$place = $opts->{value};
-        }
+        eval { spath($data, $spath, assign => $opts->{value}, expand => 1) };
+        die_fatal "Failed to lookup path '$path' ($@)", 4 if ($@);
     }
 }
 

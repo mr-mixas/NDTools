@@ -12,7 +12,7 @@ use Log::Log4Cli;
 use Pod::Find qw(pod_where);
 use Pod::Usage;
 use Storable qw(dclone);
-use Struct::Path qw(spath);
+use Struct::Path 0.71 qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "n/a" }
@@ -77,7 +77,7 @@ sub restore_preserved {
     while (@{$self->{_preserved}}) {
         my ($path, $value) = splice @{$self->{_preserved}}, 0, 2;
         log_debug { "Restoring preserved '" . ps_serialize($path) . "'" };
-        ${(spath($data, $path, expand => 1))[0]} = $value;
+        spath($data, $path, assign => $value, expand => 1);
     }
 }
 
