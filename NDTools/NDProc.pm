@@ -10,7 +10,7 @@ use Log::Log4Cli;
 use Module::Find qw(findsubmod);
 use NDTools::Slurp qw(s_decode s_dump s_encode);
 use Storable qw(dclone freeze thaw);
-use Struct::Diff qw(diff dsplit);
+use Struct::Diff 0.88 qw(diff split_diff);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
@@ -255,7 +255,7 @@ sub process_rules {
 
         my $changes = { rule_id => 0 + $rcnt };
         if (defined $rule->{blame} ? $rule->{blame} : $self->{OPTS}->{blame}) {
-            my $diff = dsplit(diff($result, ${$data}, noO => 1, noU => 1));
+            my $diff = split_diff(diff($result, ${$data}, noO => 1, noU => 1));
             $changes->{R} = delete $diff->{a} if (exists $diff->{a}); # more obvious
             $changes->{A} = delete $diff->{b} if (exists $diff->{b}); # --"--
         }
