@@ -46,7 +46,7 @@ sub grep {
             spath(\$tmp, $p, assign => $r, expand => 'append');
         }
 
-        push @out, $tmp;
+        push @out, $tmp if (defined $tmp);
     }
 
     return @out;
