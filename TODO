@@ -1,7 +1,9 @@
 nddiff
     --ctx-struct <num>
     --stats
+    --X --noX (hide/unhide diff parts)
     Fix text diff header
+    --grep <path>
 
 ndpatch --path <path>
     patch specified parts
@@ -9,8 +11,6 @@ ndpatch --path <path>
 ndquery
     --ignore <path> # Ignore desired parts
     --replace # Replace loaded file by output (canonize JSON etc)
-    --grep
-    Refactor to OO
 
 ndproc
     --list-sources <rules>
@@ -28,6 +28,7 @@ NDProc::Module
 NDProc::Module::Insert
     --ignore <path> (or --preserve ?)
     --method append|override|prepend|shift # define a way to add items to arrays (override by default)
+    --file-raw <file> (or --raw toggle?) to insert file as is
 
 NDProc::Module::Merge
     --match <path> # (combined with path) -- to implement fair pairwise merge (filter like "defined" used)

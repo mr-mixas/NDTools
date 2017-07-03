@@ -1,3 +1,12 @@
+ndtools (0.4.5) unstable; urgency=low
+
+  * ndquery: --grep opt added
+  * ndquery is a subclass of NDTools::NDTool now
+  * Struct::Path::PerlStyle 0.64 used ('<<' hook deprecated)
+  * all: refactoring
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Mon, 03 Jul 2017 10:01:42 +0300
+
 ndtools (0.4.4) unstable; urgency=low
 
   * nddiff: crashes fixed on totally different texts
