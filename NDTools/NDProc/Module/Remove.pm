@@ -10,7 +10,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Remove specified parts from structure" }
-sub VERSION { "0.06" }
+sub VERSION { "0.07" }
 
 sub arg_opts {
     my $self = shift;
@@ -26,19 +26,29 @@ sub process {
 
     $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
 
-    for my $path (@{$opts->{path}}) {
-        log_info { "Removing path '$path'" };
-        my $spath = eval { ps_parse($path) };
-        die_fatal "Failed to parse path ($@)", 4 if ($@);
-        unless (@{$spath}) {
-            ${$data} = undef;
-            next;
-        }
-        eval { spath($data, $spath, delete => 1, strict => $opts->{strict}) };
-        die_fatal "Failed to remove path ($@)", 4 if ($@);
-    }
+    map { $self->process_path($data, $_, $opts) } @{$opts->{path}};
 
     $self->restore_preserved($data) if ($opts->{preserve});
+}
+
+sub process_path {
+    my ($self, $data, $path, $opts) = @_;
+
+    my $spath = eval { ps_parse($path) };
+    die_fatal "Failed to parse path ($@)", 4 if ($@);
+
+    # until entire structure removal fixed in Struct::Path
+    return ${$data} = undef unless (@{$spath});
+
+    my @list = eval { spath($data, $spath, paths => 1, strict => $opts->{strict}) };
+    die_fatal "Failed to resolve path '$path'", 4 if ($@);
+
+    while (@list) {
+        my ($p, undef) = splice @list, -2, 2;
+
+        log_info { "Removing path '" . ps_serialize($p). "'" };
+        spath($data, $p, delete => 1, strict => 1);
+    }
 }
 
 1; # End of NDTools::NDProc::Module::Remove

@@ -1,13 +1,17 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Test::More tests => 1;
+use Test::More tests => 2;
 
 use lib "t";
 use NDToolsTest;
 use NDTools::NDProc::Module::Remove;
 
-#chdir t_dir or die "Failed to change test dir";
+my ($exp, $got, $mod);
 
-my $mod = new_ok('NDTools::NDProc::Module::Remove');
+$mod = new_ok('NDTools::NDProc::Module::Remove');
 
+$got = $mod->load_uri('test/_data/menu.a.json');
+$mod->process_path($got, '[]{}[](defined)');
+$exp = [{File => []},{Edit => [undef,undef]},{View => []}];
+is_deeply($got, $exp, "Path with hooks") || diag t_ab_cmp($got, $exp);
