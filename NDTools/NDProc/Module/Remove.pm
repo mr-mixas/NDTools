@@ -16,19 +16,8 @@ sub arg_opts {
     my $self = shift;
     return (
         $self->SUPER::arg_opts(),
-        'preserve=s@' => \$self->{OPTS}->{preserve},
         'strict' => \$self->{OPTS}->{strict},
     )
-}
-
-sub process {
-    my ($self, $data, $opts) = @_;
-
-    $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
-
-    map { $self->process_path($data, $_, $opts) } @{$opts->{path}};
-
-    $self->restore_preserved($data) if ($opts->{preserve});
 }
 
 sub process_path {

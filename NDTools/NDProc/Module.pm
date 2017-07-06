@@ -24,6 +24,7 @@ sub arg_opts {
         'blame!' => \$self->{OPTS}->{blame}, # just to set opt in rule
         'help|h' => sub { $self->usage(); exit 0 },
         'path=s@' => \$self->{OPTS}->{path},
+        'preserve=s@' => \$self->{OPTS}->{preserve},
         'version|V' => sub { print $self->VERSION . "\n"; exit 0 },
     )
 }
@@ -68,7 +69,13 @@ sub parse_args {
 }
 
 sub process {
-    log_fatal { "It works" };
+    my ($self, $data, $opts) = @_;
+
+    $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
+
+    map { $self->process_path($data, $_, $opts) } @{$opts->{path}};
+
+    $self->restore_preserved($data) if ($opts->{preserve});
 }
 
 sub restore_preserved {
