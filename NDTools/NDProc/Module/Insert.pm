@@ -10,7 +10,7 @@ use Struct::Path 0.71 qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Insert substructure/value into structure" }
-sub VERSION { "0.06" }
+sub VERSION { "0.07" }
 
 sub arg_opts {
     my $self = shift;
@@ -41,17 +41,15 @@ sub configure {
         if (defined $self->{OPTS}->{file});
 }
 
-sub process {
-    my ($self, $data, $opts) = @_;
-    for my $path (@{$opts->{path}}) {
-        log_info { 'Updating path "' . $path . '"' };
+sub process_path {
+    my ($self, $data, $path, $opts) = @_;
 
-        my $spath = eval { ps_parse($path) };
-        die_fatal "Failed to parse path ($@)", 4 if ($@);
+    my $spath = eval { ps_parse($path) };
+    die_fatal "Failed to parse path ($@)", 4 if ($@);
 
-        eval { spath($data, $spath, assign => $opts->{value}, expand => 1) };
-        die_fatal "Failed to lookup path '$path' ($@)", 4 if ($@);
-    }
+    log_info { 'Updating path "' . $path . '"' };
+    eval { spath($data, $spath, assign => $opts->{value}, expand => 1) };
+    die_fatal "Failed to lookup path '$path' ($@)", 4 if ($@);
 }
 
 
@@ -90,6 +88,10 @@ Number to insert.
 =item B<--path> E<lt>pathE<gt>
 
 Path in the structure to deal with. May be used several times.
+
+=item B<--preserve> E<lt>pathE<gt>
+
+Preserve specified structure parts. May be used several times.
 
 =item B<--string> E<lt>stringE<gt>
 
