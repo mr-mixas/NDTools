@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use Capture::Tiny qw(capture);
 use Test::File::Contents;
-use Test::More tests => 8;
+use Test::More tests => 10;
 
 use lib "t";
 use NDToolsTest;
@@ -48,3 +48,18 @@ my ($out, $err);
 ($out, $err) = capture { $tool->dump_opts() };
 file_contents_eq_or_diff('dump-opts.exp', $out, "Check dump-opts method output (STDOUT)");
 is($err, '', "STDERR for dump-opts method must be empty");
+
+($out, $err) = capture { $tool->usage() };
+is($out, '', "STDOUT for usage method must be empty");
+file_contents_eq_or_diff('usage.exp', $err, "Check usage method output (STDERR)");
+
+__END__
+
+=head1 SYNOPSIS
+
+    use parent "NDTools::NDTool";
+    ...
+
+=head1 EXAMPLES
+
+    look above

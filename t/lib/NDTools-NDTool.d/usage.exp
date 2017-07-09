@@ -1,0 +1,7 @@
+Usage:
+        use parent "NDTools::NDTool";
+        ...
+
+Examples:
+        look above
+
