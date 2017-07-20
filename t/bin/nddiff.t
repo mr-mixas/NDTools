@@ -90,4 +90,10 @@ file_contents_eq_or_diff('term-_array-01.exp', $out, "Check STDOUT for '@cmd'");
 is($err, '', "Check STDERR for '@cmd'");
 is($exit >> 8, 8, "Check exit code for '@cmd'");
 
+@cmd = qw(nddiff ../../../test/_data/struct-subkey-AR.a.json ../../../test/_data/struct-subkey-AR.b.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('term-struct-subkey-AR.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
 done_testing();
