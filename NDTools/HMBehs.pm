@@ -7,7 +7,7 @@ use parent qw(Exporter);
 
 use Hash::Merge qw(_merge_hashes);
 
-our $VERSION = '0.05'; # Don't forget to change in pod below
+our $VERSION = '0.06'; # Don't forget to change in pod below
 
 our @EXPORT_OK = qw(
     L_OVERRIDE
@@ -24,14 +24,14 @@ use constant L_OVERRIDE => {
         'HASH'   => sub { $_[0] },
     },
     'ARRAY' => {
-        'SCALAR' => sub { [ @{ $_[0] } ] },
-        'ARRAY'  => sub { [ @{ $_[0] } ] },
-        'HASH'   => sub { [ @{ $_[0] } ] },
+        'SCALAR' => sub { $_[0] },
+        'ARRAY'  => sub { $_[0] },
+        'HASH'   => sub { $_[0] },
     },
     'HASH' => {
         'SCALAR' => sub { $_[0] },
         'ARRAY'  => sub { $_[0] },
-        'HASH'   => sub { _merge_hashes( $_[0], $_[1] ) },
+        'HASH'   => sub { _merge_hashes($_[0], $_[1]) },
     },
 };
 Hash::Merge::specify_behavior(L_OVERRIDE, "L_OVERRIDE");
@@ -43,14 +43,14 @@ use constant R_OVERRIDE => {
         'HASH'   => sub { $_[1] },
     },
     'ARRAY' => {
-        'SCALAR' => sub { [ @{ $_[1] } ] },
-        'ARRAY'  => sub { [ @{ $_[1] } ] },
-        'HASH'   => sub { [ @{ $_[1] } ] },
+        'SCALAR' => sub { $_[1] },
+        'ARRAY'  => sub { $_[1] },
+        'HASH'   => sub { $_[1] },
     },
     'HASH' => {
         'SCALAR' => sub { $_[1] },
         'ARRAY'  => sub { $_[1] },
-        'HASH'   => sub { _merge_hashes( $_[0], $_[1] ) },
+        'HASH'   => sub { _merge_hashes($_[0], $_[1]) },
     },
 };
 Hash::Merge::specify_behavior(R_OVERRIDE, "R_OVERRIDE");
@@ -99,11 +99,11 @@ __END__
 
 =head1 NAME
 
-NDTools::HMBehs -- Collection of extra behaviors for HASH::Merge
+NDTools::HMBehs -- Collection of extra behaviors for L<Hash::Merge>
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =head1 SYNOPSIS
 
@@ -116,7 +116,7 @@ Version 0.05
 
 =head1 EXPORT
 
-Nothing exports by default.
+Nothing is exported by default.
 
 =head1 BEHAVIORS
 
