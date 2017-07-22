@@ -18,6 +18,7 @@ clean_test:
 	rm -f t/*/*.d/*.got
 
 depends: \
+	NDTools/INC/Hash/Merge/Extra.pm \
 	NDTools/INC/Log/Log4Cli.pm \
 	NDTools/INC/Struct/Diff.pm \
 	NDTools/INC/Struct/Path.pm \
@@ -31,6 +32,10 @@ test: depends
 	prove --jobs $(TEST_JOBS) t/bin/*.t
 	make -C test
 	@echo ===== ALL TESTS PASSED =====
+
+NDTools/INC/Hash/Merge/Extra.pm:
+	mkdir -p $(@D)
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Hash-Merge-Extra-0.01/lib/Hash/Merge/Extra.pm"
 
 NDTools/INC/Log/Log4Cli.pm:
 	mkdir -p $(@D)

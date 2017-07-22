@@ -6,7 +6,7 @@ use parent "NDTools::NDProc::Module";
 
 use NDTools::INC;
 use Hash::Merge qw();
-use NDTools::HMBehs qw();
+use Hash::Merge::Extra;
 use List::MoreUtils qw(before);
 use Log::Log4Cli;
 use Storable qw(dclone);
