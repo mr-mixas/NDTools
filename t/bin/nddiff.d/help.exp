@@ -38,6 +38,9 @@ Options:
     --quiet|-q
         Don't show diff, only exit code shows exists diff or not.
 
+    --rules
+        Dump diff in nsproc-rules format.
+
     --show
         Visualize diff (JSON formatted diff file must be provided as
         argument).

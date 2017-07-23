@@ -70,6 +70,10 @@ On/Off pretty-print for JSON. Enabled by default.
 
 Don't show diff, only exit code shows exists diff or not.
 
+=item B<--rules>
+
+Dump diff in nsproc-rules format.
+
 =item B<--show>
 
 Visualize diff (JSON formatted diff file must be provided as argument).

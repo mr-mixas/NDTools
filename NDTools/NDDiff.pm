@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.18" }
+sub VERSION { "0.19" }
 
 sub arg_opts {
     my $self = shift;
@@ -29,6 +29,7 @@ sub arg_opts {
         'ignore=s@' => \$self->{OPTS}->{ignore},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
+        'rules' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
         'quiet|q' => \$self->{OPTS}->{quiet},
         'show' => \$self->{OPTS}->{show},
     )
@@ -179,10 +180,13 @@ sub dump {
     my $self = shift;
 
     log_debug { "Dumping results" };
+
     if ($self->{OPTS}->{'out-fmt'} eq 'term') {
         $self->dump_term();
     } elsif ($self->{OPTS}->{'out-fmt'} eq 'brief') {
         $self->dump_brief();
+    } elsif ($self->{OPTS}->{'out-fmt'} eq 'rules') {
+        $self->dump_rules();
     } else {
         s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, {pretty => $self->{OPTS}->{pretty}}, $self->{diff});
     }
@@ -203,6 +207,31 @@ sub dump_brief {
                 if (exists ${$dref}->{$tag});
         }
     }
+}
+
+sub dump_rules {
+    my $self = shift;
+
+    my ($path, $dref, $item, @out);
+    my @list = Struct::Diff::list_diff($self->{diff}, sort => 1);
+
+    while (@list) {
+        ($path, $dref) = splice @list, 0, 2;
+        for (qw{R N A}) {
+            next unless (exists ${$dref}->{$_});
+            unshift @out, {
+                modname => $_ eq "R" ? "Remove" : "Insert",
+                path => $self->dump_rules_path($path),
+                value => ${$dref}->{$_}
+            };
+        }
+    }
+
+    s_dump(\*STDOUT, 'JSON', {pretty => $self->{OPTS}->{pretty}}, \@out);
+}
+
+sub dump_rules_path { # to be able to override
+    return ps_serialize($_[1]);
 }
 
 sub dump_term {
