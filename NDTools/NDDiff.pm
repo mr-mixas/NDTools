@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.19" }
+sub VERSION { "0.20" }
 
 sub arg_opts {
     my $self = shift;
@@ -292,7 +292,7 @@ sub load {
             }
             ($data) = spath($data, $p, deref => 1);
         }
-        if (exists $self->{OPTS}->{ignore}) {
+        if (ref $data and exists $self->{OPTS}->{ignore}) {
             for my $path (@{$self->{OPTS}->{ignore}}) {
                 my $p = eval { ps_parse($path) };
                 if ($@) {
