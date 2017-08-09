@@ -35,15 +35,15 @@ test: depends
 
 NDTools/INC/Hash/Merge/Extra.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Hash-Merge-Extra-0.01/lib/Hash/Merge/Extra.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Hash-Merge-Extra-0.02/lib/Hash/Merge/Extra.pm"
 
 NDTools/INC/Log/Log4Cli.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Log-Log4Cli-0.16/lib/Log/Log4Cli.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Log-Log4Cli-0.17/lib/Log/Log4Cli.pm"
 
 NDTools/INC/Struct/Diff.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Diff-0.89/lib/Struct/Diff.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Diff-0.90/lib/Struct/Diff.pm"
 
 NDTools/INC/Struct/Path.pm:
 	mkdir -p $(@D)
