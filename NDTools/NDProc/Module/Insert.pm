@@ -9,8 +9,8 @@ use Log::Log4Cli;
 use Struct::Path 0.71 qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub MODINFO { "Insert substructure/value into structure" }
-sub VERSION { "0.07" }
+sub MODINFO { "Insert value into structure" }
+sub VERSION { "0.08" }
 
 sub arg_opts {
     my $self = shift;
@@ -59,7 +59,7 @@ __END__
 
 =head1 NAME
 
-Insert - substructure/value into structure
+Insert - Insert value into structure
 
 =head1 OPTIONS
 
