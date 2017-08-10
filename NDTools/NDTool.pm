@@ -43,11 +43,11 @@ sub dump_opts {
 }
 
 sub grep {
-    my ($self, $data, $spath) = @_; # $data is a list if data entries
+    my ($self, $spath, @structs) = @_;
 
     my @out;
-    for my $i (@{$data}) {
-        my @found = eval { spath($i, $spath, deref => 1, paths => 1) };
+    for (@structs) {
+        my @found = eval { spath($_, $spath, deref => 1, paths => 1) };
 
         my $tmp;
         while (@found) {

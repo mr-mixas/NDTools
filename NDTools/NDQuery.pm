@@ -85,7 +85,7 @@ sub exec {
         if (defined $self->{OPTS}->{grep}) {
             my $spath = eval { ps_parse($self->{OPTS}->{grep}) };
             die_fatal "Failed to parse '$self->{OPTS}->{grep}'", 4 if ($@);
-            @data = $self->grep(\@data, $spath);
+            @data = $self->grep($spath, @data);
         }
 
         if ($self->{OPTS}->{list}) {
