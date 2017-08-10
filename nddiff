@@ -44,6 +44,11 @@ Don't suppresss common items in JSON mode.
 
 Print full headers (delta printed by default).
 
+=item B<--grep> E<lt>pathE<gt>
+
+Grep substructures to diff. See path syntax description at
+L<https://metacpan.org/pod/Struct::Path::PerlStyle>
+
 =item B<--help|-h>
 
 Print a help message and exit.
@@ -59,7 +64,7 @@ Use JSON as output diff format.
 
 =item B<--path> E<lt>pathE<gt>
 
-Define path to substructure to deal with. See detailed syntax description
+Define path to substructure to deal with. See path syntax description
 at L<https://metacpan.org/pod/Struct::Path::PerlStyle>
 
 =item B<--[no]pretty>

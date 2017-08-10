@@ -3,7 +3,6 @@ use warnings FATAL => 'all';
 
 use Capture::Tiny qw(capture);
 use Test::File::Contents;
-#use Test::More tests => 24;
 use Test::More;
 
 use lib "t";
@@ -57,6 +56,12 @@ is($exit >> 8, 8, "Check exit code for '@cmd'");
 @cmd = qw(nddiff --rules ../../../test/alpha.json ../../../test/beta.json);
 ($out, $err, $exit) = capture { system(@cmd) };
 file_contents_eq_or_diff('rules.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
+@cmd = qw(nddiff --grep {list}[1] ../../../test/_data/bool.a.json ../../../test/_data/bool.b.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('grep.exp', $out, "Check STDOUT for '@cmd'");
 is($err, '', "Check STDERR for '@cmd'");
 is($exit >> 8, 8, "Check exit code for '@cmd'");
 

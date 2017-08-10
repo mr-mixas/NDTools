@@ -18,6 +18,10 @@ Options:
     --full-headers
         Print full headers (delta printed by default).
 
+    --grep <path>
+        Grep substructures to diff. See path syntax description at
+        <https://metacpan.org/pod/Struct::Path::PerlStyle>
+
     --help|-h
         Print a help message and exit.
 
@@ -29,7 +33,7 @@ Options:
         Use JSON as output diff format.
 
     --path <path>
-        Define path to substructure to deal with. See detailed syntax
+        Define path to substructure to deal with. See path syntax
         description at <https://metacpan.org/pod/Struct::Path::PerlStyle>
 
     --[no]pretty
