@@ -14,7 +14,7 @@ use Struct::Path qw(is_implicit_step spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.11" }
+sub VERSION { "0.12" }
 
 sub arg_opts {
     my $self = shift;
@@ -30,14 +30,14 @@ sub arg_opts {
         },
         'source=s' => sub {
             push @{$self->{rules}}, { source => $_[1] };
-         },
+        },
         'strict!' => sub {
             $self->set_path_related_opt($_[0], $_[1]),
-         },
+        },
         'preserve=s@' => \$self->{OPTS}->{preserve},
         'style=s' => sub {
             $self->set_path_related_opt($_[0], $_[1])
-         },
+        },
     )
 }
 
@@ -226,9 +226,17 @@ per-merge opt otherwise.
 
 =over 8
 
+=item B<L_ADDITIVE>, B<R_ADDITIVE>
+
+Hashes merged, arrays joined, undefined scalars overrided. Left and right precedence.
+
 =item B<L_OVERRIDE>, B<R_OVERRIDE>
 
-Objects merged, lists and scalars overrided, left and right precedence.
+Hashes merged, arrays and scalars overrided. Left and right precedence.
+
+=item B<L_REPLACE>, B<R_REPLACE>
+
+Nothing merged. One thing simply replaced by another. Left and right precedence.
 
 =back
 
