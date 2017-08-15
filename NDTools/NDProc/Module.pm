@@ -9,8 +9,6 @@ use NDTools::INC;
 use NDTools::Slurp qw(s_load);
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
-use Pod::Find qw(pod_where);
-use Pod::Usage;
 use Storable qw(dclone);
 use Struct::Path 0.71 qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
@@ -102,9 +100,11 @@ sub stash_preserved {
 }
 
 sub usage {
-    pod2usage(
+    require Pod::Find;
+    require Pod::Usage;
+    Pod::Usage::pod2usage(
         -exitval => 'NOEXIT',
-        -input => pod_where({-inc => 1}, ref(shift)),
+        -input => Pod::Find::pod_where({-inc => 1}, ref(shift)),
         -output => \*STDERR,
         -sections => 'NAME|DESCRIPTION|OPTIONS',
         -verbose => 99

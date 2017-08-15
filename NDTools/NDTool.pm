@@ -8,7 +8,6 @@ use NDTools::INC;
 use NDTools::Slurp qw(s_dump s_load);
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
-use Pod::Usage;
 use Struct::Path 0.71 qw(spath);
 
 sub VERSION { "n/a" }
@@ -88,7 +87,8 @@ sub new {
 }
 
 sub usage {
-    pod2usage(
+    require Pod::Usage;
+    Pod::Usage::pod2usage(
         -exitval => 'NOEXIT',
         -output => \*STDERR,
         -sections => 'SYNOPSIS|OPTIONS|EXAMPLES',
