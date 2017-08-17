@@ -23,6 +23,17 @@ sub arg_opts {
     );
 }
 
+sub check_args {
+    my $self = shift;
+
+    unless (@_) {
+        log_error { 'At least one argument expected' };
+        return undef;
+    }
+
+    return $self;
+}
+
 sub configure {
     my $self = shift;
 }

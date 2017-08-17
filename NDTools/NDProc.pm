@@ -134,7 +134,7 @@ sub exec {
     if ($self->{OPTS}->{'dump-rules'} and not @ARGV) {
         $self->dump_rules();
     } else {
-        die_fatal "At least one argument expected", 1 unless (@ARGV);
+        $self->check_args(@ARGV) or die_fatal undef, 1;
         $self->process_args(@ARGV);
     }
 

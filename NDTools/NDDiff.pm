@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.21" }
+sub VERSION { "0.22" }
 
 sub arg_opts {
     my $self = shift;
@@ -34,6 +34,22 @@ sub arg_opts {
         'quiet|q' => \$self->{OPTS}->{quiet},
         'show' => \$self->{OPTS}->{show},
     )
+}
+
+sub check_args {
+    my $self = shift;
+
+    if ($self->{OPTS}->{show}) {
+        unless (@_ == 1) {
+            log_error { "One argument expected (--show) used" };
+            return undef;
+        }
+    } elsif (@_ != 2) {
+        log_error { "Two arguments expected for diff" };
+        return undef;
+    }
+
+    return $self;
 }
 
 sub configure {
@@ -252,12 +268,16 @@ sub dump_term {
 
 sub exec {
     my $self = shift;
+
+    $self->check_args(@ARGV) or die_fatal undef, 1;
     $self->load(@ARGV) or die_fatal undef, 1;
+
     if ($self->{OPTS}->{show}) {
         $self->{diff} = shift @{$self->{items}};
     } else {
         $self->diff or die_fatal undef, 1;
     }
+
     $self->dump or die_fatal undef, 1 unless ($self->{OPTS}->{quiet});
 
     die_info "All done, no difference found", 0
@@ -265,23 +285,8 @@ sub exec {
     die_info "Difference found", 8;
 }
 
-sub list {
-    my $self = shift;
-    return @{$self->{items}};
-}
-
 sub load {
     my $self = shift;
-
-    if ($self->{OPTS}->{show}) {
-        unless (@_ == 1) {
-            log_error { "One argument expected (--show) used" };
-            return undef;
-        }
-    } elsif (@_ != 2) {
-        log_error { "Two arguments expected for diff" };
-        return undef;
-    }
 
     for my $i (@_) {
         my $data = $self->load_uri($i) or return undef;

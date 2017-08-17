@@ -18,7 +18,7 @@ my (@cmd, $out, $err, $exit);
 @cmd = qw/ndproc/;
 ($out, $err, $exit) = capture { system(@cmd) };
 is($out, '', "Check STDOUT for '@cmd'");
-like($err, qr/FATAL] At least one argument expected/, "Check STDERR for '@cmd'");
+like($err, qr/ERROR] At least one argument expected/, "Check STDERR for '@cmd'");
 is($exit >> 8, 1, "Check exit code for '@cmd'");
 
 @cmd = qw/ndproc -vv -v4 --verbose --verbose 4 -V/;
