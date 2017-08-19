@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use Capture::Tiny qw(capture);
 use Test::File::Contents;
-use Test::More tests => 69;
+use Test::More tests => 72;
 
 use lib "t";
 use NDToolsTest;
@@ -37,6 +37,15 @@ is($exit >> 8, 0, "Check exit code for '@cmd'");
 @cmd = qw(ndquery ../../../test/alpha.json);
 ($out, $err, $exit) = capture { system(@cmd) };
 file_contents_eq_or_diff('../../../test/alpha.json', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 0, "Check exit code for '@cmd'");
+
+@cmd = qw(ndquery ../../../test/_data/bool.yaml);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff(
+    '../../../test/_data/bool.yaml', $out,
+    "YAML bool values must be correctly converted"
+);
 is($err, '', "Check STDERR for '@cmd'");
 is($exit >> 8, 0, "Check exit code for '@cmd'");
 

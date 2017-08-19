@@ -11,6 +11,7 @@ use Carp qw(croak);
 use File::Basename qw(basename);
 use JSON qw();
 use Log::Log4Cli;
+use Scalar::Util qw(readonly);
 use YAML::XS qw();
 
 our @EXPORT_OK = qw(
@@ -32,6 +33,33 @@ our %FORMATS = (
     },
 );
 
+# YAML::XS decode boolean values as PL_sv_yes and PL_sv_no, both - read only
+# at leas until https://github.com/ingydotnet/yaml-libyaml-pm/issues/25
+sub _fix_decoded_yaml_bools($) {
+    my @stack = (\$_[0]);
+    my $ref;
+
+    while ($ref = shift @stack) {
+        if (ref ${$ref} eq 'ARRAY') {
+            for (reverse 0 .. $#{${$ref}}) {
+                if (ref ${$ref}->[$_]) {
+                    push @stack, \${$ref}->[$_];
+                } elsif (readonly ${$ref}->[$_]) {
+                    splice @{${$ref}}, $_, 1, (${$ref}->[$_] ? JSON::true : JSON::false);
+                }
+            }
+        } elsif (ref ${$ref} eq 'HASH') {
+            for (keys %{${$ref}}) {
+                if (ref ${$ref}->{$_}) {
+                    push @stack, \${$ref}->{$_};
+                } elsif (readonly ${$ref}->{$_}) {
+                    ${$ref}->{$_} = delete ${$ref}->{$_} ? JSON::true : JSON::false;
+                }
+            }
+        }
+    }
+}
+
 sub s_decode($$;$) {
     my ($data, $fmt, $opts) = @_;
 
@@ -39,6 +67,8 @@ sub s_decode($$;$) {
         $data = eval { JSON::from_json($data, {%{$FORMATS{JSON}}, %{$opts || {}}}) };
     } elsif (uc($fmt) eq 'YAML') {
         $data = eval { YAML::XS::Load($data) };
+        die_fatal "Failed to decode '$fmt': " . $@, 4 if $@;
+        _fix_decoded_yaml_bools($data);
     } else {
         die_fatal "Unable to decode '$fmt' (not supported)";
     }
