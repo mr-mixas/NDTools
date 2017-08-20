@@ -23,7 +23,7 @@ like($@, qr/^Failed to open file/, "Must fail when file doesn't exists");
 
 $tmp = $tool->load_uri('../../../test/_data/menu.a.json');
 
-($got) = $tool->grep([[],{regs => [qr/^.i/]},[],{keys => ['id']}], $tmp);
+($got) = $tool->grep([[[],{regs => [qr/^.i/]},[],{keys => ['id']}]], $tmp);
 $exp = [
     {
         File => [

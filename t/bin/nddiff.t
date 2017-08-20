@@ -65,6 +65,12 @@ file_contents_eq_or_diff('grep.exp', $out, "Check STDOUT for '@cmd'");
 is($err, '', "Check STDERR for '@cmd'");
 is($exit >> 8, 8, "Check exit code for '@cmd'");
 
+@cmd = qw(nddiff --grep {fqdn} --grep {mtime} ../../../test/alpha.json ../../../test/beta.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('grep2.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 8, "Check exit code for '@cmd'");
+
 @cmd = qw(nddiff --colors ../../../test/alpha.json ../../../test/beta.json);
 ($out, $err, $exit) = capture { system(@cmd) };
 file_contents_eq_or_diff('term-colors.exp', $out, "Check STDOUT for '@cmd'");

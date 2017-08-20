@@ -53,18 +53,18 @@ sub dump_opts {
 }
 
 sub grep {
-    my ($self, $spath, @structs) = @_;
-
+    my ($self, $spaths, @structs) = @_;
     my @out;
-    for (@structs) {
-        my @found = eval { spath($_, $spath, deref => 1, paths => 1) };
 
+    for my $struct (@structs) {
         my $tmp;
-        while (@found) {
-            my ($p, $r) = splice @found, 0, 2;
-            spath(\$tmp, $p, assign => $r, expand => 'append');
+        for (@{$spaths}) {
+            my @found = eval { spath($struct, $_, deref => 1, paths => 1) };
+            while (@found) {
+                my ($p, $r) = splice @found, 0, 2;
+                spath(\$tmp, $p, assign => $r, expand => 'append');
+            }
         }
-
         push @out, $tmp if (defined $tmp);
     }
 

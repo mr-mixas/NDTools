@@ -14,7 +14,7 @@ use Struct::Path 0.71 qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.21' };
+sub VERSION { '0.22' };
 
 sub arg_opts {
     my $self = shift;
@@ -23,7 +23,7 @@ sub arg_opts {
         $self->SUPER::arg_opts(),
         'colors!' => \$self->{OPTS}->{colors},
         'depth|d=i' => \$self->{OPTS}->{depth},
-        'grep=s' => \$self->{OPTS}->{grep},
+        'grep=s@' => \$self->{OPTS}->{grep},
         'list|l' => \$self->{OPTS}->{list},
         'md5' => \$self->{OPTS}->{md5},
         'path|p=s' => \$self->{OPTS}->{path},
@@ -39,6 +39,12 @@ sub configure {
 
     $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0
         unless (defined $self->{OPTS}->{colors});
+
+    for (@{$self->{OPTS}->{grep}}) {
+        my $tmp = eval { ps_parse($_) };
+        die_fatal "Failed to parse '$_'", 4 if ($@);
+        $_ = $tmp;
+    }
 
     return $self;
 }
@@ -82,11 +88,8 @@ sub exec {
             }
         }
 
-        if (defined $self->{OPTS}->{grep}) {
-            my $spath = eval { ps_parse($self->{OPTS}->{grep}) };
-            die_fatal "Failed to parse '$self->{OPTS}->{grep}'", 4 if ($@);
-            @data = $self->grep($spath, @data);
-        }
+        @data = $self->grep($self->{OPTS}->{grep}, @data)
+            if (@{$self->{OPTS}->{grep}});
 
         if ($self->{OPTS}->{list}) {
             $self->list($uri, \@data);

@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.22" }
+sub VERSION { "0.23" }
 
 sub arg_opts {
     my $self = shift;
@@ -25,7 +25,7 @@ sub arg_opts {
         'ctx-text=i' => \$self->{OPTS}->{'ctx-text'},
         'full' => \$self->{OPTS}->{full},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
-        'grep=s' => \$self->{OPTS}->{grep},
+        'grep=s@' => \$self->{OPTS}->{grep},
         'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
         'ignore=s@' => \$self->{OPTS}->{ignore},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
@@ -54,8 +54,15 @@ sub check_args {
 
 sub configure {
     my $self = shift;
+
     $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0
         unless (defined $self->{OPTS}->{colors});
+
+    for (@{$self->{OPTS}->{grep}}) {
+        my $tmp = eval { ps_parse($_) };
+        die_fatal "Failed to parse '$_'", 4 if ($@);
+        $_ = $tmp;
+    }
 
     return $self;
 }
@@ -299,11 +306,8 @@ sub load {
             ($data) = spath($data, $p, deref => 1);
         }
 
-        if (defined $self->{OPTS}->{grep}) {
-            my $spath = eval { ps_parse($self->{OPTS}->{grep}) };
-            die_fatal "Failed to parse '$self->{OPTS}->{grep}'", 4 if ($@);
-            ($data) = $self->grep($spath, $data);
-        }
+        ($data) = $self->grep($self->{OPTS}->{grep}, $data)
+            if (@{$self->{OPTS}->{grep}});
 
         if (ref $data and exists $self->{OPTS}->{ignore}) {
             for my $path (@{$self->{OPTS}->{ignore}}) {

@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use Capture::Tiny qw(capture);
 use Test::File::Contents;
-use Test::More tests => 72;
+use Test::More;
 
 use lib "t";
 use NDToolsTest;
@@ -163,3 +163,10 @@ file_contents_eq_or_diff('grep-01.exp', $out, "Check STDOUT for '@cmd'");
 is($err, '', "Check STDERR for '@cmd'");
 is($exit >> 8, 0, "Check exit code for '@cmd'");
 
+@cmd = qw(ndquery --grep {files} --grep {fqdn} ../../../test/alpha.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('grep-02.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 0, "Check exit code for '@cmd'");
+
+done_testing();
