@@ -50,7 +50,7 @@ is($exit >> 8, 8, "Check exit code for '@cmd'");
 @cmd = qw(nddiff --brief --path [1]{Edit}[5] ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
 ($out, $err, $exit) = capture { system(@cmd) };
 is($out, '', "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
+like($err, qr/NOTICE] Opt --path is deprecated and will be removed/, "Check STDERR for '@cmd'");
 is($exit >> 8, 8, "Check exit code for '@cmd'");
 
 @cmd = qw(nddiff --rules ../../../test/alpha.json ../../../test/beta.json);

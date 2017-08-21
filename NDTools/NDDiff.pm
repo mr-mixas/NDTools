@@ -14,7 +14,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.23" }
+sub VERSION { "0.24" }
 
 sub arg_opts {
     my $self = shift;
@@ -63,6 +63,10 @@ sub configure {
         die_fatal "Failed to parse '$_'", 4 if ($@);
         $_ = $tmp;
     }
+
+    # --path is ambigous - result is a list which depends of passed structure
+    log_notice { "Opt --path is deprecated and will be removed in the future" }
+        if ($self->{OPTS}->{path});
 
     return $self;
 }
