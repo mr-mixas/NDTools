@@ -99,7 +99,7 @@ t_term_text_ctx:
 	diff $@.0110.exp $@.0110.got
 
 t_ignore:
-	$(BIN) $(VERB) --json --ignore 'unsupported_path_format' ../_data/menu.a.json ../_data/menu.b.json; $(VRFY_EXIT_1)
+	$(BIN) $(VERB) --json --ignore 'unsupported_path_format' ../_data/menu.a.json ../_data/menu.b.json; $(VRFY_EXIT_4)
 	$(BIN) $(VERB) --json --full --ignore "{some}[5]{text}[0]{buried}[1]{'deep down'}{in}[0]{'the structure'}" ../_data/deep-down-lorem.a.json ../_data/deep-down-lorem.b.json > $@.0000.got;
 	diff $@.0000.exp $@.0000.got # diff part ignored (removed)
 	$(BIN) $(VERB) --json --full --ignore '[1]{notexists}[5]' ../_data/menu.a.json ../_data/menu.b.json > $@.0010.got; $(VRFY_EXIT_8)

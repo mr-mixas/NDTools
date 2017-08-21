@@ -58,7 +58,7 @@ sub configure {
     $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0
         unless (defined $self->{OPTS}->{colors});
 
-    for (@{$self->{OPTS}->{grep}}) {
+    for (@{$self->{OPTS}->{grep}}, @{$self->{OPTS}->{ignore}}) {
         my $tmp = eval { ps_parse($_) };
         die_fatal "Failed to parse '$_'", 4 if ($@);
         $_ = $tmp;
@@ -313,16 +313,9 @@ sub load {
         ($data) = $self->grep($self->{OPTS}->{grep}, $data)
             if (@{$self->{OPTS}->{grep}});
 
-        if (ref $data and exists $self->{OPTS}->{ignore}) {
-            for my $path (@{$self->{OPTS}->{ignore}}) {
-                my $p = eval { ps_parse($path) };
-                if ($@) {
-                    log_error { "Failed to parse path '$path' ($@)" };
-                    return undef;
-                }
-                spath($data, $p, delete => 1);
-            }
-        }
+        map { spath($data, $_, delete => 1) } @{$self->{OPTS}->{ignore}}
+            if (ref $data);
+
         $self->add($data);
     }
 
