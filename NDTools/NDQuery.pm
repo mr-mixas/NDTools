@@ -14,7 +14,7 @@ use Struct::Path 0.71 qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.22' };
+sub VERSION { '0.23' };
 
 sub arg_opts {
     my $self = shift;
@@ -140,8 +140,9 @@ sub list {
 sub md5 {
     my ($self, $uri, $data) = @_;
 
-    print md5_hex(JSON->new->canonical->allow_nonref->encode($_)) . " ($uri)\n"
-        for (@{$data});
+    print md5_hex(JSON->new->canonical->allow_nonref->encode($_)) .
+        (ref $uri ? "\n" : " $uri\n")
+            for (@{$data});
 }
 
 1; # End of NDTools::NDQuery

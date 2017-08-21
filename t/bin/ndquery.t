@@ -97,6 +97,12 @@ file_contents_eq_or_diff('md5-path.exp', $out, "Check STDOUT for '@cmd'");
 is($err, '', "Check STDERR for '@cmd'");
 is($exit >> 8, 0, "Check exit code for '@cmd'");
 
+@cmd = qw(ndquery --md5 --path [0]{File}[0]{label} < ../../../test/_data/menu.a.json);
+($out, $err, $exit) = capture { system(join(' ', @cmd)) };
+file_contents_eq_or_diff('md5-STDIN.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 0, "Check exit code for '@cmd'");
+
 @cmd = qw(ndquery --path {files}{"/etc/hosts"} ../../../test/alpha.json);
 ($out, $err, $exit) = capture { system(@cmd) };
 file_contents_eq_or_diff('path-00.exp', $out, "Check STDOUT for '@cmd'");
