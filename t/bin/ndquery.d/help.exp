@@ -1,17 +1,20 @@
 Usage:
-        ndquery [OPTIONS]
         ndquery [OPTIONS] <arguments>
 
 Options:
     --[no]colors
         On/Off colors in --list mode.
 
+    --delete|--ignore <path>
+        Delete substructure. May be used several times.
+
     --depth|-d <int>
         Combined with --list allows to define how much levels must be
         listed.
 
     --grep <path>
-        Grep specified by path elements from structure.
+        Grep specified by path elements from structure. May be used several
+        times.
 
     --help|-h
         Print a help message and exit.

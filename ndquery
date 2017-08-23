@@ -13,7 +13,6 @@ ndquery - get desired parts from nested data structure
 
 =head1 SYNOPSIS
 
-    ndquery [OPTIONS]
     ndquery [OPTIONS] <arguments>
 
 =head1 DESCRIPTION
@@ -28,13 +27,17 @@ Get specified by path parts from nested data structure
 
 On/Off colors in --list mode.
 
+=item B<--delete|--ignore> E<lt>pathE<gt>
+
+Delete substructure. May be used several times.
+
 =item B<--depth|-d> E<lt>intE<gt>
 
 Combined with B<--list> allows to define how much levels must be listed.
 
 =item B<--grep> E<lt>pathE<gt>
 
-Grep specified by path elements from structure.
+Grep specified by path elements from structure. May be used several times.
 
 =item B<--help|-h>
 

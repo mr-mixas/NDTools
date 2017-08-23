@@ -22,6 +22,7 @@ sub arg_opts {
     return (
         $self->SUPER::arg_opts(),
         'colors!' => \$self->{OPTS}->{colors},
+        'delete|ignore=s@' => \$self->{OPTS}->{delete},
         'depth|d=i' => \$self->{OPTS}->{depth},
         'grep=s@' => \$self->{OPTS}->{grep},
         'list|l' => \$self->{OPTS}->{list},
@@ -40,7 +41,10 @@ sub configure {
     $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0
         unless (defined $self->{OPTS}->{colors});
 
-    for (@{$self->{OPTS}->{grep}}) {
+    for (
+        @{$self->{OPTS}->{grep}},
+        @{$self->{OPTS}->{delete}}
+    ) {
         my $tmp = eval { ps_parse($_) };
         die_fatal "Failed to parse '$_'", 4 if ($@);
         $_ = $tmp;
@@ -90,6 +94,10 @@ sub exec {
 
         @data = $self->grep($self->{OPTS}->{grep}, @data)
             if (@{$self->{OPTS}->{grep}});
+
+        for my $spath (@{$self->{OPTS}->{delete}}) {
+            map { spath($_, $spath, delete => 1) if (ref $_) } @data;
+        }
 
         if ($self->{OPTS}->{list}) {
             $self->list($uri, \@data);

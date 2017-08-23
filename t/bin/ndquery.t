@@ -175,4 +175,10 @@ file_contents_eq_or_diff('grep-02.exp', $out, "Check STDOUT for '@cmd'");
 is($err, '', "Check STDERR for '@cmd'");
 is($exit >> 8, 0, "Check exit code for '@cmd'");
 
+@cmd = qw(ndquery --delete {mtime} --delete {files}{"/etc/hosts"} ../../../test/alpha.json);
+($out, $err, $exit) = capture { system(@cmd) };
+file_contents_eq_or_diff('delete.exp', $out, "Check STDOUT for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 0, "Check exit code for '@cmd'");
+
 done_testing();
