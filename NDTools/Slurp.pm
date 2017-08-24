@@ -99,11 +99,14 @@ sub s_dump_file($$) {
 
 sub s_encode($$;$) {
     my ($data, $fmt, $opts) = @_;
+    my $format = uc($fmt);
 
-    if (uc($fmt) eq 'JSON') {
+    if ($format eq 'JSON' or $format eq 'RAW' and ref $data) {
         $data = eval { JSON::to_json($data, {%{$FORMATS{JSON}}, %{$opts || {}}}) };
-    } elsif (uc($fmt) eq 'YAML') {
+    } elsif ($format eq 'YAML') {
         $data = eval { YAML::XS::Dump($data) };
+    } elsif ($format eq 'RAW') {
+        $data .= "\n";
     } else {
         die_fatal "Unable to encode to '$fmt' (not supported)";
     }
