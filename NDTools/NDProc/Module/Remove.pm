@@ -4,7 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 use parent "NDTools::NDProc::Module";
 
-use NDTools::INC;
 use Log::Log4Cli;
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);

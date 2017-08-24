@@ -4,7 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 use parent "NDTools::NDProc::Module";
 
-use NDTools::INC;
 use IPC::Run3;
 use Log::Log4Cli;
 use NDTools::Slurp qw(s_decode s_encode);

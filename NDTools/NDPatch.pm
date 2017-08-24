@@ -4,7 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 use parent "NDTools::NDTool";
 
-use NDTools::INC;
 use NDTools::Slurp qw(s_dump);
 use Log::Log4Cli;
 use Struct::Diff qw();

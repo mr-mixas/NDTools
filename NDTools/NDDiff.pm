@@ -6,7 +6,6 @@ use parent "NDTools::NDTool";
 
 use Algorithm::Diff;
 use JSON qw();
-use NDTools::INC;
 use NDTools::Slurp qw(s_dump);
 use Log::Log4Cli 0.18;
 use Struct::Diff 0.88 qw();

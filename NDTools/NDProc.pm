@@ -4,7 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 use parent "NDTools::NDTool";
 
-use NDTools::INC;
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Module::Find qw(findsubmod);

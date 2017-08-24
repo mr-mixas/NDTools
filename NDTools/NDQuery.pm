@@ -4,8 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 use parent "NDTools::NDTool";
 
-use NDTools::INC;
-
 use Digest::MD5 qw(md5_hex);
 use JSON qw();
 use Log::Log4Cli;

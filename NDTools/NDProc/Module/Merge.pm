@@ -4,7 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 use parent "NDTools::NDProc::Module";
 
-use NDTools::INC;
 use Hash::Merge qw();
 use Hash::Merge::Extra;
 use List::MoreUtils qw(before);
