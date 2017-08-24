@@ -39,7 +39,7 @@ NDTools/INC/Hash/Merge/Extra.pm:
 
 NDTools/INC/Log/Log4Cli.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Log-Log4Cli-0.17/lib/Log/Log4Cli.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Log-Log4Cli-0.18/lib/Log/Log4Cli.pm"
 
 NDTools/INC/Struct/Diff.pm:
 	mkdir -p $(@D)

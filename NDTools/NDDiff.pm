@@ -8,13 +8,13 @@ use Algorithm::Diff;
 use JSON qw();
 use NDTools::INC;
 use NDTools::Slurp qw(s_dump);
-use Log::Log4Cli;
+use Log::Log4Cli 0.18;
 use Struct::Diff 0.88 qw();
 use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.24" }
+sub VERSION { "0.25" }
 
 sub arg_opts {
     my $self = shift;
@@ -65,7 +65,7 @@ sub configure {
     }
 
     # --path is ambigous - result is a list which depends of passed structure
-    log_notice { "Opt --path is deprecated and will be removed in the future" }
+    log_alert { "Opt --path is deprecated and will be removed in the future" }
         if ($self->{OPTS}->{path});
 
     return $self;
