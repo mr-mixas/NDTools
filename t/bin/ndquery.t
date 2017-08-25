@@ -2,6 +2,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Capture::Tiny qw(capture);
+use File::Copy qw(copy);
 use Test::File::Contents;
 use Test::More;
 
@@ -180,5 +181,34 @@ is($exit >> 8, 0, "Check exit code for '@cmd'");
 file_contents_eq_or_diff('delete.exp', $out, "Check STDOUT for '@cmd'");
 is($err, '', "Check STDERR for '@cmd'");
 is($exit >> 8, 0, "Check exit code for '@cmd'");
+
+@cmd = qw(ndquery --replace --delete {mtime} replace-00.got replace-01.got);
+copy('../../../test/alpha.json', 'replace-00.got') or die "Failed to prepare got file ($!)";
+copy('../../../test/beta.json',  'replace-01.got') or die "Failed to prepare got file ($!)";
+($out, $err, $exit) = capture { system(@cmd) };
+files_eq_or_diff('replace-00.exp', 'replace-00.got', "Check result for '@cmd'");
+files_eq_or_diff('replace-01.exp', 'replace-01.got', "Check result for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 0, "Check exit code for '@cmd'");
+
+@cmd = (qw(ndquery --replace --raw-output replace-02.got --path), '{fqdn,mtime,files}');
+copy('../../../test/alpha.json', 'replace-02.got') or die "Failed to prepare got file ($!)";
+($out, $err, $exit) = capture { system(@cmd) };
+files_eq_or_diff('replace-02.exp', 'replace-02.got', "Check result for '@cmd'");
+is($err, '', "Check STDERR for '@cmd'");
+is($exit >> 8, 0, "Check exit code for '@cmd'");
+
+@cmd = qw(ndquery --replace --list replace-03.got);
+copy('../../../test/alpha.json', 'replace-03.got') or die "Failed to prepare got file ($!)";
+($out, $err, $exit) = capture { system(@cmd) };
+files_eq_or_diff('../../../test/alpha.json', 'replace-03.got', "Check result for '@cmd'");
+like($err, qr/FATAL] --replace opt can't be used with --list/, "Check STDERR for '@cmd'");
+is($exit >> 8, 1, "Check exit code for '@cmd'");
+
+@cmd = qw(ndquery --replace --md5 replace-03.got);
+($out, $err, $exit) = capture { system(@cmd) };
+files_eq_or_diff('../../../test/alpha.json', 'replace-03.got', "Check result for '@cmd'");
+like($err, qr/FATAL] --replace opt can't be used with --md5/, "Check STDERR for '@cmd'");
+is($exit >> 8, 1, "Check exit code for '@cmd'");
 
 done_testing();

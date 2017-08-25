@@ -32,6 +32,9 @@ Options:
         Dont't format result simple things (strings/numbers) - dump them as
         is.
 
+    --replace
+        Replace original files by query result.
+
     --[no]strict
         Fail if unexisted path specified. Enabled by default.
 

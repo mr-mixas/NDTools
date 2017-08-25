@@ -59,6 +59,10 @@ Path in the structure to deal with.
 
 Dont't format result simple things (strings/numbers) - dump them as is.
 
+=item B<--replace>
+
+Replace original files by query result.
+
 =item B<--[no]strict>
 
 Fail if unexisted path specified. Enabled by default.

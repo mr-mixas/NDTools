@@ -12,7 +12,7 @@ use Struct::Path 0.71 qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.23' };
+sub VERSION { '0.24' };
 
 sub arg_opts {
     my $self = shift;
@@ -27,10 +27,24 @@ sub arg_opts {
         'md5' => \$self->{OPTS}->{md5},
         'path|p=s' => \$self->{OPTS}->{path},
         'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
-        'raw-output' => \$self->{OPTS}->{'raw-output'},
+        'raw-output' => sub { $self->{OPTS}->{'out-fmt'} = 'RAW' },
+        'replace' => \$self->{OPTS}->{replace},
         'strict!' => \$self->{OPTS}->{strict},
         'values|vals' => \$self->{OPTS}->{values},
     );
+}
+
+sub check_args {
+    my $self = shift;
+
+    if ($self->{OPTS}->{replace}) {
+        die_fatal "--replace opt can't be used with --list", 1
+            if ($self->{OPTS}->{list});
+        die_fatal "--replace opt can't be used with --md5", 1
+            if ($self->{OPTS}->{md5});
+    }
+
+    return $self;
 }
 
 sub configure {
@@ -58,23 +72,21 @@ sub defaults {
         %{$self->SUPER::defaults()},
         'color-common' => 'bold black',
         'strict' => 1, # exit with 8 if unexisted path specified
+        'out-fmt' => 'JSON',
     };
 }
 
 sub dump {
     my ($self, $uri, $data) = @_;
 
-    for (@{$data}) {
-        if ($self->{OPTS}->{'raw-output'} and not ref $_) {
-            print $_ . "\n";
-        } else {
-            s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, undef, $_);
-        }
-    }
+    $uri = \*STDOUT unless ($self->{OPTS}->{replace});
+    s_dump($uri, $self->{OPTS}->{'out-fmt'}, undef, @{$data});
 }
 
 sub exec {
     my $self = shift;
+
+    $self->check_args(@ARGV) or die_fatal undef, 1;
 
     for my $uri (@ARGV ? @ARGV : \*STDIN) {
         my @data = $self->load_uri($uri);
@@ -128,7 +140,7 @@ sub list {
 
             if ($self->{OPTS}->{values}) {
                 $line .= " = ";
-                if ($self->{OPTS}->{'raw-output'} and not ref ${$value}) {
+                if ($self->{OPTS}->{'out-fmt'} eq 'RAW' and not ref ${$value}) {
                     $line .= ${$value};
                 } else {
                     $line .= JSON->new->canonical->allow_nonref->encode(${$value});
