@@ -7,7 +7,6 @@ use warnings FATAL => 'all';
 use parent qw(Exporter);
 use open qw(:std :utf8);
 
-use Carp qw(croak);
 use File::Basename qw(basename);
 use JSON qw();
 use Log::Log4Cli;
@@ -86,15 +85,16 @@ sub s_dump(@) {
     if (ref $uri eq 'GLOB') {
         print $uri $data;
     } else {
-        eval { s_dump_file($uri, $data) };
-        die_fatal $@, 2 if $@;
+        s_dump_file($uri, $data);
     }
 }
 
 sub s_dump_file($$) {
     my ($file, $data) = @_;
-    open(my $fh, '>', $file) or croak "Failed to open file '$file' ($!)";
+
+    open(my $fh, '>', $file) or die_fatal "Failed to open '$file' ($!)", 2;
     print $fh $data;
+    close($fh);
 }
 
 sub s_encode($$;$) {
@@ -128,8 +128,7 @@ sub s_load($$;@) {
     my ($uri, $fmt, %opts) = @_;
     $uri = \*STDIN if ($uri eq '-');
 
-    my $data = eval { s_load_uri($uri) };
-    die_fatal $@, 2 if $@;
+    my $data = s_load_uri($uri);
     $fmt = s_fmt_by_uri($uri) unless (defined $fmt);
     return s_decode($data, $fmt);
 }
@@ -137,12 +136,15 @@ sub s_load($$;@) {
 sub s_load_uri($) {
     my $uri = shift;
     my $data;
+
     if (ref $uri eq 'GLOB') {
         $data = do { local $/; <$uri> };
     } else {
-        open(my $fh, '<', $uri) or croak "Failed to open file '$uri' ($!)";
+        open(my $fh, '<', $uri) or die_fatal "Failed to open file '$uri' ($!)", 2;
         $data = do { local $/; <$fh> }; # load whole file
+        close($fh);
     }
+
     return $data;
 }
 
