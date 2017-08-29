@@ -298,8 +298,9 @@ sub exec {
 sub load {
     my $self = shift;
 
-    for my $i (@_) {
-        my $data = $self->load_uri($i) or return undef;
+    for (@_) {
+        my $data = $self->load_struct($_) or return undef;
+
         if (my $path = $self->{OPTS}->{path}) {
             my $p = eval { ps_parse($path) };
             if ($@) {

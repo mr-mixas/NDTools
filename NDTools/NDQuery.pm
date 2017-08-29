@@ -89,7 +89,7 @@ sub exec {
     $self->check_args(@ARGV) or die_fatal undef, 1;
 
     for my $uri (@ARGV ? @ARGV : \*STDIN) {
-        my @data = $self->load_uri($uri);
+        my @data = $self->load_struct($uri);
 
         if (defined $self->{OPTS}->{path}) {
             my $spath = eval { ps_parse($self->{OPTS}->{path}) };

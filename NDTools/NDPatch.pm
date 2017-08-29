@@ -46,10 +46,8 @@ sub exec {
 }
 
 sub load_patch {
-    shift->load_uri(@_);
+    shift->load_struct(@_);
 }
-
-*load_struct = \&load_patch;
 
 sub patch {
     my ($self, $struct, $patch) = @_;

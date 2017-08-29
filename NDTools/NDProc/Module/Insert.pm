@@ -36,7 +36,8 @@ sub arg_opts {
 
 sub configure {
     my $self = shift;
-    $self->{OPTS}->{value} = $self->load_uri($self->{OPTS}->{file})
+
+    $self->{OPTS}->{value} = $self->load_struct($self->{OPTS}->{file})
         if (defined $self->{OPTS}->{file});
 }
 

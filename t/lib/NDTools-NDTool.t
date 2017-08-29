@@ -18,10 +18,10 @@ $tool = new_ok('NDTools::NDTool') || die "Failed to init module";
 
 can_ok($tool, qw(VERSION arg_opts configure defaults dump_opts usage));
 
-$tmp = eval { $tool->load_uri('file-does-not-exists') };
+$tmp = eval { $tool->load_struct('file-does-not-exists') };
 like($@, qr/^Failed to open file/, "Must fail when file doesn't exists");
 
-$tmp = $tool->load_uri('../../../test/_data/menu.a.json');
+$tmp = $tool->load_struct('../../../test/_data/menu.a.json');
 
 ($got) = $tool->grep([[[],{regs => [qr/^.i/]},[],{keys => ['id']}]], $tmp);
 $exp = [

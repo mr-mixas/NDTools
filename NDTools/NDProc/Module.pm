@@ -6,6 +6,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use NDTools::INC;
+use NDTools::NDTool;
 use NDTools::Slurp qw(s_load);
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
@@ -43,11 +44,7 @@ sub get_opts {
     return $self->{OPTS};
 }
 
-sub load_uri {
-    my ($self, $uri) = @_;
-    log_debug { "Loading $uri" };
-    s_load($uri, undef) or return undef;
-}
+*load_struct = \&NDTools::NDTool::load_struct;
 
 sub new {
     my $self = bless {}, shift;

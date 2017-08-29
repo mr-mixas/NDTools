@@ -71,8 +71,9 @@ sub grep {
     return @out;
 }
 
-sub load_uri {
+sub load_struct {
     my ($self, $uri) = @_;
+
     log_trace { ref $uri ? "Reading from STDIN" : "Loading '$uri'" };
     s_load($uri, undef) or return undef;
 }

@@ -32,7 +32,7 @@ for my $mod (sort keys %{$ndproc->{MODS}}) {
         configure
         defaults
         get_opts
-        load_uri
+        load_struct
         usage
         parse_args
         process

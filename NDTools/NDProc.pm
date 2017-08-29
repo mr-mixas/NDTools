@@ -41,8 +41,9 @@ sub configure {
     $self->index_modules();
 
     $self->{rules} = [];
-    map { push @{$self->{rules}}, @{$self->load_uri($_)} } @{$self->{OPTS}->{rules}}
-        if ($self->{OPTS}->{rules});
+    map { push @{$self->{rules}}, @{$self->load_struct($_)} }
+        @{$self->{OPTS}->{rules}}
+            if ($self->{OPTS}->{rules});
 
     if ($self->{OPTS}->{module} or @{$self->{rules}}) {
         log_info { "Explicit rules used: builtin will be ignored" };
@@ -174,7 +175,7 @@ sub list_modules {
 }
 
 sub load_arg {
-    shift->load_uri(@_);
+    shift->load_struct(@_);
 }
 
 *load_source = \&load_arg;
