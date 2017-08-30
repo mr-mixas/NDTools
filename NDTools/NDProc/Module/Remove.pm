@@ -53,7 +53,7 @@ Remove - remove specified parts from structure
 
 =item B<--[no]blame>
 
-Blame calculaton toggle. Enabled by default.
+Blame calculation toggle. Enabled by default.
 
 =item B<--path> E<lt>pathE<gt>
 

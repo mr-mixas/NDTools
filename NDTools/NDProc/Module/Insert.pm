@@ -67,7 +67,7 @@ Insert - Insert value into structure
 
 =item B<--[no]blame>
 
-Blame calculaton toggle. Enabled by default.
+Blame calculation toggle. Enabled by default.
 
 =item B<--boolean> E<lt>true|false|1|0E<gt>
 

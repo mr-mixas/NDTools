@@ -191,7 +191,7 @@ Merge - merge structures according provided rules
 
 =item B<--[no]blame>
 
-Blame calculaton toggle. Enabled by default.
+Blame calculation toggle. Enabled by default.
 
 =item B<--ignore> E<lt>pathE<gt>
 

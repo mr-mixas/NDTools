@@ -18,7 +18,7 @@ ndpatch - apply diff to a structure
 
 =head1 DESCRIPTION
 
-Apply diff file to original one
+Apply diff file to original one.
 
 =head1 OPTIONS
 
@@ -26,7 +26,7 @@ Apply diff file to original one
 
 =item B<--help|-h>
 
-Print a help message and exit.
+Print help message and exit.
 
 =item B<--[no]pretty>
 

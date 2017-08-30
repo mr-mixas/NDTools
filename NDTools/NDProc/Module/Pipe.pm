@@ -69,7 +69,7 @@ Pipe - pipe structure to external program and apply result.
 
 =item B<--[no]blame>
 
-Blame calculaton toggle. Enabled by default.
+Blame calculation toggle. Enabled by default.
 
 =item B<--path> E<lt>pathE<gt>
 
