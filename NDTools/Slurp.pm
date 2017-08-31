@@ -61,13 +61,16 @@ sub _fix_decoded_yaml_bools($) {
 
 sub s_decode($$;$) {
     my ($data, $fmt, $opts) = @_;
+    my $format = uc($fmt);
 
-    if (uc($fmt) eq 'JSON') {
+    if ($format eq 'JSON') {
         $data = eval { JSON::from_json($data, {%{$FORMATS{JSON}}, %{$opts || {}}}) };
-    } elsif (uc($fmt) eq 'YAML') {
+    } elsif ($format eq 'YAML') {
         $data = eval { YAML::XS::Load($data) };
         die_fatal "Failed to decode '$fmt': " . $@, 4 if $@;
         _fix_decoded_yaml_bools($data);
+    } elsif ($format eq 'RAW') {
+        ;
     } else {
         die_fatal "Unable to decode '$fmt' (not supported)";
     }
