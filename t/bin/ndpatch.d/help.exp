@@ -4,7 +4,7 @@ Usage:
 
 Options:
     --help|-h
-        Print a help message and exit.
+        Print help message and exit.
 
     --[no]pretty
         On/Off pretty-print for JSON. Enabled by default.
