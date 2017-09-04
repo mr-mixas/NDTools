@@ -67,6 +67,11 @@ sub run_ok {
             return;
         }
 
+        if (not exists $t{clean} or defined $t{clean}) { # set to undef to skip
+            @{$t{clean}} = "$t{name}.got" unless exists $t{clean};
+            map { unlink $_ if (-f $_) } @{$t{clean}};
+        }
+
         done_testing();
     }
 }
