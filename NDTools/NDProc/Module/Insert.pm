@@ -9,7 +9,7 @@ use Struct::Path 0.71 qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Insert value into structure" }
-sub VERSION { "0.08" }
+sub VERSION { "0.09" }
 
 sub arg_opts {
     my $self = shift;
@@ -28,6 +28,7 @@ sub arg_opts {
             }
         },
         'file|f=s' => \$self->{OPTS}->{file},
+        'file-fmt=s' => \$self->{OPTS}->{'file-fmt'},
         'null|undef' => sub { $self->{OPTS}->{value} = undef },
         'number=f' => sub { $self->{OPTS}->{value} = 0 + $_[1] },
         'string|value=s' => \$self->{OPTS}->{value},
@@ -37,8 +38,9 @@ sub arg_opts {
 sub configure {
     my $self = shift;
 
-    $self->{OPTS}->{value} = $self->load_struct($self->{OPTS}->{file})
-        if (defined $self->{OPTS}->{file});
+    $self->{OPTS}->{value} =
+        $self->load_struct($self->{OPTS}->{file}, $self->{OPTS}->{'file-fmt'})
+            if (defined $self->{OPTS}->{file});
 }
 
 sub process_path {
@@ -76,6 +78,10 @@ Boolean value to insert.
 =item B<--file|-f> E<lt>fileE<gt>
 
 Load substructure from file.
+
+=item B<--file-fmt> E<lt><RAW|JSON|YAML>E<gt>
+
+Input file format.
 
 =item B<--null|--undef>
 

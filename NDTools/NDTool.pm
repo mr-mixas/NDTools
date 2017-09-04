@@ -72,10 +72,10 @@ sub grep {
 }
 
 sub load_struct {
-    my ($self, $uri) = @_;
+    my ($self, $uri, $fmt) = @_;
 
     log_trace { ref $uri ? "Reading from STDIN" : "Loading '$uri'" };
-    s_load($uri, undef) or return undef;
+    s_load($uri, $fmt) or return undef;
 }
 
 sub new {

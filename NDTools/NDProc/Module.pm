@@ -7,7 +7,6 @@ use warnings FATAL => 'all';
 
 use NDTools::INC;
 use NDTools::NDTool;
-use NDTools::Slurp qw(s_load);
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Storable qw(dclone);
