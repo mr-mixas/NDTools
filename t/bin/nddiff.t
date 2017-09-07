@@ -1,116 +1,437 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Capture::Tiny qw(capture);
 use Test::File::Contents;
-use Test::More;
+use Test::More tests => 52;
 
-use lib "t";
-use NDToolsTest;
+use NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
-my (@cmd, $out, $err, $exit);
+my $test;
+my $shared = "../../../test/_data";
+my @cmd = qw/nddiff/;
 
 ### essential tests
 
-@cmd = qw/nddiff/;
-($out, $err, $exit) = capture { system(@cmd) };
-is($out, '', "Check STDOUT for '@cmd'");
-like($err, qr/ERROR] Two arguments expected for diff/, "Check STDERR for '@cmd'");
-is($exit >> 8, 1, "Check exit code for '@cmd'");
+$test = "noargs";
+run_ok(
+    name => $test,
+    cmd => [ @cmd ],
+    stderr => qr/ERROR] Two arguments expected for diff/,,
+    exit => 1,
+);
 
-@cmd = qw/nddiff -vv -v4 --verbose --verbose 4 -V/;
-($out, $err, $exit) = capture { system(@cmd) };
-like($out, qr/^\d+\.\d+/, "Check STDOUT for '@cmd'");
-like($err, qr//, "Check STDERR for '@cmd'"); # FIXME
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "verbose";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, qw(-vv -v4 --verbose --verbose 4 -V)],
+    stdout => qr/^\d+\.\d+/,
+    exit => 0,
+);
 
-@cmd = qw/nddiff -h --help/;
-($out, $err, $exit) = capture { system(@cmd) };
-is($out, '', "Check STDOUT for '@cmd'");
-file_contents_eq_or_diff('help.exp', $err, "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "help";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--help', '-h' ],
+    stderr => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 0,
+);
 
 ### bin specific tests
 
-@cmd = qw(nddiff --brief ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('brief.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "json";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--json', "$shared/../alpha.json", "$shared/../beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-@cmd = qw(nddiff --brief --colors ../../../test/_data/bool.a.json ../../../test/_data/bool.b.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('brief-colors.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "json_ignore";
+run_ok(
+    name => $test,
+    cmd => [
+        @cmd, '--json', '--full', '--ignore', '{some}[5]{text}[0]{buried}[1]{"deep down"}{in}[0]{"the structure"}',
+        "$shared/deep-down-lorem.a.json", "$shared/deep-down-lorem.b.json"
+    ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 0, # no diff here
+);
+
+$test = "json_ignore_incorrect_path";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--json', '--ignore', 'incorrect path', "$shared/menu.a.json", "$shared/menu.b.json" ],
+    stderr => qr/FATAL] Failed to parse 'incorrect path '/, # FIXME: space at the end
+    exit => 4,
+);
+
+$test = "json_ignore_unexisted_path";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--json', '--full', '--ignore', '[1]{notexists}[5]', "$shared/menu.a.json", "$shared/menu.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "json_nodiff";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--json', "$shared/../alpha.json", "$shared/../alpha.json" ],
+    stdout => "{}\n",
+);
+
+$test = "json_nopretty";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--json', '--nopretty', "$shared/../alpha.json", "$shared/../beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "json_numbers";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--json', "$shared/numbers.a.json", "$shared/numbers.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "out_fmt_yaml";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--out-fmt', 'yaml', "$shared/../alpha.json", "$shared/../beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "rules";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--rules', "$shared/../alpha.json", "$shared/../beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_array_0";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/menu.a.json", "$shared/menu.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_array_1";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/menu.b.json", "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_bool";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--nopretty', "$shared/bool.a.json", "$shared/bool.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_brief";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--brief', "$shared/menu.a.json", "$shared/menu.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_brief_colors";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--brief', '--colors', "$shared/bool.a.json", "$shared/bool.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
 # [5] here is added item, that's why empty STDOUT. But exit code must be 8 - diff exists after all
-@cmd = qw(nddiff --brief --path [1]{Edit}[5] ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
-($out, $err, $exit) = capture { system(@cmd) };
-is($out, '', "Check STDOUT for '@cmd'");
-like($err, qr/ALERT] Opt --path is deprecated and will be removed/, "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_brief_path";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--brief', '--path', '[1]{Edit}[5]', "$shared/menu.a.json", "$shared/menu.b.json" ],
+    stderr => qr/ALERT] Opt --path is deprecated and will be removed/,
+    stdout => '',
+    exit => 8,
+);
 
-@cmd = qw(nddiff --rules ../../../test/alpha.json ../../../test/beta.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('rules.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_colors";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--colors', "$shared/../alpha.json", "$shared/../beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-@cmd = qw(nddiff --grep {list}[1] ../../../test/_data/bool.a.json ../../../test/_data/bool.b.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('grep.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_full_headers";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--full-headers', "$shared/../alpha.json", "$shared/../beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-@cmd = qw(nddiff --grep {fqdn} --grep {mtime} ../../../test/alpha.json ../../../test/beta.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('grep2.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_grep_1";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '{list}[1]', "$shared/bool.a.json", "$shared/bool.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-@cmd = qw(nddiff --colors ../../../test/alpha.json ../../../test/beta.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('term-colors.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_grep_2";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '{fqdn}', '--grep', '{mtime}', "$shared/../alpha.json", "$shared/../beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-@cmd = qw(nddiff --full-headers ../../../test/alpha.json ../../../test/beta.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('term-full_headers.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_grep_utf8_path";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '{"текст"}', "$shared/text-utf8.a.json", "$shared/text-utf8.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-@cmd = qw(nddiff --nopretty ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('term-nopretty.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_hash";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/../alpha.json", "$shared/../beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-@cmd = qw(nddiff --nopretty ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('term-nopretty.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_nodiff";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/menu.a.json", "$shared/menu.a.json" ],
+);
 
-@cmd = qw(nddiff ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('term-_array-00.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_nopretty";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--nopretty', "$shared/menu.a.json", "$shared/menu.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-@cmd = qw(nddiff ../../../test/_data/menu.b.json ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('term-_array-01.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_path";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--path', '{files}', "$shared/../alpha.json", "$shared/../beta.json" ],
+    stderr => qr/ALERT] Opt --path is deprecated and will be removed in the future/,
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-@cmd = qw(nddiff ../../../test/_data/struct-subkey-AR.a.json ../../../test/_data/struct-subkey-AR.b.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('term-struct-subkey-AR.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "term_show";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--show', "$test.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
-done_testing();
+$test = "term_show_brief";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--show', '--brief', "$test.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_quiet";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--quiet', "$shared/bool.a.json", "$shared/bool.b.json" ],
+    stdout => '',
+    exit => 8,
+);
+
+$test = "term_subkey_AR";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/struct-subkey-AR.a.json", "$shared/struct-subkey-AR.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/deep-down-lorem.a.json", "$shared/deep-down-lorem.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_AR_0";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/text-AR.a.json", "$shared/text-AR.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_AR_1";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/text-AR.b.json", "$shared/text-AR.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+# check that sequences of changed lines grouped by removed and added blocks
+$test = "term_text_changed_seqs";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/text-changed-seqs.a.json", "$shared/text-changed-seqs.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_00";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '0', "$shared/text-changed-seqs.a.json", "$shared/text-changed-seqs.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_01";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '1', "$shared/text-changed-seqs.a.json", "$shared/text-changed-seqs.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+$test = "term_text_ctx_02";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '2', "$shared/text-changed-seqs.a.json", "$shared/text-changed-seqs.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_03";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '3', "$shared/text-changed-seqs.a.json", "$shared/text-changed-seqs.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_04";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '0', "$shared/text-utf8.a.json", "$shared/text-utf8.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_05";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '1', "$shared/text-utf8.a.json", "$shared/text-utf8.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_06";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '2', "$shared/text-utf8.a.json", "$shared/text-utf8.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_07";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '3', "$shared/text-utf8.a.json", "$shared/text-utf8.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_08";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '9', "$shared/text-utf8.a.json", "$shared/text-utf8.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_09";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '0', "$shared/deep-down-lorem.a.json", "$shared/deep-down-lorem.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_10";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '0', "$shared/text-AR.a.json", "$shared/text-AR.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_ctx_11";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ctx-text', '1', "$shared/text-AR.a.json", "$shared/text-AR.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_newlines_0";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/text-newlines.a.json", "$shared/text-newlines.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_newlines_1";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/text-newlines.b.json", "$shared/text-newlines.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_newlines_2";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/text-newlines2.a.json", "$shared/text-newlines2.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_newlines_3";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/text-newlines2.b.json", "$shared/text-newlines2.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_utf8";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/text-utf8.a.json", "$shared/text-utf8.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
