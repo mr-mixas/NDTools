@@ -9,9 +9,11 @@ use open qw(:std :utf8);
 
 use File::Basename qw(basename);
 use JSON qw();
-use Log::Log4Cli;
 use Scalar::Util qw(readonly);
 use YAML::XS qw();
+
+use NDTools::INC;
+use Log::Log4Cli;
 
 our @EXPORT_OK = qw(
     s_decode
