@@ -1,20 +1,14 @@
 {
-   "false" : true,
+   "false" : false,
    "list" : [
       true,
-      true,
       false,
+      true,
       false
    ],
    "same" : {
       "false" : false,
       "true" : true
    },
-   "some" : [
-      null,
-      {
-         "path" : "string"
-      }
-   ],
-   "true" : false
+   "true" : true
 }
