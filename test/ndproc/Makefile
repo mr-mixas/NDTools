@@ -24,12 +24,8 @@ test: \
 	t_m_Merge_preserve \
 	t_m_Merge_merge_style \
 	t_m_Merge_multiargs \
-	t_m_Remove \
 	t_m_Remove_dump_rules \
-	t_m_Remove_full_doc \
 	t_m_Remove_multiargs \
-	t_m_Remove_preserve \
-	t_m_Remove__strict \
 	t_m_Remove_version \
 	t_m_Remove__dump_blame \
 	t_m_Remove__embed_blame \
@@ -156,18 +152,8 @@ t_m_Pipe:
 	$(BIN) $(VERB) --module Pipe --path '{files}' --cmd 'sed "s/1/42/g"' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
-t_m_Remove:
-	cp ../_data/deep-down-lorem.a.json $@.0000.got
-	$(BIN) $(VERB) --module Remove --path '{some}[0..5]' $@.0000.got
-	diff $@.0000.exp $@.0000.got
-
 t_m_Remove_dump_rules:
 	$(BIN) $(VERB) --module Remove --path '{some}[0..5]' --dump-rules $@.0000.got
-	diff $@.0000.exp $@.0000.got
-
-t_m_Remove_full_doc:
-	cp ../_data/menu.a.json $@.0000.got
-	$(BIN) $(VERB) --module Remove --strict --path '' $@.0000.got
 	diff $@.0000.exp $@.0000.got
 
 t_m_Remove_multiargs:
@@ -176,15 +162,6 @@ t_m_Remove_multiargs:
 	$(BIN) $(VERB) --module Remove --path '[1]{Edit}[3..5]' $@.0000.got $@.0010.got
 	diff $@.0000.exp $@.0000.got
 	diff $@.0010.got $@.0010.got
-
-t_m_Remove_preserve:
-	cp ../_data/menu.a.json $@.0000.got
-	$(BIN) $(VERB) --module Remove --strict --path '[]' --preserve '[]{}[]{id}' $@.0000.got
-	diff $@.0000.exp $@.0000.got
-
-t_m_Remove__strict:
-	cp ../_data/deep-down-lorem.a.json $@.0000.got
-	$(BIN) $(VERB) --module Remove --path '{some}[1000]' --strict $@.0000.got; $(VRFY_EXIT_4)
 
 t_m_Remove_version:
 	$(BIN) --module Remove --version -V > $@.0000.got
