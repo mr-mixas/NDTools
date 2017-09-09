@@ -26,7 +26,6 @@ test: \
 	t_m_Merge_multiargs \
 	t_m_Remove_dump_rules \
 	t_m_Remove_multiargs \
-	t_m_Remove_version \
 	t_m_Remove__dump_blame \
 	t_m_Remove__embed_blame \
 	t_m_Remove__noblame \
@@ -162,10 +161,6 @@ t_m_Remove_multiargs:
 	$(BIN) $(VERB) --module Remove --path '[1]{Edit}[3..5]' $@.0000.got $@.0010.got
 	diff $@.0000.exp $@.0000.got
 	diff $@.0010.got $@.0010.got
-
-t_m_Remove_version:
-	$(BIN) --module Remove --version -V > $@.0000.got
-	diff $@.0000.exp $@.0000.got
 
 t_m_Remove__dump_blame:
 	cp ../_data/menu.a.json $@.0010.got
