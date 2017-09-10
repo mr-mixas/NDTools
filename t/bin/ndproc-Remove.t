@@ -43,7 +43,7 @@ run_ok(
     name => $test,
     pre => sub { copy("$shared/deep-down-lorem.a.json", "$test.got") },
     cmd => [ @cmd, '--path', '{some}[1000]', '--strict', "$test.got" ],
-    stderr => qr/ FATAL] Failed to resolve path '{some}\[1000\]'/,
+    stderr => qr/ FATAL] Failed to resolve path '\{some\}\[1000\]'/,
     exit => 4,
 );
 
