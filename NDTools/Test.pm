@@ -18,6 +18,11 @@ our @EXPORT = qw(
 sub run_ok {
     my %t = @_;
 
+    if (exists $t{skip} and $t{skip}->()) {
+        pass("Test '$t{name}' cancelled by 'skip' opt");
+        return;
+    }
+
     my @envs = exists $t{env} ? %{$t{env}} : ();
     SET_ENV: # can't use loop here - env vars will be localized in it's block
     @envs and local $ENV{$envs[0]} = $envs[1];
