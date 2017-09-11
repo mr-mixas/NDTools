@@ -1,3 +1,21 @@
+ndtools (0.4.6) unstable; urgency=low
+
+  * all: --dump-opts opt added
+  * all: fix boolean values on YAML decode (YAML::XS issue workaround)
+  * nddiff: rules diff format added (--rules opt)
+  * nddiff: Don't fail trying to remove ignored parts on nonstructures
+  * nddiff: --grep opt added
+  * nddiff: --path opt deprecated (ambigous)
+  * ndproc Insert: --preserve opt supported
+  * ndproc-Insert: --file-fmt opt added
+  * ndproc Remove: paths with hooks removal supported
+  * ndquery: --grep opt may be used several times now
+  * ndquery: get rid of parenthesis, STDIN correctly handled for --md5
+  * ndquery: --delete opt added
+  * ndquery: --replace opt added
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Mon, 11 Sep 2017 12:41:21 +0300
+
 ndtools (0.4.5) unstable; urgency=low
 
   * ndquery: --grep opt added
