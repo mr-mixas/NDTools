@@ -13,7 +13,7 @@
          }
       },
       "rule_id" : 1,
-      "source" : "../beta.json"
+      "source" : "../../../test/beta.json"
    },
    {
       "A" : {
@@ -22,7 +22,7 @@
          }
       },
       "rule_id" : 2,
-      "source" : "../gamma.json"
+      "source" : "../../../test/gamma.json"
    },
    {
       "A" : {
@@ -30,6 +30,6 @@
          "mtime" : 1462431001
       },
       "rule_id" : 3,
-      "source" : "t_m_Merge_implicit_source.0000.got"
+      "source" : "source_self.got"
    }
 ]

@@ -9,7 +9,7 @@
          "mtime" : 1462431002
       },
       "rule_id" : 0,
-      "source" : "../beta.json"
+      "source" : "../../../test/_data/../beta.json"
    },
    {
       "A" : {
@@ -20,6 +20,6 @@
          "mtime" : 1462431003
       },
       "rule_id" : 1,
-      "source" : "../gamma.json"
+      "source" : "../../../test/_data/../gamma.json"
    }
 ]

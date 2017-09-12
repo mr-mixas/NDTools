@@ -10,7 +10,7 @@
    {
       "modname" : "Merge",
       "path" : "{files}",
-      "source" : "../beta.json",
+      "source" : "../../../test/beta.json",
       "strict" : 1,
       "style" : "R_OVERRIDE"
    },
@@ -19,7 +19,7 @@
       "path" : [
          "{files}"
       ],
-      "source" : "../gamma.json",
+      "source" : "../../../test/gamma.json",
       "strict" : 1,
       "style" : "R_OVERRIDE"
    },

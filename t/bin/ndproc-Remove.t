@@ -5,7 +5,6 @@ use File::Copy qw(copy);
 use Test::File::Contents;
 use Test::More tests => 5;
 
-use NDTools::INC;
 use NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
