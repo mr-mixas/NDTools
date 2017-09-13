@@ -40,11 +40,6 @@ t_disable_module:
 t_m__UNKNOWN_via_rules:
 	$(BIN) $(VERB) --rules $@.rules.json ../_data/menu.a.json; $(VRFY_EXIT_1)
 
-t_m_Pipe:
-	cp ../alpha.json $@.0000.got
-	$(BIN) $(VERB) --module Pipe --path '{files}' --cmd 'sed "s/1/42/g"' $@.0000.got
-	diff $@.0000.exp $@.0000.got
-
 t_m_Remove_dump_rules:
 	$(BIN) $(VERB) --module Remove --path '{some}[0..5]' --dump-rules $@.0000.got
 	diff $@.0000.exp $@.0000.got
