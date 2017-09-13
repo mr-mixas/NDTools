@@ -11,7 +11,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Modify structure using external process" }
-sub VERSION { "0.01" }
+sub VERSION { "0.02" }
 
 sub arg_opts {
     my $self = shift;
@@ -25,6 +25,9 @@ sub arg_opts {
 
 sub process {
     my ($self, $data, $opts) = @_;
+
+    die_fatal "Command to run should be defined", 1
+        unless defined ($opts->{command});
 
     $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
 
@@ -71,9 +74,14 @@ Pipe - pipe structure to external program and apply result.
 
 Blame calculation toggle. Enabled by default.
 
+=item B<--command|--cmd> E<lt>commandE<gt>
+
+Command to run. Exit 0 expected for success. JSON emitted to it's STDERR
+will be applied to original structure.
+
 =item B<--path> E<lt>pathE<gt>
 
-Path in the structure to remove. May be used several times.
+Structure to send to cammand's STDIN.
 
 =item B<--preserve> E<lt>pathE<gt>
 
