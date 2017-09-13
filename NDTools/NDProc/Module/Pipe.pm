@@ -44,8 +44,8 @@ sub process {
             run3($opts->{command}, \$in, \$out, \$err, { return_if_system_error => 1});
             die_fatal "Failed to run '$opts->{command}' ($!)", 2 if ($? == -1); # run3 specific
             unless ($? == 0) {
-                die_fatal "'$opts->{command}' exited with $? (" .
-                    join(" ", split("\n", $err)) . ")", 16;
+                die_fatal "'$opts->{command}' exited with " . ($? >> 8) .
+                    ($err ? " (" . join(" ", split("\n", $err)) . ")" : ""), 16;
             }
 
             ${$r} = s_decode($out, 'JSON');
