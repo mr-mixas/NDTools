@@ -12,7 +12,7 @@ use NDTools::NDProc;
 
 #chdir t_dir or die "Failed to change test dir";
 
-my $ndproc = NDTools::NDProc->new() or die "Failed to instabntiate 'NDTools::NDProc'";
+my $ndproc = NDTools::NDProc->new() or die "Failed to instantiate 'NDTools::NDProc'";
 
 for my $mod (sort keys %{$ndproc->{MODS}}) {
     $ndproc->{OPTS}->{module} = $mod;

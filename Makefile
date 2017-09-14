@@ -11,7 +11,6 @@ TEST_JOBS ?= 4
 all: dist
 
 clean: clean_test
-	make -C test clean
 	make -C dist veryclean
 
 clean_test:
@@ -30,8 +29,6 @@ dist:
 test: depends
 	prove t/*.t t/lib/*.t
 	prove --jobs $(TEST_JOBS) t/bin/*.t
-	make -C test
-	@echo ===== ALL TESTS PASSED =====
 
 NDTools/INC/Hash/Merge/Extra.pm:
 	mkdir -p $(@D)
