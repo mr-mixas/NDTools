@@ -1,214 +1,253 @@
 use strict;
 use warnings FATAL => 'all';
 
-use Capture::Tiny qw(capture);
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More;
+use Test::More tests => 31;
 
-use lib "t";
-use NDToolsTest;
+use NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
-my (@cmd, $out, $err, $exit);
+my $test;
+my $shared = "../../../test/_data";
+my @cmd = qw/ndquery/;
 
 ### essential tests
 
-@cmd = qw/ndquery <\/dev\/null/;
-($out, $err, $exit) = capture { system("@cmd") };
-is($out, '', "Check STDOUT for '@cmd'");
-like($err, qr/FATAL] Failed to decode/, "Check STDERR for '@cmd'");
-is($exit >> 8, 4, "Check exit code for '@cmd'");
+$test = "noargs";
+run_ok(
+    name => $test,
+    cmd => [ "@cmd < /dev/null" ],
+    stderr => qr/ FATAL] Failed to decode /,
+    exit => 4
+);
 
-@cmd = qw/ndquery -vv -v4 --verbose --verbose 4 -V/;
-($out, $err, $exit) = capture { system(@cmd) };
-like($out, qr/^\d+\.\d+/, "Check STDOUT for '@cmd'");
-like($err, qr//, "Check STDERR for '@cmd'"); # FIXME
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "verbose";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, qw(-vv -v4 --verbose --verbose 4 -V)],
+    stdout => qr/^\d+\.\d+/,
+);
 
-@cmd = qw/ndquery -h --help/;
-($out, $err, $exit) = capture { system(@cmd) };
-is($out, '', "Check STDOUT for '@cmd'");
-file_contents_eq_or_diff('help.exp', $err, "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "help";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--help', '-h' ],
+    stderr => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
 ### bin specific tests
 
-@cmd = qw(ndquery ../../../test/alpha.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('../../../test/alpha.json', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
-
-@cmd = qw(ndquery ../../../test/_data/bool.yaml);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff(
-    '../../../test/_data/bool.yaml', $out,
-    "YAML bool values must be correctly converted"
+$test = "bool_yaml"; # YAML bool values must be correctly loaded
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/bool.yaml" ],
+    stdout => sub { file_contents_eq_or_diff("$shared/bool.yaml", shift, $test) },
 );
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
 
-@cmd = qw(ndquery --list ../../../test/alpha.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('list.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "default";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$shared/../alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$shared/../alpha.json", shift, $test) },
+);
 
-@cmd = qw(ndquery --list --depth 1 ../../../test/alpha.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('list-depth.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "delete";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--delete', '{mtime}', '--delete', '{files}{"/etc/hosts"}', "$shared/../alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --list --path {files} ../../../test/alpha.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('list-path.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "grep_0";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '[]{/^.i/}[1]{id}', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --list --colors ../../../test/_data/deep-down-lorem.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('list-colors.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "grep_1";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '[]{}[](not defined)', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --list --values --vals ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('list-values.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "grep_2";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '{files}', '--grep', '{fqdn}', "$shared/../alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --list --values --vals --depth 3 ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('list-values-depth.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "list";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--list', "$shared/../alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --md5 ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('md5.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "list_colors";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--list', '--colors', "$shared/deep-down-lorem.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --md5 --path [0]{File}[0]{label} ../../../test/_data/menu.a.json ../../../test/_data/menu.b.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('md5-path.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "list_depth";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--list', '--depth', '1', "$shared/../alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --md5 --path [0]{File}[0]{label} < ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(join(' ', @cmd)) };
-file_contents_eq_or_diff('md5-STDIN.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "list_path";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--list', '--path', '{files}', "$shared/../alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --path {files}{"/etc/hosts"} ../../../test/alpha.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('path-00.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "list_values";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--list', '--values', '--vals', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --path [] ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('path-01.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "list_values_depth";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--list', '--values', '--depth', '3', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = ('ndquery', '--path', '[1]{Edit}[]{id}(eq "edit_paste")(<<)', '../../../test/_data/menu.a.json');
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('path-02.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "md5";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--md5', "$shared/menu.a.json", "$shared/menu.b.json", "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = ('ndquery', '--path', '[1]{Edit}[](not defined)', '../../../test/_data/menu.a.json');
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('path-03.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "md5_path";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--md5', '--path', '[0]{File}[0]{label}', "$shared/menu.a.json", "$shared/menu.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = ('ndquery', '--path', '{"текст"}', '../../../test/_data/text-utf8.a.json');
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('path-04.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "md5_stdin";
+run_ok(
+    name => $test,
+    cmd => [ "@cmd --md5 --path [0]{File}[0]{label} < $shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --raw-output --path [0]{File}[1] ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('raw-output-object.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "path_0";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--path', '{files}{"/etc/hosts"}', "$shared/../alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --raw-output --path [0]{File}[1]{label} ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('raw-output-string.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "path_1";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--path', '[]', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --strict --path [0]{NoTeXiStS} ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-is($out, '', "Check STDOUT for '@cmd'");
-like($err, qr/FATAL] Failed to lookup/, "Check STDERR for '@cmd'");
-is($exit >> 8, 8, "Check exit code for '@cmd'");
+$test = "path_2";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--path', '[1]{Edit}[]{id}(eq "edit_paste")(back)', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --nostrict --path [0]{NoTeXiStS} ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-is($out, '', "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "path_3";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--path', '[1]{Edit}[](not defined)', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --grep []{/^.i/}[1]{id} ../../../test/_data/menu.a.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('grep-00.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "path_utf8";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--path', '{"текст"}', "$shared/text-utf8.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = ('ndquery', '--grep', '[]{}[](not defined)', '../../../test/_data/menu.a.json');
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('grep-01.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "raw_output_object";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--raw-output', '--path', '[0]{File}[1]', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --grep {files} --grep {fqdn} ../../../test/alpha.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('grep-02.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "raw_output_string";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--raw-output', '--path', '[0]{File}[1]{label}', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
 
-@cmd = qw(ndquery --delete {mtime} --delete {files}{"/etc/hosts"} ../../../test/alpha.json);
-($out, $err, $exit) = capture { system(@cmd) };
-file_contents_eq_or_diff('delete.exp', $out, "Check STDOUT for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "replace_list";
+run_ok(
+    name => $test,
+    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    cmd => [ @cmd, '--replace', '--list', "$test.got" ],
+    test => sub { files_eq_or_diff("$shared/../alpha.json", "$test.got", $test) }, # must remain unchanged
+    stderr => qr/FATAL] --replace opt can't be used with --list/,
+    exit => 1,
+);
 
-@cmd = qw(ndquery --replace --delete {mtime} replace-00.got replace-01.got);
-copy('../../../test/alpha.json', 'replace-00.got') or die "Failed to prepare got file ($!)";
-copy('../../../test/beta.json',  'replace-01.got') or die "Failed to prepare got file ($!)";
-($out, $err, $exit) = capture { system(@cmd) };
-files_eq_or_diff('replace-00.exp', 'replace-00.got', "Check result for '@cmd'");
-files_eq_or_diff('replace-01.exp', 'replace-01.got', "Check result for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "replace_md5";
+run_ok(
+    name => $test,
+    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    cmd => [ @cmd, '--replace', '--md5', "$test.got" ],
+    test => sub { files_eq_or_diff("$shared/../alpha.json", "$test.got", $test) }, # must remain unchanged
+    stderr => qr/FATAL] --replace opt can't be used with --md5/,
+    exit => 1,
+);
 
-@cmd = (qw(ndquery --replace --raw-output replace-02.got --path), '{fqdn,mtime,files}');
-copy('../../../test/alpha.json', 'replace-02.got') or die "Failed to prepare got file ($!)";
-($out, $err, $exit) = capture { system(@cmd) };
-files_eq_or_diff('replace-02.exp', 'replace-02.got', "Check result for '@cmd'");
-is($err, '', "Check STDERR for '@cmd'");
-is($exit >> 8, 0, "Check exit code for '@cmd'");
+$test = "replace_multiargs";
+run_ok(
+    name => $test,
+    pre => sub {
+        copy("$shared/../alpha.json", "$test.0.got") and
+        copy("$shared/../beta.json", "$test.1.got")
+    },
+    cmd => [ @cmd, '--replace', '--delete', '{mtime}', "$test.0.got", "$test.1.got" ],
+    test => sub {
+        files_eq_or_diff("$test.0.exp", "$test.0.got", $test) and
+        files_eq_or_diff("$test.1.exp", "$test.1.got", $test)
+    },
+    clean => [ "$test.0.got", "$test.1.got" ],
+);
 
-@cmd = qw(ndquery --replace --list replace-03.got);
-copy('../../../test/alpha.json', 'replace-03.got') or die "Failed to prepare got file ($!)";
-($out, $err, $exit) = capture { system(@cmd) };
-files_eq_or_diff('../../../test/alpha.json', 'replace-03.got', "Check result for '@cmd'");
-like($err, qr/FATAL] --replace opt can't be used with --list/, "Check STDERR for '@cmd'");
-is($exit >> 8, 1, "Check exit code for '@cmd'");
+$test = "replace_raw_output";
+run_ok(
+    name => $test,
+    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    cmd => [ @cmd, '--replace', '--raw-output', '--path', '{fqdn,mtime,files}', "$test.got" ],
+    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+);
 
-@cmd = qw(ndquery --replace --md5 replace-03.got);
-($out, $err, $exit) = capture { system(@cmd) };
-files_eq_or_diff('../../../test/alpha.json', 'replace-03.got', "Check result for '@cmd'");
-like($err, qr/FATAL] --replace opt can't be used with --md5/, "Check STDERR for '@cmd'");
-is($exit >> 8, 1, "Check exit code for '@cmd'");
+$test = "strict";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--strict', '--path', '{NoTeXiStS}', "$shared/menu.a.json" ],
+    stderr => qr/FATAL] Failed to lookup path '\{NoTeXiStS\}'/,
+    exit => 8
+);
 
-done_testing();
+$test = "strict_disabled";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--nostrict', '--path', '{NoTeXiStS}', "$shared/menu.a.json" ],
+    stdout => '', # empty
+);
+
