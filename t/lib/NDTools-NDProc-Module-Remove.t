@@ -3,8 +3,6 @@ use warnings FATAL => 'all';
 
 use Test::More tests => 2;
 
-use lib "t";
-use NDToolsTest;
 use NDTools::NDProc::Module::Remove;
 
 my ($exp, $got, $mod);

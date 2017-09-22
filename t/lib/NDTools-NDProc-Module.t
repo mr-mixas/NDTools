@@ -5,14 +5,10 @@ use Capture::Tiny qw(capture);
 use Test::File::Contents;
 use Test::More;
 
-use lib "t";
-use NDToolsTest;
-
 use NDTools::NDProc;
 
-#chdir t_dir or die "Failed to change test dir";
-
-my $ndproc = NDTools::NDProc->new() or die "Failed to instantiate 'NDTools::NDProc'";
+my $ndproc = NDTools::NDProc->new() or
+    die "Failed to instantiate 'NDTools::NDProc'";
 
 for my $mod (sort keys %{$ndproc->{MODS}}) {
     $ndproc->{OPTS}->{module} = $mod;

@@ -4,8 +4,7 @@ use warnings FATAL => 'all';
 use Test::File::Contents;
 use Test::More tests => 6;
 
-use lib "t";
-use NDToolsTest;
+use NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 

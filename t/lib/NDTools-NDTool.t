@@ -5,8 +5,7 @@ use Capture::Tiny qw(capture);
 use Test::File::Contents;
 use Test::More tests => 10;
 
-use lib "t";
-use NDToolsTest;
+use NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
