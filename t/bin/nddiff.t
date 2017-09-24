@@ -9,7 +9,7 @@ use NDTools::Test;
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my $shared = "../../../test/_data";
+my $shared = "../../_data";
 my @cmd = qw/nddiff/;
 
 ### essential tests
@@ -43,7 +43,7 @@ run_ok(
 $test = "json";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--json', "$shared/../alpha.json", "$shared/../beta.json" ],
+    cmd => [ @cmd, '--json', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
@@ -78,14 +78,14 @@ run_ok(
 $test = "json_nodiff";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--json', "$shared/../alpha.json", "$shared/../alpha.json" ],
+    cmd => [ @cmd, '--json', "$shared/cfg.alpha.json", "$shared/cfg.alpha.json" ],
     stdout => "{}\n",
 );
 
 $test = "json_nopretty";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--json', '--nopretty', "$shared/../alpha.json", "$shared/../beta.json" ],
+    cmd => [ @cmd, '--json', '--nopretty', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
@@ -101,7 +101,7 @@ run_ok(
 $test = "out_fmt_yaml";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--out-fmt', 'yaml', "$shared/../alpha.json", "$shared/../beta.json" ],
+    cmd => [ @cmd, '--out-fmt', 'yaml', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
@@ -109,7 +109,7 @@ run_ok(
 $test = "rules";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--rules', "$shared/../alpha.json", "$shared/../beta.json" ],
+    cmd => [ @cmd, '--rules', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
@@ -167,7 +167,7 @@ run_ok(
 $test = "term_colors";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--colors', "$shared/../alpha.json", "$shared/../beta.json" ],
+    cmd => [ @cmd, '--colors', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
@@ -175,7 +175,7 @@ run_ok(
 $test = "term_full_headers";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--full-headers', "$shared/../alpha.json", "$shared/../beta.json" ],
+    cmd => [ @cmd, '--full-headers', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
@@ -191,7 +191,7 @@ run_ok(
 $test = "term_grep_2";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--grep', '{fqdn}', '--grep', '{mtime}', "$shared/../alpha.json", "$shared/../beta.json" ],
+    cmd => [ @cmd, '--grep', '{fqdn}', '--grep', '{mtime}', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
@@ -207,7 +207,7 @@ run_ok(
 $test = "term_hash";
 run_ok(
     name => $test,
-    cmd => [ @cmd, "$shared/../alpha.json", "$shared/../beta.json" ],
+    cmd => [ @cmd, "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
@@ -229,7 +229,7 @@ run_ok(
 $test = "term_path";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--path', '{files}', "$shared/../alpha.json", "$shared/../beta.json" ],
+    cmd => [ @cmd, '--path', '{files}', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stderr => qr/ALERT] Opt --path is deprecated and will be removed in the future/,
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,

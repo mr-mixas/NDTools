@@ -10,7 +10,7 @@ use NDTools::Test;
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my $shared = "../../../test/_data";
+my $shared = "../../_data";
 my @cmd = qw/ndproc --module Insert/;
 
 $test = "bool_0";

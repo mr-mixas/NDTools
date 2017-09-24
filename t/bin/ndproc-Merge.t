@@ -10,7 +10,7 @@ use NDTools::Test;
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my $shared = "../../../test/_data";
+my $shared = "../../_data";
 my @cmd = qw/ndproc --module Merge/;
 
 $test = "dump_rules";
@@ -31,8 +31,8 @@ run_ok(
 $test = "ignore";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
-    cmd => [ @cmd, '--source', "$shared/../beta.json", '--ignore', "{files}{'/etc/hostname'}", "$test.got" ],
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--ignore', "{files}{'/etc/hostname'}", "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
@@ -96,10 +96,10 @@ $test = "multiargs";
 run_ok(
     name => $test,
     pre => sub {
-        copy("$shared/../alpha.json", "$test.0.got") and
-        copy("$shared/../beta.json", "$test.1.got")
+        copy("$shared/cfg.alpha.json", "$test.0.got") and
+        copy("$shared/cfg.beta.json", "$test.1.got")
     },
-    cmd => [ @cmd, '--source', "$shared/../gamma.json", "$test.0.got", "$test.1.got" ],
+    cmd => [ @cmd, '--source', "$shared/cfg.gamma.json", "$test.0.got", "$test.1.got" ],
     test => sub {
         files_eq_or_diff("$test.0.exp", "$test.0.got", $test) and
         files_eq_or_diff("$test.1.exp", "$test.1.got", $test)
@@ -110,23 +110,23 @@ run_ok(
 $test = "path";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
-    cmd => [ @cmd, '--source', "$shared/../beta.json", '--merge', '{files}', '--merge', '{mtime}', "$test.got" ],
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--merge', '{files}', '--merge', '{mtime}', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
 $test = "preserve";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
-    cmd => [ @cmd, '--source', "$shared/../beta.json", '--style', 'R_REPLACE', '--preserve', '{fqdn}', "$test.got" ],
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--style', 'R_REPLACE', '--preserve', '{fqdn}', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
 $test = "source_self";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--rules', "$test.rules.json", '--dump-blame', "$test.blame.got", "$test.got" ],
     test => sub {
         files_eq_or_diff("$test.exp", "$test.got", $test) and
@@ -138,8 +138,8 @@ run_ok(
 $test = "sequent_merge";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
-    cmd => [ @cmd, '--source', "$shared/../beta.json", '--source', "$shared/../gamma.json", '--dump-blame', "$test.blame.got", "$test.got" ],
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--source', "$shared/cfg.gamma.json", '--dump-blame', "$test.blame.got", "$test.got" ],
     test => sub {
         files_eq_or_diff("$test.exp", "$test.got", $test) and
         files_eq_or_diff("$test.blame.exp", "$test.blame.got", $test)
@@ -150,36 +150,36 @@ run_ok(
 $test = "style";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
-    cmd => [ @cmd, '--source', "$shared/../beta.json", '--merge', '{files}', '--style', 'L_OVERRIDE', '--merge', '{mtime}', "$test.got" ],
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--merge', '{files}', '--style', 'L_OVERRIDE', '--merge', '{mtime}', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
 $test = "strict_default"; # strict enabled by default
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
-    cmd => [ @cmd, '--source', "$shared/../beta.json", '--merge', '{not_exists}', "$test.got" ],
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--merge', '{not_exists}', "$test.got" ],
     stderr => qr/ FATAL] No such path \(\{not_exists\}\)/, # FIXME: replace parens by single quotes
-    test => sub { files_eq_or_diff("$shared/../alpha.json", "$test.got", $test) },
+    test => sub { files_eq_or_diff("$shared/cfg.alpha.json", "$test.got", $test) },
     exit => 4,
 );
 
 $test = "strict_enabled";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
-    cmd => [ @cmd, '--source', "$shared/../beta.json", '--strict', '--merge', '{not_exists}', "$test.got" ],
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--strict', '--merge', '{not_exists}', "$test.got" ],
     stderr => qr/ FATAL] No such path \(\{not_exists\}\)/, # FIXME: replace parens by single quotes
-    test => sub { files_eq_or_diff("$shared/../alpha.json", "$test.got", $test) },
+    test => sub { files_eq_or_diff("$shared/cfg.alpha.json", "$test.got", $test) },
     exit => 4,
 );
 
 $test = "strict_disabled";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
-    cmd => [ @cmd, '--source', "$shared/../beta.json", '--strict', '--merge', '{not_exists}', '--nostrict', '--merge', '{mtime}', "$test.got" ],
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--strict', '--merge', '{not_exists}', '--nostrict', '--merge', '{mtime}', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 

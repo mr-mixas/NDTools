@@ -10,7 +10,7 @@ use NDTools::Test;
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my $shared = "../../../test/_data";
+my $shared = "../../_data";
 my @cmd = qw/ndproc/;
 
 ### essential tests
@@ -76,23 +76,23 @@ run_ok(
 $test = "module_disabled_0";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--rules', "$test.rules.json", '--disable-module', 'Insert', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 $test = "module_disabled_1";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--rules', "$test.rules.json", '--disable-module', 'Remove', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 $test = "module_disabled_1";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--rules', "$test.rules.json", '--disable-module', 'Insert', '--disable-module', 'Remove', "$test.got" ],
-    test => sub { files_eq_or_diff("$shared/../alpha.json", "$test.got", $test) },
+    test => sub { files_eq_or_diff("$shared/cfg.alpha.json", "$test.got", $test) },
 );
 
 $test = "module_not_exists";
@@ -191,7 +191,7 @@ run_ok(
 $test = "stdin_stdout";
 run_ok(
     name => $test,
-    cmd => [ "cat $shared/../alpha.json | @cmd --module Remove --path '{files}' -" ],
+    cmd => [ "cat $shared/cfg.alpha.json | @cmd --module Remove --path '{files}' -" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 

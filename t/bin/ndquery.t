@@ -10,7 +10,7 @@ use NDTools::Test;
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my $shared = "../../../test/_data";
+my $shared = "../../_data";
 my @cmd = qw/ndquery/;
 
 ### essential tests
@@ -49,14 +49,14 @@ run_ok(
 $test = "default";
 run_ok(
     name => $test,
-    cmd => [ @cmd, "$shared/../alpha.json" ],
-    stdout => sub { file_contents_eq_or_diff("$shared/../alpha.json", shift, $test) },
+    cmd => [ @cmd, "$shared/cfg.alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$shared/cfg.alpha.json", shift, $test) },
 );
 
 $test = "delete";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--delete', '{mtime}', '--delete', '{files}{"/etc/hosts"}', "$shared/../alpha.json" ],
+    cmd => [ @cmd, '--delete', '{mtime}', '--delete', '{files}{"/etc/hosts"}', "$shared/cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
@@ -77,14 +77,14 @@ run_ok(
 $test = "grep_2";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--grep', '{files}', '--grep', '{fqdn}', "$shared/../alpha.json" ],
+    cmd => [ @cmd, '--grep', '{files}', '--grep', '{fqdn}', "$shared/cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
 $test = "list";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--list', "$shared/../alpha.json" ],
+    cmd => [ @cmd, '--list', "$shared/cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
@@ -98,14 +98,14 @@ run_ok(
 $test = "list_depth";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--list', '--depth', '1', "$shared/../alpha.json" ],
+    cmd => [ @cmd, '--list', '--depth', '1', "$shared/cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
 $test = "list_path";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--list', '--path', '{files}', "$shared/../alpha.json" ],
+    cmd => [ @cmd, '--list', '--path', '{files}', "$shared/cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
@@ -147,7 +147,7 @@ run_ok(
 $test = "path_0";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--path', '{files}{"/etc/hosts"}', "$shared/../alpha.json" ],
+    cmd => [ @cmd, '--path', '{files}{"/etc/hosts"}', "$shared/cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
@@ -196,9 +196,9 @@ run_ok(
 $test = "replace_list";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--replace', '--list', "$test.got" ],
-    test => sub { files_eq_or_diff("$shared/../alpha.json", "$test.got", $test) }, # must remain unchanged
+    test => sub { files_eq_or_diff("$shared/cfg.alpha.json", "$test.got", $test) }, # must remain unchanged
     stderr => qr/FATAL] --replace opt can't be used with --list/,
     exit => 1,
 );
@@ -206,9 +206,9 @@ run_ok(
 $test = "replace_md5";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--replace', '--md5', "$test.got" ],
-    test => sub { files_eq_or_diff("$shared/../alpha.json", "$test.got", $test) }, # must remain unchanged
+    test => sub { files_eq_or_diff("$shared/cfg.alpha.json", "$test.got", $test) }, # must remain unchanged
     stderr => qr/FATAL] --replace opt can't be used with --md5/,
     exit => 1,
 );
@@ -217,8 +217,8 @@ $test = "replace_multiargs";
 run_ok(
     name => $test,
     pre => sub {
-        copy("$shared/../alpha.json", "$test.0.got") and
-        copy("$shared/../beta.json", "$test.1.got")
+        copy("$shared/cfg.alpha.json", "$test.0.got") and
+        copy("$shared/cfg.beta.json", "$test.1.got")
     },
     cmd => [ @cmd, '--replace', '--delete', '{mtime}', "$test.0.got", "$test.1.got" ],
     test => sub {
@@ -231,7 +231,7 @@ run_ok(
 $test = "replace_raw_output";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/../alpha.json", "$test.got") },
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--replace', '--raw-output', '--path', '{fqdn,mtime,files}', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
