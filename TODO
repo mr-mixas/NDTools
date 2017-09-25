@@ -1,16 +1,13 @@
+nd*
+    NDTools::ND*->new()->run()->status();
+        * to be able to catch real exit code in tests
+
 nddiff
     --ctx-struct <num>
-    --stats
     --X --noX (hide/unhide diff parts)
     Fix text diff header
-    --grep <path>
-
-ndpatch --path <path>
-    patch specified parts
 
 ndquery
-    --ignore <path> # Ignore desired parts
-    --replace # Replace loaded file by output (canonize JSON etc)
 
 ndproc
     --list-sources <rules>
@@ -21,18 +18,29 @@ ndproc
     'optional' opt to mods opts %)
     validate_rules method for all modules
 
+NDProc::NDTool
+    --ifmt --ofmt
+
 NDProc::Module
     complete rule using defaults if not all vital opts provided
     also - non default opts only when dump rules
 
 NDProc::Module::Insert
-    --ignore <path> (or --preserve ?)
     --method append|override|prepend|shift # define a way to add items to arrays (override by default)
-    --file-raw <file> (or --raw toggle?) to insert file as is
 
 NDProc::Module::Merge
     --match <path> # (combined with path) -- to implement fair pairwise merge (filter like "defined" used)
+    --structure # as --source alternative (JSON in args, raw structure in rule)
     make per-merge path opt to be able as list
 
 NDProc::Module::Copy
     --path --to --move
+
+NDProc::Module::Patch
+    ndpatch must be simply wrapper for it
+
+NDProc::Module::Rules # Replace rule by external rules (recursive)
+    support builtin rules as well
+
+ndtools.pod:
+    INSTALL (after App::NDTools)
