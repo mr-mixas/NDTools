@@ -1,7 +1,12 @@
 =head1 NAME
 
-ndtools - a set of command line tools aimed to help to deal with nested data
-structures
+ndtools - diff/patch/process/query command line tools for nested data structures
+
+=begin html
+
+<a href="https://travis-ci.org/mr-mixas/NDTools"><img src="https://travis-ci.org/mr-mixas/NDTools.svg?branch=master" alt="CI"></a>
+
+=end html
 
 =head1 SYNOPSIS
 
@@ -12,9 +17,8 @@ See exact list of options, examples and exit codes for each tool in it's man pag
 
 =head1 DESCRIPTION
 
-Nested structures nowadays are everywhere and often requires quite complex
-processing. This tools may solve some "pain in the neck" cases without writing
-any code.
+Nested structures are everywhere and often requires quite complex processing,
+this tools aimed to solve some "pain in the neck" cases without writing any code.
 
 =head1 TOOLS
 
