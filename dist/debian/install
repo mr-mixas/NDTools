@@ -3,4 +3,4 @@
 ../ndpatch   usr/bin
 ../ndquery   usr/bin
 
-../NDTools   /usr/share/perl5
+../lib/NDTools   /usr/share/perl5
