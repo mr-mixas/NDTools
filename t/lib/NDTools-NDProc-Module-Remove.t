@@ -3,12 +3,12 @@ use warnings FATAL => 'all';
 
 use Test::More tests => 2;
 
-use NDTools::NDProc::Module::Remove;
+use App::NDTools::NDProc::Module::Remove;
 
 my ($exp, $got, $mod);
 my $shared = 't/_data';
 
-$mod = new_ok('NDTools::NDProc::Module::Remove');
+$mod = new_ok('App::NDTools::NDProc::Module::Remove');
 
 $got = $mod->load_struct("$shared/menu.a.json");
 $mod->process_path($got, '[]{}[](defined)');

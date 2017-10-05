@@ -1,10 +1,10 @@
-package NDTools::NDPatch;
+package App::NDTools::NDPatch;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDTool";
+use parent 'App::NDTools::NDTool';
 
-use NDTools::Slurp qw(s_dump);
+use App::NDTools::Slurp qw(s_dump);
 use Log::Log4Cli;
 use Struct::Diff qw();
 
@@ -55,4 +55,4 @@ sub patch {
     die_fatal "Failed to patch structure ($@)", 8 if ($@);
 }
 
-1; # End of NDTools::NDPatch
+1; # End of App::NDTools::NDPatch

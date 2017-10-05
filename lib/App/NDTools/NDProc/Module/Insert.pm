@@ -1,8 +1,8 @@
-package NDTools::NDProc::Module::Insert;
+package App::NDTools::NDProc::Module::Insert;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDProc::Module";
+use parent 'App::NDTools::NDProc::Module';
 
 use Log::Log4Cli;
 use Struct::Path 0.71 qw(spath);
@@ -55,7 +55,7 @@ sub process_path {
 }
 
 
-1; # End of NDTools::NDProc::Module::Insert
+1; # End of App::NDTools::NDProc::Module::Insert
 
 __END__
 

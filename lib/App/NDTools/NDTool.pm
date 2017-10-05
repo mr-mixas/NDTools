@@ -1,11 +1,11 @@
-package NDTools::NDTool;
+package App::NDTools::NDTool;
 
 use strict;
 use warnings FATAL => 'all';
 
 use Encode::Locale qw(decode_argv);
-use NDTools::INC;
-use NDTools::Slurp qw(s_dump s_load);
+use App::NDTools::INC;
+use App::NDTools::Slurp qw(s_dump s_load);
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
 use Struct::Path 0.71 qw(spath);
@@ -108,4 +108,4 @@ sub usage {
     );
 }
 
-1; # End of NDTools::NDTool
+1; # End of App::NDTools::NDTool

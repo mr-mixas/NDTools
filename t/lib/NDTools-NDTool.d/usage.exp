@@ -1,5 +1,5 @@
 Usage:
-        use parent "NDTools::NDTool";
+        use parent 'App::NDTools::NDTool';
         ...
 
 Examples:

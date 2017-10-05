@@ -5,16 +5,16 @@ use Capture::Tiny qw(capture);
 use Test::File::Contents;
 use Test::More tests => 10;
 
-use NDTools::Test;
+use App::NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
-use_ok('NDTools::NDTool');
+use_ok('App::NDTools::NDTool');
 
 my ($tool, $got, $exp, $tmp);
 my $shared = '../../_data';
 
-$tool = new_ok('NDTools::NDTool') || die "Failed to init module";
+$tool = new_ok('App::NDTools::NDTool') || die "Failed to init module";
 
 can_ok($tool, qw(VERSION arg_opts configure defaults dump_opts usage));
 
@@ -57,7 +57,7 @@ __END__
 
 =head1 SYNOPSIS
 
-    use parent "NDTools::NDTool";
+    use parent 'App::NDTools::NDTool';
     ...
 
 =head1 EXAMPLES

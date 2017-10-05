@@ -1,8 +1,8 @@
-package NDTools::NDProc::Module::Merge;
+package App::NDTools::NDProc::Module::Merge;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDProc::Module";
+use parent 'App::NDTools::NDProc::Module';
 
 use Hash::Merge qw();
 use Hash::Merge::Extra;
@@ -177,7 +177,7 @@ sub set_path_related_opt {
     }
 }
 
-1; # End of NDTools::NDProc::Module::Merge
+1; # End of App::NDTools::NDProc::Module::Merge
 
 __END__
 

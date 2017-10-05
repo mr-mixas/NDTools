@@ -1,4 +1,4 @@
-package NDTools::Slurp;
+package App::NDTools::Slurp;
 
 # input/output related subroutines for NDTools
 
@@ -12,7 +12,7 @@ use JSON qw();
 use Scalar::Util qw(readonly);
 use YAML::XS qw();
 
-use NDTools::INC;
+use App::NDTools::INC;
 use Log::Log4Cli;
 
 our @EXPORT_OK = qw(

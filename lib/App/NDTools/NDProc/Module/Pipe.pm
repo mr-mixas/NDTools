@@ -1,12 +1,12 @@
-package NDTools::NDProc::Module::Pipe;
+package App::NDTools::NDProc::Module::Pipe;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDProc::Module";
+use parent 'App::NDTools::NDProc::Module';
 
 use IPC::Run3;
 use Log::Log4Cli;
-use NDTools::Slurp qw(s_decode s_encode);
+use App::NDTools::Slurp qw(s_decode s_encode);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
@@ -58,7 +58,7 @@ sub process {
     $self->restore_preserved($data) if ($opts->{preserve});
 }
 
-1; # End of NDTools::NDProc::Module::Pipe
+1; # End of App::NDTools::NDProc::Module::Pipe
 
 __END__
 

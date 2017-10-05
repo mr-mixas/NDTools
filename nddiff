@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
-use NDTools::NDDiff;
+use App::NDTools::NDDiff;
 
-my $nddiff = NDTools::NDDiff->new();
+my $nddiff = App::NDTools::NDDiff->new();
 $nddiff->exec();
 
 __END__

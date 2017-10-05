@@ -1,8 +1,8 @@
-package NDTools::NDProc::Module::Remove;
+package App::NDTools::NDProc::Module::Remove;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDProc::Module";
+use parent 'App::NDTools::NDProc::Module';
 
 use Log::Log4Cli;
 use Struct::Path qw(spath);
@@ -39,7 +39,7 @@ sub process_path {
     }
 }
 
-1; # End of NDTools::NDProc::Module::Remove
+1; # End of App::NDTools::NDProc::Module::Remove
 
 __END__
 

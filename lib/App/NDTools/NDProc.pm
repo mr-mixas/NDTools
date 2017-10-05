@@ -1,13 +1,13 @@
-package NDTools::NDProc;
+package App::NDTools::NDProc;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDTool";
+use parent 'App::NDTools::NDTool';
 
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Module::Find qw(findsubmod);
-use NDTools::Slurp qw(s_decode s_dump s_encode);
+use App::NDTools::Slurp qw(s_decode s_dump s_encode);
 use Storable qw(dclone freeze thaw);
 use Struct::Diff 0.88 qw(diff split_diff);
 use Struct::Path qw(spath);
@@ -58,7 +58,7 @@ sub defaults {
     return {
         'blame' => 1, # may be redefined per-rule
         'builtin-format' => "", # raw
-        'modpath' => [ "NDTools::NDProc::Module" ],
+        'modpath' => [ 'App::NDTools::NDProc::Module' ],
     };
 }
 
@@ -293,4 +293,4 @@ sub resolve_rules {
     return $self;
 }
 
-1; # End of NDTools::NDProc
+1; # End of App::NDTools::NDProc

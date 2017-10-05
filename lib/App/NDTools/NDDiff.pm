@@ -1,12 +1,12 @@
-package NDTools::NDDiff;
+package App::NDTools::NDDiff;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDTool";
+use parent 'App::NDTools::NDTool';
 
 use Algorithm::Diff;
 use JSON qw();
-use NDTools::Slurp qw(s_dump);
+use App::NDTools::Slurp qw(s_dump);
 use Log::Log4Cli 0.18;
 use Struct::Diff 0.88 qw();
 use Struct::Path qw(spath spath_delta);
@@ -445,4 +445,4 @@ sub term_value_diff_text {
     return @out;
 }
 
-1; # End of NDTools::NDDiff
+1; # End of App::NDTools::NDDiff

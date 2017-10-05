@@ -1,4 +1,4 @@
-package NDTools::Test;
+package App::NDTools::Test;
 
 use strict;
 use warnings FATAL => 'all';

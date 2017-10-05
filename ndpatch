@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
-use NDTools::NDPatch;
+use App::NDTools::NDPatch;
 
-my $ndpatch = NDTools::NDPatch->new();
+my $ndpatch = App::NDTools::NDPatch->new();
 $ndpatch->exec();
 
 __END__

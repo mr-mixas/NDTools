@@ -1,12 +1,12 @@
-package NDTools::NDProc::Module;
+package App::NDTools::NDProc::Module;
 
 # base class for ndproc modules
 
 use strict;
 use warnings FATAL => 'all';
 
-use NDTools::INC;
-use NDTools::NDTool;
+use App::NDTools::INC;
+use App::NDTools::NDTool;
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Storable qw(dclone);
@@ -43,7 +43,7 @@ sub get_opts {
     return $self->{OPTS};
 }
 
-*load_struct = \&NDTools::NDTool::load_struct;
+*load_struct = \&App::NDTools::NDTool::load_struct;
 
 sub new {
     my $self = bless {}, shift;
@@ -107,4 +107,4 @@ sub usage {
     );
 }
 
-1; # End of NDTools::NDProc::Module
+1; # End of App::NDTools::NDProc::Module

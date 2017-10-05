@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
-use NDTools::NDQuery;
+use App::NDTools::NDQuery;
 
-my $ndquery = NDTools::NDQuery->new();
+my $ndquery = App::NDTools::NDQuery->new();
 $ndquery->exec();
 
 __END__

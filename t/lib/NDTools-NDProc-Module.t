@@ -5,10 +5,10 @@ use Capture::Tiny qw(capture);
 use Test::File::Contents;
 use Test::More;
 
-use NDTools::NDProc;
+use App::NDTools::NDProc;
 
-my $ndproc = NDTools::NDProc->new() or
-    die "Failed to instantiate 'NDTools::NDProc'";
+my $ndproc = App::NDTools::NDProc->new() or
+    die "Failed to instantiate 'App::NDTools::NDProc'";
 
 for my $mod (sort keys %{$ndproc->{MODS}}) {
     $ndproc->{OPTS}->{module} = $mod;

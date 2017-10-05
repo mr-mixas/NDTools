@@ -1,13 +1,13 @@
-package NDTools::NDQuery;
+package App::NDTools::NDQuery;
 
 use strict;
 use warnings FATAL => 'all';
-use parent "NDTools::NDTool";
+use parent 'App::NDTools::NDTool';
 
 use Digest::MD5 qw(md5_hex);
 use JSON qw();
 use Log::Log4Cli;
-use NDTools::Slurp qw(s_dump);
+use App::NDTools::Slurp qw(s_dump);
 use Struct::Path 0.71 qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
@@ -163,4 +163,4 @@ sub md5 {
             for (@{$data});
 }
 
-1; # End of NDTools::NDQuery
+1; # End of App::NDTools::NDQuery
