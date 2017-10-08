@@ -38,7 +38,7 @@ sub process {
         my $spath = eval { ps_parse($path) };
         die_fatal "Failed to parse path ($@)", 4 if ($@);
         my @refs = eval { spath($data, $spath, strict => $opts->{strict}) };
-        die_fatal "Failed to lookup path ($path)", 4 if ($@);
+        die_fatal "Failed to lookup path '$path'", 4 if ($@);
 
         for my $r (@refs) {
             my $in = s_encode(${$r}, 'JSON', { pretty => 1 });

@@ -142,7 +142,7 @@ sub process {
         log_debug { "Resolving paths '$m->{merge}'" };
         my @srcs = spath($source, $spath, paths => 1);
         unless (@srcs) {
-            die_fatal "No such path ($m->{merge}) in $opts->{source}", 4
+            die_fatal "No such path '$m->{merge}' in $opts->{source}", 4
                 if(exists $m->{strict} ? $m->{strict} : $opts->{strict});
             log_info { "Ignoring path $m->{merge} (doesn't exists in $opts->{source})" };
             next;

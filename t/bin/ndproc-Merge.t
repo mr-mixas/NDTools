@@ -160,7 +160,7 @@ run_ok(
     name => $test,
     pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--merge', '{not_exists}', "$test.got" ],
-    stderr => qr/ FATAL] No such path \(\{not_exists\}\)/, # FIXME: replace parens by single quotes
+    stderr => qr/ FATAL] No such path '\{not_exists\}' in /,
     test => sub { files_eq_or_diff("$shared/cfg.alpha.json", "$test.got", $test) },
     exit => 4,
 );
@@ -170,7 +170,7 @@ run_ok(
     name => $test,
     pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--source', "$shared/cfg.beta.json", '--strict', '--merge', '{not_exists}', "$test.got" ],
-    stderr => qr/ FATAL] No such path \(\{not_exists\}\)/, # FIXME: replace parens by single quotes
+    stderr => qr/ FATAL] No such path '\{not_exists\}' in /,
     test => sub { files_eq_or_diff("$shared/cfg.alpha.json", "$test.got", $test) },
     exit => 4,
 );

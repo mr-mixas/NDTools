@@ -99,7 +99,7 @@ $test = "module_not_exists";
 run_ok(
     name => $test,
     cmd => [ @cmd, qw/--module NoTeXiStS/ ],
-    stderr => qr/ FATAL] Unknown module specified \(NoTeXiStS\)/, # FIXME: get rid of parens here
+    stderr => qr/ FATAL] Unknown module specified 'NoTeXiStS'/,
     exit => 1
 );
 

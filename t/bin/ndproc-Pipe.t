@@ -61,7 +61,7 @@ run_ok(
     name => $test,
     pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--strict', '--path', '{not_exists}', '--cmd', 'sed "s/[0-8]/9/g"', "$test.got" ],
-    stderr => qr/ FATAL] Failed to lookup path \(\{not_exists\}\)/, # FIXME: get rid of parens here
+    stderr => qr/ FATAL] Failed to lookup path '\{not_exists\}'/,
     exit => 4,
 );
 

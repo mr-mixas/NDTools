@@ -107,7 +107,7 @@ sub exec {
     }
 
     if (defined $self->{OPTS}->{module}) {
-        die_fatal "Unknown module specified ($self->{OPTS}->{module})", 1
+        die_fatal "Unknown module specified '$self->{OPTS}->{module}'", 1
             unless (exists $self->{MODS}->{$self->{OPTS}->{module}});
         $self->init_module($self->{OPTS}->{module});
         my $mod = $self->{MODS}->{$self->{OPTS}->{module}}->new();
