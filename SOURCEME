@@ -3,4 +3,4 @@
 CWD=`pwd -P`
 
 export PATH=${CWD}:$PATH
-export PERL5LIB=lib/${CWD}
+export PERL5LIB=${CWD}/lib
