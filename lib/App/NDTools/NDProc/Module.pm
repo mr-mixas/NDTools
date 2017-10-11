@@ -18,6 +18,7 @@ sub VERSION { "n/a" }
 
 sub arg_opts {
     my $self = shift;
+
     return (
         'blame!' => \$self->{OPTS}->{blame}, # just to set opt in rule
         'help|h' => sub { $self->usage(); exit 0 },
@@ -28,11 +29,11 @@ sub arg_opts {
 }
 
 sub check_rule {
-    my $self = shift;
+    return $_[0];
 }
 
 sub configure {
-    my $self = shift;
+    return $_[0];
 }
 
 sub defaults {
@@ -43,26 +44,29 @@ sub defaults {
 }
 
 sub get_opts {
-    my $self = shift;
-    return $self->{OPTS};
+    return $_[0]->{OPTS};
 }
 
 *load_struct = \&App::NDTools::NDTool::load_struct;
 
 sub new {
     my $self = bless {}, shift;
+
     $self->{OPTS} = $self->defaults();
     $self->configure;
+
     return $self;
 }
 
 sub parse_args {
     my $self = shift;
+
     unless (GetOptions ($self->arg_opts)) {
         $self->usage;
         die_fatal "Unsupported opt passed", 1;
     }
     $self->configure;
+
     return $self;
 }
 
@@ -72,10 +76,10 @@ sub process {
     $self->check_rule($opts) or die_fatal undef, 1;
 
     $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
-
     map { $self->process_path($data, $_, $opts) } @{$opts->{path}};
-
     $self->restore_preserved($data) if ($opts->{preserve});
+
+    return $self;
 }
 
 sub restore_preserved {
@@ -86,6 +90,8 @@ sub restore_preserved {
         log_debug { "Restoring preserved '" . ps_serialize($path) . "'" };
         spath($data, $path, assign => $value, expand => 1);
     }
+
+    return $self;
 }
 
 sub stash_preserved {
@@ -99,11 +105,14 @@ sub stash_preserved {
             map { $_ = ref $_ ? dclone($_) : $_ } # immutable now
             spath($data, $spath, deref => 1, paths => 1);
     }
+
+    return $self;
 }
 
 sub usage {
     require Pod::Find;
     require Pod::Usage;
+
     Pod::Usage::pod2usage(
         -exitval => 'NOEXIT',
         -input => Pod::Find::pod_where({-inc => 1}, ref(shift)),
