@@ -25,6 +25,7 @@ for my $mod (sort keys %{$ndproc->{MODS}}) {
         MODINFO
         VERSION
         arg_opts
+        check_rule
         configure
         defaults
         get_opts

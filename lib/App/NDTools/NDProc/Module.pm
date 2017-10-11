@@ -27,6 +27,10 @@ sub arg_opts {
     )
 }
 
+sub check_rule {
+    my $self = shift;
+}
+
 sub configure {
     my $self = shift;
 }
@@ -64,6 +68,8 @@ sub parse_args {
 
 sub process {
     my ($self, $data, $opts) = @_;
+
+    $self->check_rule($opts) or die_fatal undef, 1;
 
     $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
 
