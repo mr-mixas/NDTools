@@ -9,10 +9,11 @@ use Struct::Path 0.71 qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Insert value into structure" }
-sub VERSION { "0.09" }
+sub VERSION { "0.10" }
 
 sub arg_opts {
     my $self = shift;
+
     return (
         $self->SUPER::arg_opts(),
         'boolean=s'   => sub {
@@ -31,8 +32,20 @@ sub arg_opts {
         'file-fmt=s' => \$self->{OPTS}->{'file-fmt'},
         'null|undef' => sub { $self->{OPTS}->{value} = undef },
         'number=f' => sub { $self->{OPTS}->{value} = 0 + $_[1] },
-        'string|value=s' => \$self->{OPTS}->{value},
+        'string|value=s' => sub { $self->{OPTS}->{value} = $_[1] },
     )
+}
+
+sub check_rule {
+    my ($self, $rule) = @_;
+    my $out = $self;
+
+    unless (exists $rule->{value}) {
+        log_error { "Value to insert should be defined" };
+        $out = undef;
+    }
+
+    return $out;
 }
 
 sub configure {

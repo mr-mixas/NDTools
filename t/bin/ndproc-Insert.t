@@ -199,11 +199,12 @@ run_ok(
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
-$test = "value_absent"; # FIXME: bug? must be error here?
+$test = "value_absent";
 run_ok(
     name => $test,
     pre => sub { copy("$shared/empty_hash.json", "$test.got") },
     cmd => [ @cmd, '--path', '{value}', "$test.got" ],
-    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+    stderr => qr/ERROR] Value to insert should be defined/,
+    exit => 1,
 );
 
