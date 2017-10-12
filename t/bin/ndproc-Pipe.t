@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use App::NDTools::Test;
 
@@ -18,7 +18,7 @@ run_ok(
     name => $test,
     pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--path', '{files}', "$test.got" ],
-    stderr => qr/ FATAL] Command to run should be defined/,
+    stderr => qr/ ERROR] Command to run should be defined/,
     exit => 1
 );
 
@@ -63,5 +63,13 @@ run_ok(
     cmd => [ @cmd, '--strict', '--path', '{not_exists}', '--cmd', 'sed "s/[0-8]/9/g"', "$test.got" ],
     stderr => qr/ FATAL] Failed to lookup path '\{not_exists\}'/,
     exit => 4,
+);
+
+$test = "preserve";
+run_ok(
+    name => $test,
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--preserve', '{files}{"/etc/hosts"}', '--cmd', 'sed "s/[0-8]/9/g"', "$test.got" ],
+    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 

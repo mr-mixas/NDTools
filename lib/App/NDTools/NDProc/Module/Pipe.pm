@@ -11,7 +11,7 @@ use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Modify structure using external process" }
-sub VERSION { "0.02" }
+sub VERSION { "0.03" }
 
 sub arg_opts {
     my $self = shift;
@@ -23,39 +23,44 @@ sub arg_opts {
     )
 }
 
-sub process {
-    my ($self, $data, $opts) = @_;
-
-    die_fatal "Command to run should be defined", 1
-        unless defined ($opts->{command});
-
-    $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
+sub check_rule {
+    my ($self, $rule) = @_;
+    my $out = $self;
 
     # process full source if no paths defined # FIXME: move it to parent and make common for all mods
-    push @{$opts->{path}}, '' unless (@{$opts->{path}});
+    push @{$rule->{path}}, '' unless (@{$rule->{path}});
 
-    for my $path (@{$opts->{path}}) {
-        my $spath = eval { ps_parse($path) };
-        die_fatal "Failed to parse path ($@)", 4 if ($@);
-        my @refs = eval { spath($data, $spath, strict => $opts->{strict}) };
-        die_fatal "Failed to lookup path '$path'", 4 if ($@);
-
-        for my $r (@refs) {
-            my $in = s_encode(${$r}, 'JSON', { pretty => 1 });
-
-            my ($out, $err);
-            run3($opts->{command}, \$in, \$out, \$err, { return_if_system_error => 1});
-            die_fatal "Failed to run '$opts->{command}' ($!)", 2 if ($? == -1); # run3 specific
-            unless ($? == 0) {
-                die_fatal "'$opts->{command}' exited with " . ($? >> 8) .
-                    ($err ? " (" . join(" ", split("\n", $err)) . ")" : ""), 16;
-            }
-
-            ${$r} = s_decode($out, 'JSON');
-        }
+    unless (defined $rule->{command}) {
+        log_error { 'Command to run should be defined' };
+        $out = undef;
     }
 
-    $self->restore_preserved($data) if ($opts->{preserve});
+    return $out;
+}
+
+sub process_path {
+    my ($self, $data, $path, $opts) = @_;
+
+    my $spath = eval { ps_parse($path) };
+    die_fatal "Failed to parse path ($@)", 4 if ($@);
+
+    my @refs = eval { spath($data, $spath, strict => $opts->{strict}) };
+    die_fatal "Failed to lookup path '$path'", 4 if ($@);
+
+     for my $r (@refs) {
+        my $in = s_encode(${$r}, 'JSON', { pretty => 1 });
+
+        my ($out, $err);
+        run3($opts->{command}, \$in, \$out, \$err, { return_if_system_error => 1});
+        die_fatal "Failed to run '$opts->{command}' ($!)", 2
+            if ($? == -1); # run3 specific
+        unless ($? == 0) {
+            die_fatal "'$opts->{command}' exited with " . ($? >> 8) .
+                ($err ? " (" . join(" ", split("\n", $err)) . ")" : ""), 16;
+        }
+
+        ${$r} = s_decode($out, 'JSON');
+    }
 }
 
 1; # End of App::NDTools::NDProc::Module::Pipe
