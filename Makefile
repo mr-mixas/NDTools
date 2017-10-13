@@ -2,7 +2,7 @@
 
 CWD := $(shell pwd -P)
 export PATH := $(CWD):$(PATH)
-export PERL5LIB := lib/$(CWD)
+export PERL5LIB := $(CWD)/lib
 
 TEST_JOBS ?= 4
 
