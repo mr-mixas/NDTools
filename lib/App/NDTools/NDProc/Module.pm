@@ -71,13 +71,20 @@ sub parse_args {
 }
 
 sub process {
-    my ($self, $data, $opts) = @_;
+    my ($self, $data, $opts, $source) = @_;
 
     $self->check_rule($opts) or die_fatal undef, 1;
 
-    $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
-    map { $self->process_path($data, $_, $opts) } @{$opts->{path}};
-    $self->restore_preserved($data) if ($opts->{preserve});
+    $self->stash_preserved($data, $opts->{preserve})
+        if ($opts->{preserve});
+
+    for my $path (@{$opts->{path}}) {
+        log_debug { "Processing '$path'" };
+        $self->process_path($data, $path, $opts, $source);
+    }
+
+    $self->restore_preserved($data)
+        if ($opts->{preserve});
 
     return $self;
 }

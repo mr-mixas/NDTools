@@ -13,10 +13,11 @@ use Struct::Path qw(is_implicit_step spath);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.12" }
+sub VERSION { "0.13" }
 
 sub arg_opts {
     my $self = shift;
+
     return (
         $self->SUPER::arg_opts(),
         'ignore=s@' => \$self->{OPTS}->{ignore},
@@ -42,6 +43,7 @@ sub arg_opts {
 
 sub configure {
     my $self = shift;
+
     $self->{rules} = [] unless ($self->{rules});
 
     # resolve rules
@@ -61,6 +63,7 @@ sub configure {
 
 sub defaults {
     my $self = shift;
+
     return {
         %{$self->SUPER::defaults()},
         'strict' => 1,
@@ -69,8 +72,7 @@ sub defaults {
 }
 
 sub get_opts {
-    my $self = shift;
-    return @{$self->{rules}};
+    return @{$_[0]->{rules}};
 }
 
 sub map_paths {
@@ -118,6 +120,19 @@ sub map_paths {
     return @out;
 }
 
+sub check_rule {
+    my ($self, $rule) = @_;
+
+    # merge full source if no paths defined
+    push @{$rule->{path}}, {}
+        unless ($rule->{path} and @{$rule->{path}});
+    # convert to canonical structure
+    map { $_ = { merge => $_ }
+        unless (ref $_) } @{$rule->{path}};
+
+    return $self;
+}
+
 sub process {
     my ($self, $data, $opts, $source) = @_;
 
@@ -128,46 +143,47 @@ sub process {
         }
     }
 
-    $self->stash_preserved($data, $opts->{preserve}) if ($opts->{preserve});
+    $self->SUPER::process($data, $opts, $source);
+}
 
-    # merge full source if no paths defined
-    push @{$opts->{path}}, {} unless ($opts->{path} and @{$opts->{path}});
-    # convert to canonical structure
-    map { $_ = { merge => $_ } unless (ref $_) } @{$opts->{path}};
+sub process_path {
+    my ($self, $data, $path, $opts, $source) = @_;
 
-    for my $m (@{$opts->{path}}) {
-        $m->{merge} = '' unless (defined $m->{merge}); # merge whole source if path omitted
-        my $spath = ps_parse($m->{merge});
+    # merge whole source if path omitted
+    $path->{merge} = '' unless (defined $path->{merge});
 
-        log_debug { "Resolving paths '$m->{merge}'" };
-        my @srcs = spath($source, $spath, paths => 1);
-        unless (@srcs) {
-            die_fatal "No such path '$m->{merge}' in $opts->{source}", 4
-                if(exists $m->{strict} ? $m->{strict} : $opts->{strict});
-            log_info { "Ignoring path $m->{merge} (doesn't exists in $opts->{source})" };
-            next;
-        }
-        my @dsts = map_paths($data, \@srcs, $spath);
+    my $spath = eval { ps_parse($path->{merge}) };
+    die_fatal "Failed to parse path ($@)", 4 if ($@);
 
-        my $style = $m->{style} || $opts->{style} || $self->{OPTS}->{style};
-        while (@srcs) {
-            my ($sp, $sr) = splice @srcs, 0, 2;
-            my ($dp, $dr) = splice @dsts, 0, 2;
-            log_info { "Merging $opts->{source} ($style, '" .
-                ps_serialize($sp) . "' => '" . ps_serialize($dp) . "')" };
-            Hash::Merge::set_behavior($style);
-            ${$dr} = Hash::Merge::merge(${$dr}, ${$sr});
-        }
+    log_debug { "Resolving paths '$path->{merge}'" };
+    my @srcs = spath($source, $spath, paths => 1);
+    unless (@srcs) {
+        die_fatal "No such path '$path->{merge}' in $opts->{source}", 4
+            if (exists $path->{strict} ? $path->{strict} : $opts->{strict});
+        log_info { "Ignore path '$path->{merge}' (absent in $opts->{source})" };
+        return $self;
     }
+    my @dsts = map_paths($data, \@srcs, $spath);
 
-    $self->restore_preserved($data) if ($opts->{preserve});
+    my $style = $path->{style} || $opts->{style} || $self->{OPTS}->{style};
+    while (@srcs) {
+        my ($sp, $sr) = splice @srcs, 0, 2;
+        my ($dp, $dr) = splice @dsts, 0, 2;
+        log_info { "Merging $opts->{source} ($style, '" .
+            ps_serialize($sp) . "' => '" . ps_serialize($dp) . "')" };
+        Hash::Merge::set_behavior($style);
+        ${$dr} = Hash::Merge::merge(${$dr}, ${$sr});
+    }
 }
 
 sub set_path_related_opt {
     my ($self, $name, $val) = @_;
 
     if ($self->{rules} and @{$self->{rules}}) {
-        if (exists $self->{rules}->[-1]->{path} and @{$self->{rules}->[-1]->{path}}) {
+        if (
+            exists $self->{rules}->[-1]->{path} and
+            @{$self->{rules}->[-1]->{path}}
+        ) {
             $self->{rules}->[-1]->{path}->[-1]->{$name} = $val; # per path
         } else {
             $self->{rules}->[-1]->{$name} = $val; # per rule
