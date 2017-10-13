@@ -61,20 +61,22 @@ run_ok(
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
-$test = "bool_6"; # FIXME: must be error
+$test = "bool_6";
 run_ok(
     name => $test,
     pre => sub { copy("$shared/empty_hash.json", "$test.got") },
     cmd => [ @cmd, '--path', '{value}', '--bool', ' ', "$test.got" ],
-    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+    stderr => qr/ ERROR] Unsuitable value for --boolean/,
+    exit => 1,
 );
 
-$test = "bool_7"; # FIXME: must be error
+$test = "bool_7";
 run_ok(
     name => $test,
     pre => sub { copy("$shared/empty_hash.json", "$test.got") },
     cmd => [ @cmd, '--path', '{value}', '--bool', '', "$test.got" ],
-    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+    stderr => qr/ ERROR] Unsuitable value for --boolean/,
+    exit => 1,
 );
 
 $test = "file";
@@ -142,12 +144,12 @@ run_ok(
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
-$test = "number_5"; # fixme: must be error
+$test = "number_5";
 run_ok(
     name => $test,
     pre => sub { copy("$shared/empty_hash.json", "$test.got") },
     cmd => [ @cmd, '--path', '{value}', '--number', 'garbage', "$test.got" ],
-    stderr => qr/Unknown option: number/, # fixme: opt processed by ndproc, not it's mod
+    stderr => qr/ ERROR] Unsuitable value for --number/,
     exit => 1,
 );
 

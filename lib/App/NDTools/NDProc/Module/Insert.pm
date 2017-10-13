@@ -5,33 +5,39 @@ use warnings FATAL => 'all';
 use parent 'App::NDTools::NDProc::Module';
 
 use Log::Log4Cli;
+use Scalar::Util qw(looks_like_number);
 use Struct::Path 0.71 qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
 sub MODINFO { "Insert value into structure" }
-sub VERSION { "0.10" }
+sub VERSION { "0.11" }
 
 sub arg_opts {
     my $self = shift;
 
     return (
         $self->SUPER::arg_opts(),
-        'boolean=s'   => sub {
-            require JSON;
-            if ($_[1] =~ /^true$/i) {
+        'boolean=s' => sub {
+            if ($_[1] eq '1' or $_[1] =~ /(T|t)rue/) {
                 $self->{OPTS}->{value} = JSON::true;
-            } elsif ($_[1] =~ /^false$/i) {
+            } elsif ($_[1] eq '0' or $_[1] =~ /(F|f)alse/) {
                 $self->{OPTS}->{value} = JSON::false;
-            } elsif ($_[1]) {
-                $self->{OPTS}->{value} = JSON::true;
             } else {
-                $self->{OPTS}->{value} = JSON::false;
+                log_error { "Unsuitable value for --boolean" };
+                exit 1;
             }
         },
         'file|f=s' => \$self->{OPTS}->{file},
         'file-fmt=s' => \$self->{OPTS}->{'file-fmt'},
         'null|undef' => sub { $self->{OPTS}->{value} = undef },
-        'number=f' => sub { $self->{OPTS}->{value} = 0 + $_[1] },
+        'number=s' => sub {
+            if (looks_like_number($_[1])) {
+                $self->{OPTS}->{value} = 0 + $_[1];
+            } else {
+                log_error { "Unsuitable value for --number" };
+                exit 1;
+            }
+        },
         'string|value=s' => sub { $self->{OPTS}->{value} = $_[1] },
     )
 }
