@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 use App::NDTools::Test;
 
@@ -53,6 +53,14 @@ run_ok(
     name => $test,
     pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
     cmd => [ @cmd, '--cmd', 'sed "s/[0-8]/9/g"', "$test.got" ],
+    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+);
+
+$test = "path_empty"; # means 'full structure'
+run_ok(
+    name => $test,
+    pre => sub { copy("$shared/cfg.alpha.json", "$test.got") },
+    cmd => [ @cmd, '--path', '', '--cmd', 'sed "s/[0-8]/9/g"', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
