@@ -63,7 +63,7 @@ $test = "json_ignore_incorrect_path";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--json', '--ignore', 'incorrect path', "$shared/menu.a.json", "$shared/menu.b.json" ],
-    stderr => qr/FATAL] Failed to parse 'incorrect path '/, # FIXME: space at the end
+    stderr => qr/FATAL] Failed to parse 'incorrect path'/,
     exit => 4,
 );
 
