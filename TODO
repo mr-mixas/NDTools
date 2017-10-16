@@ -1,5 +1,5 @@
 nd*
-    NDTools::ND*->new()->run()->status();
+    App::NDTools::ND*->new()->run()->status();
         * to be able to catch real exit code in tests
 
 nddiff
@@ -18,29 +18,30 @@ ndproc
     'optional' opt to mods opts %)
     validate_rules method for all modules
 
-NDProc::NDTool
+App::NDTools::NDTool
     --ifmt --ofmt
 
-NDProc::Module
+App::NDTools::NDProc::Module
     complete rule using defaults if not all vital opts provided
     also - non default opts only when dump rules
 
-NDProc::Module::Insert
+App::NDTools::NDProc::Module::Insert
     --method append|override|prepend|shift # define a way to add items to arrays (override by default)
 
-NDProc::Module::Merge
+App::NDTools::NDProc::Module::Merge
     --match <path> # (combined with path) -- to implement fair pairwise merge (filter like "defined" used)
     --structure # as --source alternative (JSON in args, raw structure in rule)
     make per-merge path opt to be able as list
 
-NDProc::Module::Copy
+App::NDTools::NDProc::Module::Copy
     --path --to --move
 
-NDProc::Module::Patch
+App::NDTools::NDProc::Module::Patch
     ndpatch must be simply wrapper for it
 
-NDProc::Module::Rules # Replace rule by external rules (recursive)
+App::NDTools::NDProc::Module::Rules # Replace rule by external rules (recursive)
     support builtin rules as well
 
 ndtools.pod:
-    INSTALL (after App::NDTools)
+    INSTALL
+    move it to App::NDTools.pm

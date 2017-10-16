@@ -1,3 +1,12 @@
+ndtools (0.4.7) unstable; urgency=low
+
+  * ndproc-Insert: more strict checks for passed args
+  * ndproc-Pipe: minor bugfixes
+  * mods namespace changed (NDTools -> App::NDTools)
+  * depends bumped
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Mon, 16 Oct 2017 10:06:57 +0300
+
 ndtools (0.4.6) unstable; urgency=low
 
   * all: --dump-opts opt added
