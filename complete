@@ -1,0 +1,1 @@
+complete -C 'perl -M"App::NDTools::Complete" ndquery' ndquery
