@@ -1,3 +1,7 @@
+package App::NDTools;
+
+our $VERSION = "0.4.7";
+
 =head1 NAME
 
 ndtools - diff/patch/process/query command line tools for nested data structures
@@ -41,6 +45,13 @@ Process structure using rules. Extendable by modules.
 Inspect structure or dump it's parts.
 
 =back
+
+=head1 INSTALL
+
+ git clone git@github.com:mr-mixas/NDTools.git
+ cd NDTools
+ make depends dist
+ sudo dpkg -i ndtools*.deb
 
 =head1 BUGS
 
