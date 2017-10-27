@@ -12,7 +12,7 @@ use Struct::Path 0.71 qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.24' };
+sub VERSION { '0.25' };
 
 sub arg_opts {
     my $self = shift;
@@ -26,8 +26,7 @@ sub arg_opts {
         'list|l' => \$self->{OPTS}->{list},
         'md5' => \$self->{OPTS}->{md5},
         'path|p=s' => \$self->{OPTS}->{path},
-        'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
-        'raw-output' => sub { $self->{OPTS}->{'out-fmt'} = 'RAW' },
+        'raw-output' => sub { $self->{OPTS}->{ofmt} = 'RAW' },
         'replace' => \$self->{OPTS}->{replace},
         'strict!' => \$self->{OPTS}->{strict},
         'values|vals' => \$self->{OPTS}->{values},
@@ -72,7 +71,7 @@ sub defaults {
         %{$self->SUPER::defaults()},
         'color-common' => 'bold black',
         'strict' => 1, # exit with 8 if unexisted path specified
-        'out-fmt' => 'JSON',
+        'ofmt' => 'JSON',
     };
 }
 
@@ -80,7 +79,7 @@ sub dump {
     my ($self, $uri, $data) = @_;
 
     $uri = \*STDOUT unless ($self->{OPTS}->{replace});
-    s_dump($uri, $self->{OPTS}->{'out-fmt'}, undef, @{$data});
+    s_dump($uri, $self->{OPTS}->{ofmt}, undef, @{$data});
 }
 
 sub exec {
@@ -140,7 +139,7 @@ sub list {
 
             if ($self->{OPTS}->{values}) {
                 $line .= " = ";
-                if ($self->{OPTS}->{'out-fmt'} eq 'RAW' and not ref ${$value}) {
+                if ($self->{OPTS}->{ofmt} eq 'RAW' and not ref ${$value}) {
                     $line .= ${$value};
                 } else {
                     $line .= JSON->new->canonical->allow_nonref->encode(${$value});

@@ -25,9 +25,11 @@ $Struct::Path::PerlStyle::HOOKS->{'<<'} = sub {
 
 sub arg_opts {
     my $self = shift;
+
     return (
         'dump-opts' => \$self->{OPTS}->{'dump-opts'},
         'help|h' => sub { $self->usage; exit 0 },
+        'ofmt=s' => \$self->{OPTS}->{ofmt},
         'pretty!' => \$self->{OPTS}->{pretty},
         'verbose|v:+' => \$Log::Log4Cli::LEVEL,
         'version|V' => sub { print $self->VERSION . "\n"; exit 0 },
@@ -51,6 +53,7 @@ sub configure {
 
 sub defaults {
     return {
+        'ofmt' => 'JSON',
         'pretty' => 1,
         'verbose' => $Log::Log4Cli::LEVEL,
     };

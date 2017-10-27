@@ -8,7 +8,7 @@ use App::NDTools::Slurp qw(s_dump);
 use Log::Log4Cli;
 use Struct::Diff qw();
 
-sub VERSION { '0.03' };
+sub VERSION { '0.04' };
 
 sub arg_opts {
     my $self = shift;
@@ -27,7 +27,8 @@ sub defaults {
 sub dump {
     my ($self, $uri, $struct) = @_;
     log_debug { "Restoring structure to '$uri'" };
-    s_dump($uri, undef, {pretty => $self->{OPTS}->{pretty}}, $struct);
+    s_dump($uri, $self->{OPTS}->{ofmt},
+        {pretty => $self->{OPTS}->{pretty}}, $struct);
 }
 
 sub exec {

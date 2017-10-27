@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 31;
+use Test::More tests => 32;
 
 use App::NDTools::Test;
 
@@ -176,6 +176,13 @@ $test = "path_utf8";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--path', '{"текст"}', "$shared/text-utf8.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "ofmt_yaml";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ofmt', 'yaml', "$shared/cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 

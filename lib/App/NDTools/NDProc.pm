@@ -13,7 +13,7 @@ use Struct::Diff 0.88 qw(diff split_diff);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.19' }
+sub VERSION { '0.20' }
 
 sub arg_opts {
     my $self = shift;
@@ -65,14 +65,15 @@ sub defaults {
 sub dump_arg {
     my ($self, $uri, $arg) = @_;
     log_debug { "Dumping result to $uri" };
-    s_dump($uri, undef, undef, $arg);
+    s_dump($uri, $self->{OPTS}->{ofmt}, $self->{OPTS}->{pretty}, $arg);
 }
 
 sub dump_blame {
     my ($self, $blame) = @_;
     return unless (defined $self->{OPTS}->{'dump-blame'});
     log_debug { "Dumping blame to $self->{OPTS}->{'dump-blame'}" };
-    s_dump($self->{OPTS}->{'dump-blame'}, undef, undef, $blame);
+    s_dump($self->{OPTS}->{'dump-blame'}, $self->{OPTS}->{ofmt},
+        $self->{OPTS}->{pretty}, $blame);
 }
 
 sub dump_rules {
@@ -82,7 +83,8 @@ sub dump_rules {
         map { defined $rule->{$_} || delete $rule->{$_} } keys %{$rule};
     }
     log_debug { "Dumping rules to $self->{OPTS}->{'dump-rules'}" };
-    s_dump($self->{OPTS}->{'dump-rules'}, undef, undef, $self->{rules});
+    s_dump($self->{OPTS}->{'dump-rules'}, $self->{OPTS}->{ofmt},
+        $self->{OPTS}->{pretty}, $self->{rules});
 }
 
 sub embed {

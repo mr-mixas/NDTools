@@ -13,23 +13,22 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.25" }
+sub VERSION { "0.26" }
 
 sub arg_opts {
     my $self = shift;
     return (
         $self->SUPER::arg_opts(),
-        'brief' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
+        'brief' => sub { $self->{OPTS}->{ofmt} = $_[0] },
         'colors!' => \$self->{OPTS}->{colors},
         'ctx-text=i' => \$self->{OPTS}->{'ctx-text'},
         'full' => \$self->{OPTS}->{full},
         'full-headers' => \$self->{OPTS}->{'full-headers'},
         'grep=s@' => \$self->{OPTS}->{grep},
-        'json' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
+        'json' => sub { $self->{OPTS}->{ofmt} = $_[0] },
         'ignore=s@' => \$self->{OPTS}->{ignore},
-        'out-fmt=s' => \$self->{OPTS}->{'out-fmt'},
         'path=s' => \$self->{OPTS}->{path},
-        'rules' => sub { $self->{OPTS}->{'out-fmt'} = $_[0] },
+        'rules' => sub { $self->{OPTS}->{ofmt} = $_[0] },
         'quiet|q' => \$self->{OPTS}->{quiet},
         'show' => \$self->{OPTS}->{show},
     )
@@ -91,7 +90,7 @@ sub defaults {
                 '@' => ' ',
             },
         },
-        'out-fmt' => 'term',
+        'ofmt' => 'term',
     };
     $out->{term}{line}{N} = $out->{term}{line}{A};
     $out->{term}{line}{O} = $out->{term}{line}{R};
@@ -113,7 +112,7 @@ sub diff {
         $self->{items}->[1],
         noU => $self->{OPTS}->{full} ? 0 : 1,
     );
-    if ($self->{OPTS}->{'out-fmt'} eq 'term') {
+    if ($self->{OPTS}->{ofmt} eq 'term') {
         $self->diff_term or return undef;
     }
     return $self->{diff};
@@ -208,14 +207,15 @@ sub dump {
 
     log_debug { "Dumping results" };
 
-    if ($self->{OPTS}->{'out-fmt'} eq 'term') {
+    if ($self->{OPTS}->{ofmt} eq 'term') {
         $self->dump_term();
-    } elsif ($self->{OPTS}->{'out-fmt'} eq 'brief') {
+    } elsif ($self->{OPTS}->{ofmt} eq 'brief') {
         $self->dump_brief();
-    } elsif ($self->{OPTS}->{'out-fmt'} eq 'rules') {
+    } elsif ($self->{OPTS}->{ofmt} eq 'rules') {
         $self->dump_rules();
     } else {
-        s_dump(\*STDOUT, $self->{OPTS}->{'out-fmt'}, {pretty => $self->{OPTS}->{pretty}}, $self->{diff});
+        s_dump(\*STDOUT, $self->{OPTS}->{ofmt},
+            {pretty => $self->{OPTS}->{pretty}}, $self->{diff});
     }
 
     return $self;

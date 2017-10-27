@@ -98,10 +98,10 @@ run_ok(
     exit => 8,
 );
 
-$test = "out_fmt_yaml";
+$test = "ofmt_yaml";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--out-fmt', 'yaml', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
+    cmd => [ @cmd, '--ofmt', 'yaml', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
