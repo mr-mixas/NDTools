@@ -19,6 +19,10 @@ Options:
     --help|-h
         Print a help message and exit.
 
+    --items
+        List keys for hash maps and indexes for arrays, other types printed
+        as is.
+
     --list|-l
         List structure's paths.
 

@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 32;
+use Test::More tests => 36;
 
 use App::NDTools::Test;
 
@@ -78,6 +78,34 @@ $test = "grep_2";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--grep', '{files}', '--grep', '{fqdn}', "$shared/cfg.alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "items_array";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--items', '--path', '[]{}', "$shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "items_bool";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--items', '--path', '{}[]', "$shared/bool.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "items_hash";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--items', "$shared/cfg.alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "items_undef";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--items', '--path', '[]{Edit}[](not defined)', "$shared/menu.a.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 

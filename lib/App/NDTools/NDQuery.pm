@@ -12,7 +12,7 @@ use Struct::Path 0.71 qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.25' };
+sub VERSION { '0.26' };
 
 sub arg_opts {
     my $self = shift;
@@ -23,6 +23,7 @@ sub arg_opts {
         'delete|ignore=s@' => \$self->{OPTS}->{delete},
         'depth|d=i' => \$self->{OPTS}->{depth},
         'grep=s@' => \$self->{OPTS}->{grep},
+        'items' => \$self->{OPTS}->{items},
         'list|l' => \$self->{OPTS}->{list},
         'md5' => \$self->{OPTS}->{md5},
         'path|p=s' => \$self->{OPTS}->{path},
@@ -37,6 +38,8 @@ sub check_args {
     my $self = shift;
 
     if ($self->{OPTS}->{replace}) {
+        die_fatal "--replace opt can't be used with --items", 1
+            if ($self->{OPTS}->{items});
         die_fatal "--replace opt can't be used with --list", 1
             if ($self->{OPTS}->{list});
         die_fatal "--replace opt can't be used with --md5", 1
@@ -108,7 +111,9 @@ sub exec {
             map { spath($_, $spath, delete => 1) if (ref $_) } @data;
         }
 
-        if ($self->{OPTS}->{list}) {
+        if ($self->{OPTS}->{items}) {
+            $self->items(\@data);
+        } elsif ($self->{OPTS}->{list}) {
             $self->list($uri, \@data);
         } elsif ($self->{OPTS}->{md5}) {
             $self->md5($uri, \@data);
@@ -118,6 +123,20 @@ sub exec {
     }
 
     die_info "All done", 0;
+}
+
+sub items {
+    my ($self, $data) = @_;
+
+    for (@{$data}) {
+        if (ref $_ eq 'HASH') {
+            print join("\n", sort keys %{$_}) . "\n";
+        } elsif (ref $_ eq 'ARRAY') {
+            print "0 .. " . $#{$_} . "\n";
+        } else {
+            print(($_ // 'null') . "\n");
+        }
+    }
 }
 
 sub list {
