@@ -6,6 +6,10 @@ Options:
     --help|-h
         Print help message and exit.
 
+    --ifmt <JSON|YAML>
+        Force specified input format usage. Automatically choosed (using
+        file extension) if omitted.
+
     --[no]pretty
         On/Off pretty-print for JSON. Enabled by default.
 

@@ -13,7 +13,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.26" }
+sub VERSION { "0.27" }
 
 sub arg_opts {
     my $self = shift;
@@ -299,7 +299,8 @@ sub load {
     my $self = shift;
 
     for (@_) {
-        my $data = $self->load_struct($_) or return undef;
+        my $data = $self->load_struct($_, $self->{OPTS}->{ifmt})
+            or return undef;
 
         if (my $path = $self->{OPTS}->{path}) {
             my $p = eval { ps_parse($path) };

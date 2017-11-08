@@ -12,7 +12,7 @@ use Struct::Path 0.71 qw(slist spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.26' };
+sub VERSION { '0.27' };
 
 sub arg_opts {
     my $self = shift;
@@ -91,7 +91,7 @@ sub exec {
     $self->check_args(@ARGV) or die_fatal undef, 1;
 
     for my $uri (@ARGV ? @ARGV : \*STDIN) {
-        my @data = $self->load_struct($uri);
+        my @data = $self->load_struct($uri, $self->{OPTS}->{ifmt});
 
         if (defined $self->{OPTS}->{path}) {
             my $spath = eval { ps_parse($self->{OPTS}->{path}) };

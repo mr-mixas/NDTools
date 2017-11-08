@@ -13,7 +13,7 @@ use Struct::Diff 0.88 qw(diff split_diff);
 use Struct::Path qw(spath);
 use Struct::Path::PerlStyle qw(ps_parse);
 
-sub VERSION { '0.20' }
+sub VERSION { '0.21' }
 
 sub arg_opts {
     my $self = shift;
@@ -200,7 +200,7 @@ sub process_args {
     my $self = shift;
     for my $arg (@_) {
         log_info { "Processing $arg" };
-        my $data = $self->load_arg($arg);
+        my $data = $self->load_arg($arg, $self->{OPTS}->{ifmt});
 
         if ($self->{OPTS}->{'builtin-rules'}) {
             $self->{rules} = $self->load_builtin_rules($data, $self->{OPTS}->{'builtin-rules'});
@@ -289,7 +289,7 @@ sub resolve_rules {
         }
         next if (exists $self->{sources}->{$rule->{source}});
         $self->{sources}->{$rule->{source}} =
-            freeze($self->load_source($rule->{source}));
+            freeze($self->load_source($rule->{source}, $self->{OPTS}->{ifmt}));
     }
 
     return $self;

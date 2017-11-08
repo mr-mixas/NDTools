@@ -28,6 +28,10 @@ Options:
     --help|-h
         Print a help message and exit.
 
+    --ifmt <JSON|YAML>
+        Force specified input format usage. Automatically choosed (using
+        file extension) if omitted.
+
     --list-modules|-l
         List available modules.
 

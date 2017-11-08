@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 22;
+use Test::More tests => 24;
 
 use App::NDTools::Test;
 
@@ -63,6 +63,22 @@ run_ok(
     name => $test,
     pre => sub { copy("$shared/menu.a.json", "$test.got") },
     cmd => [ @cmd, '--module', 'Remove', '--path', '[1]{Edit}[3..5]', '--embed-blame', '[1]{Edit}[3]{_blame_}', "$test.got" ],
+    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+);
+
+$test = "ifmt_yaml";
+run_ok(
+    name => $test,
+    pre => sub { copy("$test.data", "$test.got") },
+    cmd => [ @cmd, '--ifmt', 'yaml', '--module', 'Merge', '--source', "$test.merge", "$test.got" ],
+    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+);
+
+$test = "ifmt_yaml_ofmt_yaml";
+run_ok(
+    name => $test,
+    pre => sub { copy("$test.data", "$test.got") },
+    cmd => [ @cmd, '--ifmt', 'yaml', '--ofmt', 'yaml', '--module', 'Merge', '--source', "$test.merge", "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 

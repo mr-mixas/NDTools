@@ -2,7 +2,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Test::File::Contents;
-use Test::More tests => 52;
+use Test::More tests => 54;
 
 use App::NDTools::Test;
 
@@ -39,6 +39,22 @@ run_ok(
 );
 
 ### bin specific tests
+
+$test = "ifmt_yaml";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ifmt', 'yaml', "$test.a.data", "$test.b.data" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "ifmt_yaml_ofmt_yaml";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ifmt', 'yaml', '--ofmt', 'yaml', "$test.a.data", "$test.b.data" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
 
 $test = "json";
 run_ok(

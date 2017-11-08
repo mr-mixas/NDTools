@@ -8,7 +8,7 @@ use App::NDTools::Slurp qw(s_dump);
 use Log::Log4Cli;
 use Struct::Diff qw();
 
-sub VERSION { '0.04' };
+sub VERSION { '0.05' };
 
 sub arg_opts {
     my $self = shift;
@@ -37,8 +37,11 @@ sub exec {
         if (@ARGV < 1 or @ARGV > 2);
 
     my $uri = shift @ARGV;
-    my $struct = $self->load_struct($uri);
-    my $patch = $self->load_patch(@ARGV ? shift @ARGV : \*STDIN);
+    my $struct = $self->load_struct($uri, $self->{OPTS}->{ifmt});
+    my $patch = $self->load_patch(
+        @ARGV ? shift @ARGV : \*STDIN,
+        $self->{OPTS}->{ifmt}
+    );
 
     $self->patch($struct, $patch);
     $self->dump($uri, $struct);

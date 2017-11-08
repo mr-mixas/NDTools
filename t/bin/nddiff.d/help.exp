@@ -25,6 +25,10 @@ Options:
     --help|-h
         Print a help message and exit.
 
+    --ifmt <JSON|YAML>
+        Force specified input format usage. Automatically choosed (using
+        file extension) if omitted.
+
     --ignore <path>
         Ignore substructure. May be used several times.
 

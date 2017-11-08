@@ -19,6 +19,10 @@ Options:
     --help|-h
         Print a help message and exit.
 
+    --ifmt <JSON|YAML>
+        Force specified input format usage. Automatically choosed (using
+        file extension) if omitted.
+
     --items
         List keys for hash maps and indexes for arrays, other types printed
         as is.

@@ -28,6 +28,11 @@ Apply diff file to original one.
 
 Print help message and exit.
 
+=item B<--ifmt> E<lt>JSON|YAMLE<gt>
+
+Force specified input format usage. Automatically choosed (using file
+extension) if omitted.
+
 =item B<--[no]pretty>
 
 On/Off pretty-print for JSON. Enabled by default.

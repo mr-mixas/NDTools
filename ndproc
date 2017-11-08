@@ -56,6 +56,11 @@ Embed used rules into processed structure, using provided path.
 
 Print a help message and exit.
 
+=item B<--ifmt> E<lt>JSON|YAMLE<gt>
+
+Force specified input format usage. Automatically choosed (using file
+extension) if omitted.
+
 =item B<--list-modules|-l>
 
 List available modules.

@@ -29,6 +29,7 @@ sub arg_opts {
     return (
         'dump-opts' => \$self->{OPTS}->{'dump-opts'},
         'help|h' => sub { $self->usage; exit 0 },
+        'ifmt=s' => \$self->{OPTS}->{ifmt},
         'ofmt=s' => \$self->{OPTS}->{ofmt},
         'pretty!' => \$self->{OPTS}->{pretty},
         'verbose|v:+' => \$Log::Log4Cli::LEVEL,

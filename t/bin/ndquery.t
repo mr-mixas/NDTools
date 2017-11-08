@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 36;
+use Test::More tests => 38;
 
 use App::NDTools::Test;
 
@@ -78,6 +78,20 @@ $test = "grep_2";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--grep', '{files}', '--grep', '{fqdn}', "$shared/cfg.alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "ifmt_yaml";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ifmt', 'yaml', "$test.data" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "ifmt_yaml_ofmt_yaml";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ifmt', 'yaml', '--ofmt', 'yaml', "$test.data" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
