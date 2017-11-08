@@ -125,18 +125,23 @@ sub exec {
     die_info "All done", 0;
 }
 
+my $JSON = JSON->new->canonical->allow_nonref;
+
 sub items {
     my ($self, $data) = @_;
+    my @out;
 
     for (@{$data}) {
         if (ref $_ eq 'HASH') {
-            print join("\n", sort keys %{$_}) . "\n";
+            push @out, sort keys %{$_};
         } elsif (ref $_ eq 'ARRAY') {
-            print "0 .. " . $#{$_} . "\n";
+            push @out, "0 .. " . $#{$_};
         } else {
-            print(($_ // 'null') . "\n");
+            push @out, $JSON->encode($_);
         }
     }
+
+    print join("\n", @out) . "\n";
 }
 
 sub list {
@@ -161,7 +166,7 @@ sub list {
                 if ($self->{OPTS}->{ofmt} eq 'RAW' and not ref ${$value}) {
                     $line .= ${$value};
                 } else {
-                    $line .= JSON->new->canonical->allow_nonref->encode(${$value});
+                    $line .= $JSON->encode(${$value});
                 }
             }
 
@@ -176,7 +181,7 @@ sub list {
 sub md5 {
     my ($self, $uri, $data) = @_;
 
-    print md5_hex(JSON->new->canonical->allow_nonref->encode($_)) .
+    print md5_hex($JSON->encode($_)) .
         (ref $uri ? "\n" : " $uri\n")
             for (@{$data});
 }
