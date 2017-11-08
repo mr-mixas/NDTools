@@ -13,6 +13,7 @@ sub VERSION { "0.07" }
 
 sub arg_opts {
     my $self = shift;
+
     return (
         $self->SUPER::arg_opts(),
         'strict' => \$self->{OPTS}->{strict},

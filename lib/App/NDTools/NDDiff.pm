@@ -17,6 +17,7 @@ sub VERSION { "0.27" }
 
 sub arg_opts {
     my $self = shift;
+
     return (
         $self->SUPER::arg_opts(),
         'brief' => sub { $self->{OPTS}->{ofmt} = $_[0] },
@@ -71,6 +72,7 @@ sub configure {
 
 sub defaults {
     my $self = shift;
+
     my $out = {
         %{$self->SUPER::defaults()},
         'ctx-text' => 3,
@@ -101,25 +103,30 @@ sub defaults {
 
 sub add {
     my $self = shift;
+
     push @{$self->{items}}, @_;
 }
 
 sub diff {
     my $self = shift;
+
     log_debug { "Calculating diff for structure" };
     $self->{diff} = Struct::Diff::diff(
         $self->{items}->[0],
         $self->{items}->[1],
         noU => $self->{OPTS}->{full} ? 0 : 1,
     );
+
     if ($self->{OPTS}->{ofmt} eq 'term') {
         $self->diff_term or return undef;
     }
+
     return $self->{diff};
 }
 
 sub _lcsidx2ranges {
     my ($in_a, $in_b) = @_;
+
     return [], [] unless (@{$in_a});
 
     my @out_a = [ shift @{$in_a} ];
@@ -343,7 +350,8 @@ sub print_brief_block {
 
 sub print_term_block {
     my ($self, $value, $path, $status) = @_;
-    log_trace { "'" . ps_serialize($path) . "' (" . $status . ")"};
+
+    log_trace { "'" . ps_serialize($path) . "' (" . $status . ")" };
 
     my @lines;
     my $color = $self->{OPTS}->{term}->{line}->{$status};

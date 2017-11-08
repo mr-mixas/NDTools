@@ -17,6 +17,7 @@ sub VERSION { '0.21' }
 
 sub arg_opts {
     my $self = shift;
+
     my %arg_opts = (
         $self->SUPER::arg_opts(),
         'builtin-format=s' => \$self->{OPTS}->{'builtin-format'},
@@ -32,6 +33,7 @@ sub arg_opts {
     );
     delete $arg_opts{'help|h'};     # skip in first args parsing -- will be accessable for modules
     delete $arg_opts{'version|V'};  # --"--
+
     return %arg_opts;
 }
 
@@ -64,13 +66,16 @@ sub defaults {
 
 sub dump_arg {
     my ($self, $uri, $arg) = @_;
+
     log_debug { "Dumping result to $uri" };
     s_dump($uri, $self->{OPTS}->{ofmt}, $self->{OPTS}->{pretty}, $arg);
 }
 
 sub dump_blame {
     my ($self, $blame) = @_;
+
     return unless (defined $self->{OPTS}->{'dump-blame'});
+
     log_debug { "Dumping blame to $self->{OPTS}->{'dump-blame'}" };
     s_dump($self->{OPTS}->{'dump-blame'}, $self->{OPTS}->{ofmt},
         $self->{OPTS}->{pretty}, $blame);
@@ -78,6 +83,7 @@ sub dump_blame {
 
 sub dump_rules {
     my $self = shift;
+
     for my $rule (@{$self->{rules}}) {
         # remove undefs - defaults will be used anyway
         map { defined $rule->{$_} || delete $rule->{$_} } keys %{$rule};
@@ -161,7 +167,9 @@ sub index_modules {
 
 sub init_module {
     my ($self, $mod) = @_;
+
     return if ($self->{_initialized_mods}->{$mod});
+
     log_trace { "Inititializing module $mod ($self->{MODS}->{$mod})" };
     eval "require $self->{MODS}->{$mod}";
     die_fatal "Failed to initialize module '$mod' ($@)", 1 if ($@);
@@ -170,6 +178,7 @@ sub init_module {
 
 sub list_modules {
     my $self = shift;
+
     return map {
         $self->init_module($_);
         [ $_, $self->{MODS}->{$_}->VERSION, $self->{MODS}->{$_}->MODINFO ]
@@ -198,6 +207,7 @@ sub load_builtin_rules {
 
 sub process_args {
     my $self = shift;
+
     for my $arg (@_) {
         log_info { "Processing $arg" };
         my $data = $self->load_arg($arg, $self->{OPTS}->{ifmt});
@@ -233,6 +243,7 @@ sub process_args {
 
 sub process_rules {
     my ($self, $data) = @_;
+
     my $rcnt = 0; # rules counter
     my @blame;
 

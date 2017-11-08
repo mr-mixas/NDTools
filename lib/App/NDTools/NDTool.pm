@@ -49,7 +49,7 @@ sub check_args {
 }
 
 sub configure {
-    my $self = shift;
+    return $_[0];
 }
 
 sub defaults {

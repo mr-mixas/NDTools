@@ -12,6 +12,7 @@ sub VERSION { '0.05' };
 
 sub arg_opts {
     my $self = shift;
+
     return (
         $self->SUPER::arg_opts(),
     );
@@ -19,6 +20,7 @@ sub arg_opts {
 
 sub defaults {
     my $self = shift;
+
     return {
         %{$self->SUPER::defaults()},
     };
@@ -26,6 +28,7 @@ sub defaults {
 
 sub dump {
     my ($self, $uri, $struct) = @_;
+
     log_debug { "Restoring structure to '$uri'" };
     s_dump($uri, $self->{OPTS}->{ofmt},
         {pretty => $self->{OPTS}->{pretty}}, $struct);
@@ -33,6 +36,7 @@ sub dump {
 
 sub exec {
     my $self = shift;
+
     die_fatal "One or two arguments expected", 1
         if (@ARGV < 1 or @ARGV > 2);
 
@@ -55,6 +59,7 @@ sub load_patch {
 
 sub patch {
     my ($self, $struct, $patch) = @_;
+
     eval { Struct::Diff::patch($struct, $patch) };
     die_fatal "Failed to patch structure ($@)", 8 if ($@);
 }

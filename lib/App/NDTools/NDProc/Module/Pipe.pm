@@ -15,6 +15,7 @@ sub VERSION { "0.03" }
 
 sub arg_opts {
     my $self = shift;
+
     return (
         $self->SUPER::arg_opts(),
         'command|cmd=s' => \$self->{OPTS}->{command},
