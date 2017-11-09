@@ -13,7 +13,7 @@ use Struct::Path qw(spath spath_delta);
 use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.27" }
+sub VERSION { "0.28" }
 
 sub arg_opts {
     my $self = shift;
@@ -85,10 +85,10 @@ sub defaults {
                 '@' => 'magenta',
             },
             'sign' => {
-                'A' => '>',
+                'A' => '+',
                 'D' => '!',
                 'U' => ' ',
-                'R' => '<',
+                'R' => '-',
                 '@' => ' ',
             },
         },

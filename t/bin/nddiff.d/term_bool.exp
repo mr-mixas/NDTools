@@ -1,11 +1,11 @@
   {false}
-<   false
->   true
+-   false
++   true
   {list}
-<   [1]
-<     false
->   [3]
->     false
+-   [1]
+-     false
++   [3]
++     false
   {true}
-<   true
->   false
+-   true
++   false
