@@ -1,13 +1,7 @@
-nd*
-    App::NDTools::ND*->new()->run()->status();
-        * to be able to catch real exit code in tests
-
 nddiff
     --ctx-struct <num>
     --X --noX (hide/unhide diff parts)
     Fix text diff header
-
-ndquery
 
 ndproc
     --list-sources <rules>
@@ -17,9 +11,6 @@ ndproc
     PATH DEFINITION to all mods docs
     'optional' opt to mods opts %)
     validate_rules method for all modules
-
-App::NDTools::NDTool
-    --ifmt --ofmt
 
 App::NDTools::NDProc::Module
     complete rule using defaults if not all vital opts provided
@@ -37,11 +28,8 @@ App::NDTools::NDProc::Module::Copy
     --path --to --move
 
 App::NDTools::NDProc::Module::Patch
-    ndpatch must be simply wrapper for it
+    ndpatch should be as a wrapper for it?
 
 App::NDTools::NDProc::Module::Rules # Replace rule by external rules (recursive)
     support builtin rules as well
 
-ndtools.pod:
-    INSTALL
-    move it to App::NDTools.pm

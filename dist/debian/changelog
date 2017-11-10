@@ -1,3 +1,16 @@
+ndtools (0.4.8) unstable; urgency=low
+
+  * nddiff: A/R line marks changed to +/-
+  * ndquery: --items opt added
+  * all: --ifmt opt added
+  * all: --ofmt opt added
+  * all: deprecation alert added for '<<' path hook
+  * depends bumped (multiple bugfixes for paths parsing)
+  * perl 5.8 dropped (no longer supported by Struct::Path::PerlStyle)
+  * load for custom packages optimized a bit
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Fri, 10 Nov 2017 10:06:29 +0300
+
 ndtools (0.4.7) unstable; urgency=low
 
   * ndproc-Insert: more strict checks for passed args
