@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use parent 'App::NDTools::NDProc::Module';
 
 use Hash::Merge qw();
-use Hash::Merge::Extra;
+use Hash::Merge::Extra 0.04;
 use List::MoreUtils qw(before);
 use Log::Log4Cli;
 use Storable qw(dclone);
@@ -244,6 +244,13 @@ per-merge opt otherwise.
 =item B<L_ADDITIVE>, B<R_ADDITIVE>
 
 Hashes merged, arrays joined, undefined scalars overrided. Left and right precedence.
+
+=item B<L_JSON_MERGE_PATCH>, B<R_JSON_MERGE_PATCH>
+
+JSON Merge Patch (L<rfc7386|https://tools.ietf.org/html/rfc7386>). Almost the
+same as C<L_OVERRIDE> and C<R_OVERRIDE>, but hash keys with undef values in the
+patch cause removal of existing keys in the main structure. Left and right
+precedence.
 
 =item B<L_OVERRIDE>, B<R_OVERRIDE>
 

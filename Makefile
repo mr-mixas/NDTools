@@ -32,7 +32,7 @@ test: depends
 
 lib/App/NDTools/INC/Hash/Merge/Extra.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Hash-Merge-Extra-0.03/lib/Hash/Merge/Extra.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Hash-Merge-Extra-0.04/lib/Hash/Merge/Extra.pm"
 
 lib/App/NDTools/INC/Log/Log4Cli.pm:
 	mkdir -p $(@D)
