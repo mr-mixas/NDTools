@@ -8,12 +8,12 @@ use Algorithm::Diff;
 use JSON qw();
 use App::NDTools::Slurp qw(s_dump);
 use Log::Log4Cli 0.18;
-use Struct::Diff 0.88 qw();
-use Struct::Path qw(spath spath_delta);
-use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
+use Struct::Diff 0.94 qw();
+use Struct::Path 0.80 qw(path path_delta);
+use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.28" }
+sub VERSION { "0.29" }
 
 sub arg_opts {
     my $self = shift;
@@ -58,7 +58,7 @@ sub configure {
         unless (defined $self->{OPTS}->{colors});
 
     for (@{$self->{OPTS}->{grep}}, @{$self->{OPTS}->{ignore}}) {
-        my $tmp = eval { ps_parse($_) };
+        my $tmp = eval { str2path($_) };
         die_fatal "Failed to parse '$_'", 4 if ($@);
         $_ = $tmp;
     }
@@ -265,7 +265,7 @@ sub dump_rules {
 }
 
 sub dump_rules_path { # to be able to override
-    return ps_serialize($_[1]);
+    return path2str($_[1]);
 }
 
 sub dump_term {
@@ -310,18 +310,18 @@ sub load {
             or return undef;
 
         if (my $path = $self->{OPTS}->{path}) {
-            my $p = eval { ps_parse($path) };
+            my $p = eval { str2path($path) };
             if ($@) {
                 log_error { "Failed to parse path '$path' ($@)" };
                 return undef;
             }
-            ($data) = spath($data, $p, deref => 1);
+            ($data) = path($data, $p, deref => 1);
         }
 
         ($data) = $self->grep($self->{OPTS}->{grep}, $data)
             if (@{$self->{OPTS}->{grep}});
 
-        map { spath($data, $_, delete => 1) } @{$self->{OPTS}->{ignore}}
+        map { path($data, $_, delete => 1) } @{$self->{OPTS}->{ignore}}
             if (ref $data);
 
         $self->add($data);
@@ -337,8 +337,8 @@ sub print_brief_block {
 
     $path = [ @{$path} ]; # prevent passed path corruption (used later for items with same subpath)
     $status = 'D' if ($status eq 'N');
-    my $last = ps_serialize([pop @{$path}]);
-    my $base = ps_serialize($path);
+    my $last = path2str([pop @{$path}]);
+    my $base = path2str($path);
 
     if ($self->{OPTS}->{colors}) {
         $last = colored($last, "bold " . $self->{OPTS}->{term}->{line}->{$status});
@@ -351,18 +351,18 @@ sub print_brief_block {
 sub print_term_block {
     my ($self, $value, $path, $status) = @_;
 
-    log_trace { "'" . ps_serialize($path) . "' (" . $status . ")" };
+    log_trace { "'" . path2str($path) . "' (" . $status . ")" };
 
     my @lines;
     my $color = $self->{OPTS}->{term}->{line}->{$status};
     my $dsign = $self->{OPTS}->{term}->{sign}->{$status};
 
     # diff for path
-    if (@{$path} and my @delta = spath_delta($self->{'hdr_path'}, $path)) {
+    if (@{$path} and my @delta = path_delta($self->{'hdr_path'}, $path)) {
         $self->{'hdr_path'} = [@{$path}];
         for (my $s = 0; $s < @{$path}; $s++) {
             next if (not $self->{OPTS}->{'full-headers'} and $s < @{$path} - @delta);
-            my $line = sprintf("%" . $s * 2 . "s", "") . ps_serialize([$path->[$s]]);
+            my $line = sprintf("%" . $s * 2 . "s", "") . path2str([$path->[$s]]);
             if (($status eq 'A' or $status eq 'R') and $s == $#{$path}) {
                 $line = "$dsign $line";
                 $line = colored($line, "bold $color") if ($self->{OPTS}->{colors});

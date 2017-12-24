@@ -5,11 +5,11 @@ use warnings FATAL => 'all';
 use parent 'App::NDTools::NDProc::Module';
 
 use Log::Log4Cli;
-use Struct::Path qw(spath);
-use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
+use Struct::Path 0.80 qw(path);
+use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 
 sub MODINFO { "Remove specified parts from structure" }
-sub VERSION { "0.07" }
+sub VERSION { "0.08" }
 
 sub arg_opts {
     my $self = shift;
@@ -23,20 +23,19 @@ sub arg_opts {
 sub process_path {
     my ($self, $data, $path, $opts) = @_;
 
-    my $spath = eval { ps_parse($path) };
+    my $spath = eval { str2path($path) };
     die_fatal "Failed to parse path ($@)", 4 if ($@);
 
-    # until entire structure removal fixed in Struct::Path
     return ${$data} = undef unless (@{$spath});
 
-    my @list = eval { spath($data, $spath, paths => 1, strict => $opts->{strict}) };
+    my @list = eval { path(${$data}, $spath, paths => 1, strict => $opts->{strict}) };
     die_fatal "Failed to resolve path '$path'", 4 if ($@);
 
     while (@list) {
         my ($p, undef) = splice @list, -2, 2;
 
-        log_info { "Removing path '" . ps_serialize($p). "'" };
-        spath($data, $p, delete => 1, strict => 1);
+        log_info { "Removing path '" . path2str($p). "'" };
+        path(${$data}, $p, delete => 1, strict => 1);
     }
 }
 

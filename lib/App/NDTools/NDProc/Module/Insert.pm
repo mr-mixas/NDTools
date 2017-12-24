@@ -6,11 +6,11 @@ use parent 'App::NDTools::NDProc::Module';
 
 use Log::Log4Cli;
 use Scalar::Util qw(looks_like_number);
-use Struct::Path 0.71 qw(spath);
-use Struct::Path::PerlStyle qw(ps_parse);
+use Struct::Path 0.80 qw(path);
+use Struct::Path::PerlStyle 0.80 qw(str2path);
 
 sub MODINFO { "Insert value into structure" }
-sub VERSION { "0.11" }
+sub VERSION { "0.12" }
 
 sub arg_opts {
     my $self = shift;
@@ -65,11 +65,11 @@ sub configure {
 sub process_path {
     my ($self, $data, $path, $opts) = @_;
 
-    my $spath = eval { ps_parse($path) };
+    my $spath = eval { str2path($path) };
     die_fatal "Failed to parse path ($@)", 4 if ($@);
 
     log_info { 'Updating path "' . $path . '"' };
-    eval { spath($data, $spath, assign => $opts->{value}, expand => 1) };
+    eval { path(${$data}, $spath, assign => $opts->{value}, expand => 1) };
     die_fatal "Failed to lookup path '$path' ($@)", 4 if ($@);
 }
 

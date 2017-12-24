@@ -8,7 +8,7 @@ use App::NDTools::INC;
 use App::NDTools::Slurp qw(s_dump s_load);
 use Getopt::Long qw(:config bundling);
 use Log::Log4Cli;
-use Struct::Path 0.71 qw(spath);
+use Struct::Path 0.80 qw(path);
 
 sub VERSION { "n/a" }
 
@@ -74,10 +74,10 @@ sub grep {
     for my $struct (@structs) {
         my $tmp;
         for (@{$spaths}) {
-            my @found = eval { spath($struct, $_, deref => 1, paths => 1) };
+            my @found = eval { path($struct, $_, deref => 1, paths => 1) };
             while (@found) {
                 my ($p, $r) = splice @found, 0, 2;
-                spath(\$tmp, $p, assign => $r, expand => 'append');
+                path($tmp, $p, assign => $r, expand => 'append');
             }
         }
         push @out, $tmp if (defined $tmp);

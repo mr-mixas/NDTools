@@ -40,15 +40,15 @@ lib/App/NDTools/INC/Log/Log4Cli.pm:
 
 lib/App/NDTools/INC/Struct/Diff.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Diff-0.91/lib/Struct/Diff.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Diff-0.94/lib/Struct/Diff.pm"
 
 lib/App/NDTools/INC/Struct/Path.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Path-0.73/lib/Struct/Path.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Path-0.80/lib/Struct/Path.pm"
 
 lib/App/NDTools/INC/Struct/Path/PerlStyle.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Path-PerlStyle-0.73/lib/Struct/Path/PerlStyle.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Path-PerlStyle-0.80/lib/Struct/Path/PerlStyle.pm"
 
 veryclean: clean
 	rm -rf lib/App/NDTools/INC/*

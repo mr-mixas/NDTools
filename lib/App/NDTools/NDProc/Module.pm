@@ -10,8 +10,8 @@ use App::NDTools::NDTool;
 use Getopt::Long qw(:config bundling pass_through);
 use Log::Log4Cli;
 use Storable qw(dclone);
-use Struct::Path 0.71 qw(spath);
-use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
+use Struct::Path 0.80 qw(path);
+use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 
 sub MODINFO { "n/a" }
 sub VERSION { "n/a" }
@@ -79,7 +79,7 @@ sub process {
         if ($opts->{preserve});
 
     for my $path (@{$opts->{path}}) {
-        log_debug { "Processing '$path'" };
+        log_debug { "Processing path '$path'" };
         $self->process_path($data, $path, $opts, $source);
     }
 
@@ -94,8 +94,8 @@ sub restore_preserved {
 
     while (@{$self->{_preserved}}) {
         my ($path, $value) = splice @{$self->{_preserved}}, 0, 2;
-        log_debug { "Restoring preserved '" . ps_serialize($path) . "'" };
-        spath($data, $path, assign => $value, expand => 1);
+        log_debug { "Restoring preserved '" . path2str($path) . "'" };
+        path(${$data}, $path, assign => $value, expand => 1);
     }
 
     return $self;
@@ -106,11 +106,11 @@ sub stash_preserved {
 
     for my $path (@{$paths}) {
         log_debug { "Preserving '$path'" };
-        my $spath = eval { ps_parse($path) };
+        my $spath = eval { str2path($path) };
         die_fatal "Failed to parse path ($@)", 4 if ($@);
         push @{$self->{_preserved}},
             map { $_ = ref $_ ? dclone($_) : $_ } # immutable now
-            spath($data, $spath, deref => 1, paths => 1);
+            path(${$data}, $spath, deref => 1, paths => 1);
     }
 
     return $self;

@@ -7,11 +7,11 @@ use parent 'App::NDTools::NDProc::Module';
 use IPC::Run3;
 use Log::Log4Cli;
 use App::NDTools::Slurp qw(s_decode s_encode);
-use Struct::Path qw(spath);
-use Struct::Path::PerlStyle qw(ps_parse);
+use Struct::Path 0.80 qw(path);
+use Struct::Path::PerlStyle 0.80 qw(str2path);
 
 sub MODINFO { "Modify structure using external process" }
-sub VERSION { "0.03" }
+sub VERSION { "0.04" }
 
 sub arg_opts {
     my $self = shift;
@@ -42,13 +42,13 @@ sub check_rule {
 sub process_path {
     my ($self, $data, $path, $opts) = @_;
 
-    my $spath = eval { ps_parse($path) };
+    my $spath = eval { str2path($path) };
     die_fatal "Failed to parse path ($@)", 4 if ($@);
 
-    my @refs = eval { spath($data, $spath, strict => $opts->{strict}) };
+    my @refs = eval { path(${$data}, $spath, strict => $opts->{strict}) };
     die_fatal "Failed to lookup path '$path'", 4 if ($@);
 
-     for my $r (@refs) {
+    for my $r (@refs) {
         my $in = s_encode(${$r}, 'JSON', { pretty => 1 });
 
         my ($out, $err);

@@ -9,11 +9,11 @@ use Hash::Merge::Extra 0.04;
 use List::MoreUtils qw(before);
 use Log::Log4Cli;
 use Storable qw(dclone);
-use Struct::Path qw(is_implicit_step spath);
-use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
+use Struct::Path 0.80 qw(implicit_step path);
+use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 
 sub MODINFO { "Merge structures according provided rules" }
-sub VERSION { "0.13" }
+sub VERSION { "0.14" }
 
 sub arg_opts {
     my $self = shift;
@@ -78,12 +78,12 @@ sub get_opts {
 sub map_paths {
     my ($data, $srcs, $spath) = @_;
 
-    my @explicit = before { is_implicit_step($_) } @{$spath};
-    return spath($data, $spath, paths => 1, expand => 1)
+    my @explicit = before { implicit_step($_) } @{$spath};
+    return path(${$data}, $spath, paths => 1, expand => 1)
         if (@explicit == @{$spath}); # fully qualified path
 
     my @out;
-    my @dsts = spath($data, $spath, paths => 1);
+    my @dsts = path(${$data}, $spath, paths => 1);
 
     $srcs = [ @{$srcs} ];
     while (@{$srcs}) {
@@ -96,14 +96,14 @@ sub map_paths {
 
         my @e_path = @{$spath};
         while (my $step = pop @e_path) {
-            if (ref $step eq 'ARRAY' and is_implicit_step($step)) {
-                if (my @tmp = spath($data, \@e_path, deref => 1, paths => 1)) {
+            if (ref $step eq 'ARRAY' and implicit_step($step)) {
+                if (my @tmp = path(${$data}, \@e_path, deref => 1, paths => 1)) {
                     # expand last existed array, addressed by implicit step
                     @e_path = ( @{$tmp[0]}, [ scalar @{$tmp[1]} ] );
                     last;
                 }
-            } elsif (ref $step eq 'HASH' and is_implicit_step($step)) {
-                if (my @tmp = spath($data, [ @e_path, $step ], paths => 1)) {
+            } elsif (ref $step eq 'HASH' and implicit_step($step)) {
+                if (my @tmp = path(${$data}, [ @e_path, $step ], paths => 1)) {
                     @e_path = @{$tmp[0]};
                     last;
                 }
@@ -114,7 +114,7 @@ sub map_paths {
         my @i_path = @{$sp}[@e_path .. $#{$sp}];
 
         map { $_ = [0] if (ref $_ eq 'ARRAY') } @i_path; # drop array's indexes in implicit part of path
-        push @out, spath($data, [@e_path, @i_path], paths => 1, expand => 1);
+        push @out, path(${$data}, [@e_path, @i_path], paths => 1, expand => 1);
     }
 
     return @out;
@@ -139,7 +139,7 @@ sub process {
     if (exists $opts->{ignore}) {
         for my $path (@{$opts->{ignore}}) {
             log_debug { "Removing (ignore) from src '$path'" };
-            spath($source, ps_parse($path), delete => 1);
+            path($source, str2path($path), delete => 1);
         }
     }
 
@@ -152,11 +152,11 @@ sub process_path {
     # merge whole source if path omitted
     $path->{merge} = '' unless (defined $path->{merge});
 
-    my $spath = eval { ps_parse($path->{merge}) };
+    my $spath = eval { str2path($path->{merge}) };
     die_fatal "Failed to parse path ($@)", 4 if ($@);
 
     log_debug { "Resolving paths '$path->{merge}'" };
-    my @srcs = spath($source, $spath, paths => 1);
+    my @srcs = path($source, $spath, paths => 1);
     unless (@srcs) {
         die_fatal "No such path '$path->{merge}' in $opts->{source}", 4
             if (exists $path->{strict} ? $path->{strict} : $opts->{strict});
@@ -170,7 +170,7 @@ sub process_path {
         my ($sp, $sr) = splice @srcs, 0, 2;
         my ($dp, $dr) = splice @dsts, 0, 2;
         log_info { "Merging $opts->{source} ($style, '" .
-            ps_serialize($sp) . "' => '" . ps_serialize($dp) . "')" };
+            path2str($sp) . "' => '" . path2str($dp) . "')" };
         Hash::Merge::set_behavior($style);
         ${$dr} = Hash::Merge::merge(${$dr}, ${$sr});
     }

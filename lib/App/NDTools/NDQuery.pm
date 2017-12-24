@@ -8,11 +8,11 @@ use Digest::MD5 qw(md5_hex);
 use JSON qw();
 use Log::Log4Cli;
 use App::NDTools::Slurp qw(s_dump);
-use Struct::Path 0.71 qw(slist spath spath_delta);
-use Struct::Path::PerlStyle qw(ps_parse ps_serialize);
+use Struct::Path 0.80 qw(list_paths path path_delta);
+use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.27' };
+sub VERSION { '0.28' };
 
 sub arg_opts {
     my $self = shift;
@@ -59,7 +59,7 @@ sub configure {
         @{$self->{OPTS}->{grep}},
         @{$self->{OPTS}->{delete}}
     ) {
-        my $tmp = eval { ps_parse($_) };
+        my $tmp = eval { str2path($_) };
         die_fatal "Failed to parse '$_'", 4 if ($@);
         $_ = $tmp;
     }
@@ -94,10 +94,10 @@ sub exec {
         my @data = $self->load_struct($uri, $self->{OPTS}->{ifmt});
 
         if (defined $self->{OPTS}->{path}) {
-            my $spath = eval { ps_parse($self->{OPTS}->{path}) };
+            my $spath = eval { str2path($self->{OPTS}->{path}) };
             die_fatal "Failed to parse '$self->{OPTS}->{path}'", 4 if ($@);
 
-            unless (@data = spath($data[0], $spath, deref => 1)) {
+            unless (@data = path($data[0], $spath, deref => 1)) {
                 die_fatal "Failed to lookup path '$self->{OPTS}->{path}'", 8
                     if ($self->{OPTS}->{strict});
                 next;
@@ -108,7 +108,7 @@ sub exec {
             if (@{$self->{OPTS}->{grep}});
 
         for my $spath (@{$self->{OPTS}->{delete}}) {
-            map { spath($_, $spath, delete => 1) if (ref $_) } @data;
+            map { path($_, $spath, delete => 1) if (ref $_) } @data;
         }
 
         if ($self->{OPTS}->{items}) {
@@ -148,18 +148,18 @@ sub list {
     my ($self, $uri, $data) = @_;
 
     for (@{$data}) {
-        my @list = slist($_, depth => $self->{OPTS}->{depth});
+        my @list = list_paths($_, depth => $self->{OPTS}->{depth});
         my ($base, @delta, $line, $path, $prev, $value, @out);
 
         while (@list) {
             ($path, $value) = splice @list, 0, 2;
 
-            @delta = spath_delta($prev, $path);
+            @delta = path_delta($prev, $path);
             $base = [ @{$path}[0 .. @{$path} - @delta - 1] ];
             $line = $self->{OPTS}->{colors}
-                ? colored(ps_serialize($base), $self->{OPTS}->{'color-common'})
-                : ps_serialize($base);
-            $line .= ps_serialize(\@delta);
+                ? colored(path2str($base), $self->{OPTS}->{'color-common'})
+                : path2str($base);
+            $line .= path2str(\@delta);
 
             if ($self->{OPTS}->{values}) {
                 $line .= " = ";

@@ -9,11 +9,11 @@ use Log::Log4Cli;
 use Module::Find qw(findsubmod);
 use App::NDTools::Slurp qw(s_decode s_dump s_encode);
 use Storable qw(dclone freeze thaw);
-use Struct::Diff 0.88 qw(diff split_diff);
-use Struct::Path qw(spath);
-use Struct::Path::PerlStyle qw(ps_parse);
+use Struct::Diff 0.94 qw(diff split_diff);
+use Struct::Path 0.80 qw(path);
+use Struct::Path::PerlStyle 0.80 qw(str2path);
 
-sub VERSION { '0.21' }
+sub VERSION { '0.22' }
 
 sub arg_opts {
     my $self = shift;
@@ -96,9 +96,9 @@ sub dump_rules {
 sub embed {
     my ($self, $data, $path, $thing) = @_;
 
-    my $spath = eval { ps_parse($path) };
+    my $spath = eval { str2path($path) };
     die_fatal "Unable to parse '$path' ($@)", 4 if ($@);
-    my $ref = eval { (spath($data, $spath, expand => 1))[0]};
+    my $ref = eval { (path($data, $spath, expand => 1))[0]};
     die_fatal "Unable to lookup '$path' ($@)", 4 if ($@);
 
     ${$ref} = $self->{OPTS}->{'builtin-format'} ?
@@ -195,9 +195,9 @@ sub load_builtin_rules {
     my ($self, $data, $path) = @_;
 
     log_debug { "Loading builtin rules from '$path'" };
-    my $spath = eval { ps_parse($path) };
+    my $spath = eval { str2path($path) };
     die_fatal "Unable to parse path ($@)", 4 if ($@);
-    my $rules = eval { (spath($data, $spath, deref => 1, strict => 1))[0] };
+    my $rules = eval { (path($data, $spath, deref => 1, strict => 1))[0] };
     die_fatal "Unable to lookup path ($@)", 4 if ($@);
 
     return $self->{OPTS}->{'builtin-format'} ?

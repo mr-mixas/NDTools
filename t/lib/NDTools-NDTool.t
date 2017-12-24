@@ -23,7 +23,7 @@ like($@, qr/^Failed to open file/, "Must fail when file doesn't exists");
 
 $tmp = $tool->load_struct("$shared/menu.a.json");
 
-($got) = $tool->grep([[[],{regs => [qr/^.i/]},[],{keys => ['id']}]], $tmp);
+($got) = $tool->grep([[[],{R => [qr/^.i/]},[],{K => ['id']}]], $tmp);
 $exp = [
     {
         File => [
@@ -41,7 +41,7 @@ $exp = [
 ];
 is_deeply($got, $exp, "Grep match") || diag t_ab_cmp($got, $exp);
 
-$got = $tool->grep([$tmp], [[],{regs => [qr/^NotExists/]},[],{keys => ['id']}]);
+$got = $tool->grep([$tmp], [[],{R => [qr/^NotExists/]},[],{K => ['id']}]);
 is_deeply($got, 0, "Grep doesn't match") || diag t_ab_cmp($got, $exp);
 
 my ($out, $err);
