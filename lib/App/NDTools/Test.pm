@@ -18,6 +18,8 @@ our @EXPORT = qw(
 sub run_ok {
     my %t = @_;
 
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
     if (exists $t{skip} and $t{skip}->()) {
         pass("Test '$t{name}' cancelled by 'skip' opt");
         return;
@@ -39,7 +41,6 @@ sub run_ok {
     my ($out, $err, $exit) = capture { system(@{$t{cmd}}) };
 
     subtest $t{name} => sub {
-        local $Test::Builder::Level = $Test::Builder::Level + 6;
 
         for my $std ('stdout', 'stderr') {
             next if (exists $t{$std} and not defined $t{$std}); # set to undef to skip test
@@ -82,7 +83,7 @@ sub run_ok {
 }
 
 sub t_ab_cmp {
-    return "GOT: " . neat_dump(shift) . "\nEXP: " . neat_dump(shift);
+    return "GOT: " . t_dump(shift) . "\nEXP: " . t_dump(shift);
 }
 
 sub t_dir {
