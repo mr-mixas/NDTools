@@ -12,7 +12,7 @@ use Struct::Path 0.80 qw(list_paths path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { '0.28' };
+sub VERSION { '0.29' };
 
 sub arg_opts {
     my $self = shift;
@@ -82,7 +82,7 @@ sub dump {
     my ($self, $uri, $data) = @_;
 
     $uri = \*STDOUT unless ($self->{OPTS}->{replace});
-    s_dump($uri, $self->{OPTS}->{ofmt}, undef, @{$data});
+    s_dump($uri, $self->{OPTS}->{ofmt}, {pretty => $self->{OPTS}->{pretty}}, @{$data});
 }
 
 sub exec {

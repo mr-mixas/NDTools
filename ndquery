@@ -64,6 +64,10 @@ Calculate MD5 sum for structure.
 
 Path in the structure to deal with.
 
+=item B<--[no]pretty>
+
+On/Off pretty-print for JSON. Enabled by default.
+
 =item B<--raw-output>
 
 Dont't format result simple things (strings/numbers) - dump them as is.

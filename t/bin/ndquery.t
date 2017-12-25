@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 38;
+use Test::More tests => 39;
 
 use App::NDTools::Test;
 
@@ -183,6 +183,13 @@ $test = "md5_stdin";
 run_ok(
     name => $test,
     cmd => [ "@cmd --md5 --path [0]{File}[0]{label} < $shared/menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "nopretty";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--nopretty', "$shared/cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 

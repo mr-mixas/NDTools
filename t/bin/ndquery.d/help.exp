@@ -36,6 +36,9 @@ Options:
     --path|-p <path>
         Path in the structure to deal with.
 
+    --[no]pretty
+        On/Off pretty-print for JSON. Enabled by default.
+
     --raw-output
         Dont't format result simple things (strings/numbers) - dump them as
         is.
