@@ -12,17 +12,6 @@ use Struct::Path 0.80 qw(path);
 
 sub VERSION { "n/a" }
 
-### temporary - for '<<' deprecation cycle
-use Struct::Path::PerlStyle;
-$Struct::Path::PerlStyle::HOOKS->{'<<'} = sub {
-    log_alert { "WHOAAA!!!" };
-    log_alert {
-        "Path hook '<<' renamed to 'back'. Old name is deprecated" .
-        " and it's support will be removed in the nearest future!"
-    };
-    goto $Struct::Path::PerlStyle::HOOKS->{back};
-};
-
 sub arg_opts {
     my $self = shift;
 
