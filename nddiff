@@ -66,12 +66,6 @@ Ignore substructure. May be used several times.
 
 Use JSON as output diff format.
 
-=item B<--path> E<lt>pathE<gt>
-
-Deprecated and will be removed soon, --grep should be used instead.
-Define path to substructure to deal with. See path syntax description
-at L<https://metacpan.org/pod/Struct::Path::PerlStyle>
-
 =item B<--[no]pretty>
 
 On/Off pretty-print for JSON. Enabled by default.

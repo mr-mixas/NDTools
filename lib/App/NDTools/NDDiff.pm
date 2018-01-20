@@ -28,7 +28,6 @@ sub arg_opts {
         'grep=s@' => \$self->{OPTS}->{grep},
         'json' => sub { $self->{OPTS}->{ofmt} = $_[0] },
         'ignore=s@' => \$self->{OPTS}->{ignore},
-        'path=s' => \$self->{OPTS}->{path},
         'rules' => sub { $self->{OPTS}->{ofmt} = $_[0] },
         'quiet|q' => \$self->{OPTS}->{quiet},
         'show' => \$self->{OPTS}->{show},
@@ -62,10 +61,6 @@ sub configure {
         die_fatal "Failed to parse '$_'", 4 if ($@);
         $_ = $tmp;
     }
-
-    # --path is ambigous - result is a list which depends of passed structure
-    log_alert { "Opt --path is deprecated and will be removed in the future" }
-        if ($self->{OPTS}->{path});
 
     return $self;
 }
@@ -308,15 +303,6 @@ sub load {
     for (@_) {
         my $data = $self->load_struct($_, $self->{OPTS}->{ifmt})
             or return undef;
-
-        if (my $path = $self->{OPTS}->{path}) {
-            my $p = eval { str2path($path) };
-            if ($@) {
-                log_error { "Failed to parse path '$path' ($@)" };
-                return undef;
-            }
-            ($data) = path($data, $p, deref => 1);
-        }
 
         ($data) = $self->grep($self->{OPTS}->{grep}, $data)
             if (@{$self->{OPTS}->{grep}});

@@ -2,7 +2,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Test::File::Contents;
-use Test::More tests => 54;
+use Test::More tests => 52;
 
 use App::NDTools::Test;
 
@@ -170,16 +170,6 @@ run_ok(
     exit => 8,
 );
 
-# [5] here is added item, that's why empty STDOUT. But exit code must be 8 - diff exists after all
-$test = "term_brief_path";
-run_ok(
-    name => $test,
-    cmd => [ @cmd, '--brief', '--path', '[1]{Edit}[5]', "$shared/menu.a.json", "$shared/menu.b.json" ],
-    stderr => qr/ALERT] Opt --path is deprecated and will be removed/,
-    stdout => '',
-    exit => 8,
-);
-
 $test = "term_colors";
 run_ok(
     name => $test,
@@ -238,15 +228,6 @@ $test = "term_nopretty";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--nopretty', "$shared/menu.a.json", "$shared/menu.b.json" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
-    exit => 8,
-);
-
-$test = "term_path";
-run_ok(
-    name => $test,
-    cmd => [ @cmd, '--path', '{files}', "$shared/cfg.alpha.json", "$shared/cfg.beta.json" ],
-    stderr => qr/ALERT] Opt --path is deprecated and will be removed in the future/,
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );

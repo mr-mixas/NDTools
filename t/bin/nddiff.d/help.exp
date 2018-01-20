@@ -35,11 +35,6 @@ Options:
     --json
         Use JSON as output diff format.
 
-    --path <path>
-        Deprecated and will be removed soon, --grep should be used instead.
-        Define path to substructure to deal with. See path syntax
-        description at <https://metacpan.org/pod/Struct::Path::PerlStyle>
-
     --[no]pretty
         On/Off pretty-print for JSON. Enabled by default.
 
