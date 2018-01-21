@@ -32,11 +32,11 @@ test: depends
 
 lib/App/NDTools/INC/Hash/Merge/Extra.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Hash-Merge-Extra-0.04/lib/Hash/Merge/Extra.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Hash-Merge-Extra-0.06/lib/Hash/Merge/Extra.pm"
 
 lib/App/NDTools/INC/Log/Log4Cli.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Log-Log4Cli-0.19/lib/Log/Log4Cli.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Log-Log4Cli-0.20/lib/Log/Log4Cli.pm"
 
 lib/App/NDTools/INC/Struct/Diff.pm:
 	mkdir -p $(@D)
@@ -44,7 +44,7 @@ lib/App/NDTools/INC/Struct/Diff.pm:
 
 lib/App/NDTools/INC/Struct/Path.pm:
 	mkdir -p $(@D)
-	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Path-0.80/lib/Struct/Path.pm"
+	wget -O $@ "http://st.aticpan.org/source/MIXAS/Struct-Path-0.81/lib/Struct/Path.pm"
 
 lib/App/NDTools/INC/Struct/Path/PerlStyle.pm:
 	mkdir -p $(@D)
