@@ -1,5 +1,8 @@
 package App::NDTools;
 
+use strict;
+use warnings;
+
 our $VERSION = "0.5.0";
 
 =head1 NAME
