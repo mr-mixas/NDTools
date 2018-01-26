@@ -1,9 +1,8 @@
 #!/usr/bin/env perl
 
-use App::NDTools::NDDiff;
+require App::NDTools::NDDiff;
 
-my $nddiff = App::NDTools::NDDiff->new();
-$nddiff->exec();
+App::NDTools::NDDiff->new(@ARGV)->exec();
 
 __END__
 

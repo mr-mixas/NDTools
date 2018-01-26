@@ -1,9 +1,8 @@
 #!/usr/bin/env perl
 
-use App::NDTools::NDPatch;
+require App::NDTools::NDPatch;
 
-my $ndpatch = App::NDTools::NDPatch->new();
-$ndpatch->exec();
+App::NDTools::NDPatch->new(@ARGV)->exec();
 
 __END__
 

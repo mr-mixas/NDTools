@@ -1,9 +1,8 @@
 #!/usr/bin/env perl
 
-use App::NDTools::NDProc;
+require App::NDTools::NDProc;
 
-my $ndproc = App::NDTools::NDProc->new();
-$ndproc->exec();
+App::NDTools::NDProc->new(@ARGV)->exec();
 
 __END__
 

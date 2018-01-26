@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-sub VERSION { "0.29" }
+sub VERSION() { '0.30' }
 
 sub arg_opts {
     my $self = shift;
@@ -281,8 +281,8 @@ sub dump_term {
 sub exec {
     my $self = shift;
 
-    $self->check_args(@ARGV) or die_fatal undef, 1;
-    $self->load(@ARGV) or die_fatal undef, 1;
+    $self->check_args(@{$self->{ARGV}}) or die_fatal undef, 1;
+    $self->load(@{$self->{ARGV}}) or die_fatal undef, 1;
 
     if ($self->{OPTS}->{show}) {
         $self->{diff} = shift @{$self->{items}};
