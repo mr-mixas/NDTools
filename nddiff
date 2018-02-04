@@ -12,7 +12,7 @@ nddiff - diff tool for nested data structures
 
 =head1 SYNOPSIS
 
-    nddiff [OPTIONS] <file1> <file2>
+    nddiff [OPTIONS] <file1> <file2> [<file3> ... ]
 
 =head1 DESCRIPTION
 

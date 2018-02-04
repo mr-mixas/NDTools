@@ -1,5 +1,5 @@
 Usage:
-        nddiff [OPTIONS] <file1> <file2>
+        nddiff [OPTIONS] <file1> <file2> [<file3> ... ]
 
 Options:
     --brief

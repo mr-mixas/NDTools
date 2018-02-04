@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-sub VERSION() { '0.30' }
+sub VERSION() { '0.31' }
 
 sub arg_opts {
     my $self = shift;
@@ -38,12 +38,12 @@ sub check_args {
     my $self = shift;
 
     if ($self->{OPTS}->{show}) {
-        unless (@_ == 1) {
-            log_error { "One argument expected (--show) used" };
+        unless (@_) {
+            log_error { "At least one argument expected when --show used" };
             return undef;
         }
-    } elsif (@_ != 2) {
-        log_error { "Two arguments expected for diff" };
+    } elsif (@_ < 2) {
+        log_error { "At least two arguments expected for diff" };
         return undef;
     }
 
@@ -72,6 +72,7 @@ sub defaults {
         %{$self->SUPER::defaults()},
         'ctx-text' => 3,
         'term' => {
+            'head' => 'yellow',
             'line' => {
                 'A' => 'green',
                 'D' => 'yellow',
@@ -96,27 +97,20 @@ sub defaults {
     return $out;
 }
 
-sub add {
-    my $self = shift;
-
-    push @{$self->{items}}, @_;
-}
-
 sub diff {
-    my $self = shift;
+    my ($self, $old, $new) = @_;
 
     log_debug { "Calculating diff for structure" };
-    $self->{diff} = Struct::Diff::diff(
-        $self->{items}->[0],
-        $self->{items}->[1],
+    my $diff = Struct::Diff::diff(
+        $old, $new,
         noU => $self->{OPTS}->{full} ? 0 : 1,
     );
 
     if ($self->{OPTS}->{ofmt} eq 'term') {
-        $self->diff_term or return undef;
+        $self->diff_term($diff) or return undef;
     }
 
-    return $self->{diff};
+    return $diff;
 }
 
 sub _lcsidx2ranges {
@@ -146,7 +140,7 @@ sub _lcsidx2ranges {
 }
 
 sub diff_term {
-    my $self = shift;
+    my ($self, $diff) = @_;
 
     log_debug { "Calculating diffs for text values" };
 
@@ -154,7 +148,7 @@ sub diff_term {
     my ($o, $n);    # LCS ranges
     my ($po, $pn);  # current positions in splitted texts
     my ($ro, $rn);  # current LCS range
-    my @list = Struct::Diff::list_diff($self->{diff});
+    my @list = Struct::Diff::list_diff($diff);
 
     while (@list) {
         (undef, $dref) = splice @list, 0, 2;
@@ -205,29 +199,29 @@ sub diff_term {
 }
 
 sub dump {
-    my $self = shift;
+    my ($self, $diff) = @_;
 
     log_debug { "Dumping results" };
 
     if ($self->{OPTS}->{ofmt} eq 'term') {
-        $self->dump_term();
+        $self->dump_term($diff);
     } elsif ($self->{OPTS}->{ofmt} eq 'brief') {
-        $self->dump_brief();
+        $self->dump_brief($diff);
     } elsif ($self->{OPTS}->{ofmt} eq 'rules') {
-        $self->dump_rules();
+        $self->dump_rules($diff);
     } else {
         s_dump(\*STDOUT, $self->{OPTS}->{ofmt},
-            {pretty => $self->{OPTS}->{pretty}}, $self->{diff});
+            {pretty => $self->{OPTS}->{pretty}}, $diff);
     }
 
     return $self;
 }
 
 sub dump_brief {
-    my $self = shift;
+    my ($self, $diff) = @_;
 
     my ($path, $dref, $tag);
-    my @list = Struct::Diff::list_diff($self->{diff}, sort => 1);
+    my @list = Struct::Diff::list_diff($diff, sort => 1);
 
     while (@list) {
         ($path, $dref) = splice @list, 0, 2;
@@ -239,10 +233,10 @@ sub dump_brief {
 }
 
 sub dump_rules {
-    my $self = shift;
+    my ($self, $diff) = @_;
 
     my ($path, $dref, $item, @out);
-    my @list = Struct::Diff::list_diff($self->{diff}, sort => 1);
+    my @list = Struct::Diff::list_diff($diff, sort => 1);
 
     while (@list) {
         ($path, $dref) = splice @list, 0, 2;
@@ -264,10 +258,10 @@ sub dump_rules_path { # to be able to override
 }
 
 sub dump_term {
-    my $self = shift;
+    my ($self, $diff) = @_;
 
     my ($path, $dref, $tag);
-    my @list = Struct::Diff::list_diff($self->{diff}, sort => 1);
+    my @list = Struct::Diff::list_diff($diff, sort => 1);
 
     while (@list) {
         ($path, $dref) = splice @list, 0, 2;
@@ -282,38 +276,53 @@ sub exec {
     my $self = shift;
 
     $self->check_args(@{$self->{ARGV}}) or die_fatal undef, 1;
-    $self->load(@{$self->{ARGV}}) or die_fatal undef, 1;
 
-    if ($self->{OPTS}->{show}) {
-        $self->{diff} = shift @{$self->{items}};
-    } else {
-        $self->diff or die_fatal undef, 1;
+    my @items;
+
+    while (@{$self->{ARGV}}) {
+        my $name = shift @{$self->{ARGV}};
+        my $data = $self->load($name) or die_fatal undef, 1;
+
+        my $diff;
+
+        if ($self->{OPTS}->{show}) {
+            $self->print_term_header($name);
+            $diff = $data;
+        } else {
+            push @items, { name => $name, data => $data };
+            next unless (@items > 1);
+
+            $self->print_term_header($items[0]->{name}, $items[1]->{name});
+
+            $diff = $self->diff($items[0]->{data}, $items[1]->{data})
+                or die_fatal undef, 1;
+
+            shift @items;
+        }
+
+        $self->dump($diff) or die_fatal undef, 1
+            unless ($self->{OPTS}->{quiet});
+
+        $self->{status} = 8 unless (not keys %{$diff} or exists $diff->{U});
     }
 
-    $self->dump or die_fatal undef, 1 unless ($self->{OPTS}->{quiet});
-
-    die_info "All done, no difference found", 0
-        if (not keys %{$self->{diff}} or exists $self->{diff}->{U});
+    die_info "All done, no difference found", 0 unless ($self->{status});
     die_info "Difference found", 8;
 }
 
 sub load {
     my $self = shift;
 
-    for (@_) {
-        my $data = $self->load_struct($_, $self->{OPTS}->{ifmt})
-            or return undef;
+    my $data = $self->load_struct($_[0], $self->{OPTS}->{ifmt})
+        or return undef;
 
-        ($data) = $self->grep($self->{OPTS}->{grep}, $data)
-            if (@{$self->{OPTS}->{grep}});
+    ($data) = $self->grep($self->{OPTS}->{grep}, $data)
+        if (@{$self->{OPTS}->{grep}});
 
-        map { path($data, $_, delete => 1) } @{$self->{OPTS}->{ignore}}
-            if (ref $data);
+    map { path($data, $_, delete => 1) } @{$self->{OPTS}->{ignore}}
+        if (ref $data);
 
-        $self->add($data);
-    }
-
-    return $self;
+    return $data;
 }
 
 sub print_brief_block {
@@ -364,6 +373,20 @@ sub print_term_block {
     push @lines, $self->term_value_diff($value, $status, $indent);
 
     print join("\n", @lines) . "\n";
+}
+
+sub print_term_header {
+    my ($self, @names) = @_;
+
+    return unless (-t STDOUT); # don't dump to pipes
+
+    my $header = @names == 1 ? $names[0] :
+        "--- a: $names[0] \n+++ b: $names[1]";
+
+    $header = colored($header, $self->{OPTS}->{term}->{head})
+        if ($self->{OPTS}->{colors});
+
+    print $header . "\n";
 }
 
 sub term_value_diff {
