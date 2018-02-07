@@ -15,6 +15,8 @@ use Term::ANSIColor qw(colored);
 
 sub VERSION() { '0.31' }
 
+my $JSON = JSON->new->canonical->allow_nonref;
+
 sub arg_opts {
     my $self = shift;
 
@@ -402,7 +404,7 @@ sub term_value_diff_default {
     my ($self, $value, $status, $indent) = @_;
     my @out;
 
-    $value = JSON->new->allow_nonref->canonical->pretty($self->{OPTS}->{pretty})->encode($value)
+    $value = $JSON->pretty($self->{OPTS}->{pretty})->encode($value)
         if (ref $value or not defined $value);
 
     for my $line (split($/, $value)) {
