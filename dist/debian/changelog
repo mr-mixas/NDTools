@@ -1,3 +1,11 @@
+ndtools (0.5.1) unstable; urgency=low
+
+  * nddiff: diff multiple arguments supported
+  * all: get rid of global @ARGV usage
+  * docs improved, refactoring
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Fri, 09 Feb 2018 22:29:33 +0300
+
 ndtools (0.5.0) unstable; urgency=low
 
   * Struct::* depends updated, related code fixed
