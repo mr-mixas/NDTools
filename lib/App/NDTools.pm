@@ -17,7 +17,7 @@ App::NDTools - command line tools for nested structures
 
 =head1 VERSION
 
-Version 0.82
+Version 0.5.2
 
 =cut
 
