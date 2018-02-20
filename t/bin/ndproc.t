@@ -19,7 +19,7 @@ $test = "noargs";
 run_ok(
     name => $test,
     cmd => [ @cmd ],
-    stderr => qr/ ERROR] At least one argument expected/,
+    stderr => qr/ FATAL] At least one argument expected/,
     exit => 1
 );
 

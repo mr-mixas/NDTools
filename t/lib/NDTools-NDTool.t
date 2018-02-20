@@ -14,7 +14,7 @@ use_ok('App::NDTools::NDTool');
 my ($tool, $got, $exp, $tmp);
 my $shared = '../../_data';
 
-$tool = new_ok('App::NDTools::NDTool') || die "Failed to init module";
+$tool = new_ok('App::NDTools::NDTool' => ['arg']) || die "Failed to init module";
 
 can_ok($tool, qw(VERSION arg_opts configure defaults dump_opts usage));
 

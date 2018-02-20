@@ -12,7 +12,7 @@ use Struct::Path 0.80 qw(list_paths path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-sub VERSION() { '0.30' };
+sub VERSION() { '0.31' };
 
 sub arg_opts {
     my $self = shift;
@@ -52,6 +52,8 @@ sub check_args {
 sub configure {
     my $self = shift;
 
+    $self->SUPER::configure();
+
     $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0
         unless (defined $self->{OPTS}->{colors});
 
@@ -87,8 +89,6 @@ sub dump {
 
 sub exec {
     my $self = shift;
-
-    $self->check_args(@{$self->{ARGV}}) or die_fatal undef, 1;
 
     for my $uri (@{$self->{ARGV}} ? @{$self->{ARGV}} : \*STDIN) {
         my @data = $self->load_struct($uri, $self->{OPTS}->{ifmt});

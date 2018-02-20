@@ -29,16 +29,15 @@ sub arg_opts {
 sub check_args {
     my $self = shift;
 
-    unless (@_) {
-        log_error { 'At least one argument expected' };
-        return undef;
-    }
+    die_fatal 'At least one argument expected', 1 unless (@_);
 
     return $self;
 }
 
 sub configure {
-    return $_[0];
+    my $self = shift;
+
+    return $self->check_args(@{$self->{ARGV}});
 }
 
 sub defaults {
