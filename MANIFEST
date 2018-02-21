@@ -203,6 +203,7 @@ t/bin/ndquery.d/delete.exp
 t/bin/ndquery.d/grep_0.exp
 t/bin/ndquery.d/grep_1.exp
 t/bin/ndquery.d/grep_2.exp
+t/bin/ndquery.d/grep_3.exp
 t/bin/ndquery.d/help.exp
 t/bin/ndquery.d/ifmt_yaml.data
 t/bin/ndquery.d/ifmt_yaml.exp

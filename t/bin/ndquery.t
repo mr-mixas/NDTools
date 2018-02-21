@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 39;
+use Test::More tests => 40;
 
 use App::NDTools::Test;
 
@@ -78,6 +78,13 @@ $test = "grep_2";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--grep', '{files}', '--grep', '{fqdn}', "$shared/cfg.alpha.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "grep_3";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '[1]{Edit}[-1,-3]', "$shared/menu.a.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
