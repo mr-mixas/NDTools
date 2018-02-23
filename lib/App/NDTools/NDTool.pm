@@ -10,7 +10,7 @@ use Getopt::Long qw(GetOptionsFromArray :config bundling);
 use Log::Log4Cli;
 use Struct::Path 0.80 qw(path);
 
-sub VERSION { "n/a" }
+our $VERSION = '0.27';
 
 sub arg_opts {
     my $self = shift;

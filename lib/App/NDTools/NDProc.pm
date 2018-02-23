@@ -13,7 +13,7 @@ use Struct::Diff 0.94 qw(diff split_diff);
 use Struct::Path 0.80 qw(path);
 use Struct::Path::PerlStyle 0.80 qw(str2path);
 
-sub VERSION() { '0.23' }
+our $VERSION = '0.24';
 
 sub arg_opts {
     my $self = shift;

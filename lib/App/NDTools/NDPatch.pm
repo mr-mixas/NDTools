@@ -8,7 +8,7 @@ use App::NDTools::Slurp qw(s_dump);
 use Log::Log4Cli;
 use Struct::Diff qw();
 
-sub VERSION() { '0.07' };
+our $VERSION = '0.08';
 
 sub arg_opts {
     my $self = shift;
