@@ -10,19 +10,25 @@ use Getopt::Long qw(GetOptionsFromArray :config bundling);
 use Log::Log4Cli;
 use Struct::Path 0.80 qw(path);
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 
 sub arg_opts {
     my $self = shift;
 
     return (
         'dump-opts' => \$self->{OPTS}->{'dump-opts'},
-        'help|h' => sub { $self->usage; exit 0 },
+        'help|h' => sub {
+            $self->{OPTS}->{help} = 1;
+            die "!FINISH";
+        },
         'ifmt=s' => \$self->{OPTS}->{ifmt},
         'ofmt=s' => \$self->{OPTS}->{ofmt},
         'pretty!' => \$self->{OPTS}->{pretty},
         'verbose|v:+' => \$Log::Log4Cli::LEVEL,
-        'version|V' => sub { print $self->VERSION . "\n"; exit 0 },
+        'version|V' => sub {
+            $self->{OPTS}->{version} = 1;
+            die "!FINISH";
+        },
     );
 }
 
@@ -89,6 +95,16 @@ sub new {
     unless (GetOptionsFromArray ($self->{ARGV}, $self->arg_opts)) {
         $self->usage;
         die_fatal "Unsupported opts used", 1;
+    }
+
+    if ($self->{OPTS}->{help}) {
+        $self->usage;
+        die_info, 0;
+    }
+
+    if ($self->{OPTS}->{version}) {
+        print $self->VERSION . "\n";
+        die_info, 0;
     }
 
     $self->configure();

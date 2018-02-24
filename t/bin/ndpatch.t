@@ -27,6 +27,7 @@ $test = "verbose";
 run_ok(
     name => $test,
     cmd => [ @cmd, qw(-vv -v4 --verbose --verbose 4 -V)],
+    stderr => qr/ INFO] Exit 0/,
     stdout => qr/^\d+\.\d+/,
 );
 
