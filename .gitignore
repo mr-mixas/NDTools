@@ -19,4 +19,4 @@ nytprof.out
 *.bs
 /_eumm/
 *.swp
-/lib/NDTools/INC/
+lib/App/NDTools/INC/
