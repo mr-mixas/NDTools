@@ -93,7 +93,7 @@ run_ok(
     name => $test,
     pre => sub { copy("$shared/bool.a.json", "$test.got") },
     cmd => [ @cmd, '--path', '{path}', '--file', "NotExists.json", "$test.got" ],
-    stderr => qr/FATAL] Failed to open file 'NotExists.json' \(No such file or directory\)/,
+    stderr => qr/FATAL] Failed to open file 'NotExists.json'/,
     exit => 2,
 );
 

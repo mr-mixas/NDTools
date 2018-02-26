@@ -230,12 +230,16 @@ run_ok(
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
-$test = "path_utf8";
-run_ok(
-    name => $test,
-    cmd => [ @cmd, '--path', '{"текст"}', "$shared/text-utf8.a.json" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
-);
+SKIP: {
+    skip "non utf8 locale", 1 unless (exists $ENV{LC_ALL} and $ENV{LC_ALL} =~ /UTF-8/);
+
+    $test = "path_utf8";
+    run_ok(
+        name => $test,
+        cmd => [ @cmd, '--path', '{"текст"}', "$shared/text-utf8.a.json" ],
+        stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    );
+}
 
 $test = "ofmt_yaml";
 run_ok(

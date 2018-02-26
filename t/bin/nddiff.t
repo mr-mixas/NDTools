@@ -204,13 +204,17 @@ run_ok(
     exit => 8,
 );
 
-$test = "term_grep_utf8_path";
-run_ok(
-    name => $test,
-    cmd => [ @cmd, '--grep', '{"текст"}', "$shared/text-utf8.a.json", "$shared/text-utf8.b.json" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
-    exit => 8,
-);
+SKIP: {
+    skip "non utf8 locale", 1 unless (exists $ENV{LC_ALL} and $ENV{LC_ALL} =~ /UTF-8/);
+
+    $test = "term_grep_utf8_path";
+    run_ok(
+        name => $test,
+        cmd => [ @cmd, '--grep', '{"текст"}', "$shared/text-utf8.a.json", "$shared/text-utf8.b.json" ],
+        stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+        exit => 8,
+    );
+}
 
 $test = "term_hash";
 run_ok(
