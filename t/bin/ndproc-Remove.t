@@ -2,6 +2,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
+use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
 use Test::More tests => 5;
 
@@ -10,8 +11,8 @@ use App::NDTools::Test;
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my $shared = "../../_data";
-my @cmd = qw/ndproc --module Remove/;
+my $shared = catfile('..', '..', '_data');
+my @cmd = ($^X, catfile('..', '..', '..', 'ndproc'), '--module', 'Remove');
 
 $test = "path";
 run_ok(

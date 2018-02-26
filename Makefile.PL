@@ -49,10 +49,3 @@ WriteMakefile(
     test  => { TESTS => 't/*.t t/lib/*.t t/bin/*.t' },
 );
 
-sub MY::postamble {
-    return <<'EXTRA';
-
-PATH := $(shell pwd -P):$(PATH)
-
-EXTRA
-}
