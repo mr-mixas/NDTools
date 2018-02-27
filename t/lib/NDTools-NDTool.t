@@ -12,7 +12,6 @@ chdir t_dir or die "Failed to change test dir";
 use_ok('App::NDTools::NDTool');
 
 my ($tool, $got, $exp, $tmp);
-my $shared = '../../_data';
 
 $tool = new_ok('App::NDTools::NDTool' => ['arg']) || die "Failed to init module";
 
@@ -21,7 +20,7 @@ can_ok($tool, qw(VERSION arg_opts configure defaults dump_opts usage));
 $tmp = eval { $tool->load_struct('file-does-not-exists') };
 like($@, qr/^Failed to open file/, "Must fail when file doesn't exists");
 
-$tmp = $tool->load_struct("$shared/menu.a.json");
+$tmp = $tool->load_struct("_menu.a.json");
 
 ($got) = $tool->grep([[[],{R => [qr/^.i/]},[],{K => ['id']}]], $tmp);
 $exp = [

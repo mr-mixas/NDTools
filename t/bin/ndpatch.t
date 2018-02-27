@@ -11,7 +11,6 @@ use App::NDTools::Test;
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my $shared = catfile('..', '..', '_data');
 my @cmd = ($^X, catfile('..', '..', '..', 'ndpatch'));
 
 ### essential tests
@@ -44,9 +43,9 @@ run_ok(
 $test = "default";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/menu.a.json", "$test.got") },
+    pre => sub { copy("_menu.a.json", "$test.got") },
     cmd => [ @cmd, "$test.got", "$test.patch" ],
-    test => sub { files_eq_or_diff("$shared/menu.b.json", "$test.got", $test) },
+    test => sub { files_eq_or_diff("_menu.b.json", "$test.got", $test) },
 );
 
 $test = "ifmt_yaml";
@@ -68,8 +67,8 @@ run_ok(
 $test = "stdin";
 run_ok(
     name => $test,
-    pre => sub { copy("$shared/menu.b.json", "$test.got") },
+    pre => sub { copy("_menu.b.json", "$test.got") },
     cmd => [ @cmd, "$test.got", "$test.patch" ],
-    test => sub { files_eq_or_diff("$shared/menu.a.json", "$test.got", $test) },
+    test => sub { files_eq_or_diff("_menu.a.json", "$test.got", $test) },
 );
 
