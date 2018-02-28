@@ -26,8 +26,8 @@ $test = "cmd_failed";
 run_ok(
     name => $test,
     pre => sub { copy("_cfg.alpha.json", "$test.got") },
-    cmd => [ @cmd, '--path', '{files}', '--cmd', 'sh -c "exit 222"', "$test.got" ],
-    stderr => qr/ FATAL] 'sh -c "exit 222"' exited with 222\./,
+    cmd => [ @cmd, '--path', '{files}', '--cmd', $^X . ' -e "exit 222"', "$test.got" ],
+    stderr => qr/ FATAL] .* exited with 222\./,
     exit => 16
 );
 
@@ -44,7 +44,7 @@ $test = "path";
 run_ok(
     name => $test,
     pre => sub { copy("_cfg.alpha.json", "$test.got") },
-    cmd => [ @cmd, '--path', '{files}', '--cmd', 'sed "s/1/42/g"', "$test.got" ],
+    cmd => [ @cmd, '--path', '{files}', '--cmd', $^X . ' -pe "s/1/42/g"', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
@@ -52,7 +52,7 @@ $test = "path_absent";
 run_ok(
     name => $test,
     pre => sub { copy("_cfg.alpha.json", "$test.got") },
-    cmd => [ @cmd, '--cmd', 'sed "s/[0-8]/9/g"', "$test.got" ],
+    cmd => [ @cmd, '--cmd', $^X . ' -pe "s/[0-8]/9/g"', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
@@ -60,7 +60,7 @@ $test = "path_empty"; # means 'full structure'
 run_ok(
     name => $test,
     pre => sub { copy("_cfg.alpha.json", "$test.got") },
-    cmd => [ @cmd, '--path', '', '--cmd', 'sed "s/[0-8]/9/g"', "$test.got" ],
+    cmd => [ @cmd, '--path', '', '--cmd', $^X . ' -pe "s/[0-8]/9/g"', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
@@ -68,7 +68,7 @@ $test = "path_strict";
 run_ok(
     name => $test,
     pre => sub { copy("_cfg.alpha.json", "$test.got") },
-    cmd => [ @cmd, '--strict', '--path', '{not_exists}', '--cmd', 'sed "s/[0-8]/9/g"', "$test.got" ],
+    cmd => [ @cmd, '--strict', '--path', '{not_exists}', '--cmd', $^X . ' -pe "s/[0-8]/9/g"', "$test.got" ],
     stderr => qr/ FATAL] Failed to lookup path '\{not_exists\}'/,
     exit => 4,
 );
@@ -77,7 +77,7 @@ $test = "preserve";
 run_ok(
     name => $test,
     pre => sub { copy("_cfg.alpha.json", "$test.got") },
-    cmd => [ @cmd, '--preserve', '{files}{"/etc/hosts"}', '--cmd', 'sed "s/[0-8]/9/g"', "$test.got" ],
+    cmd => [ @cmd, '--preserve', '{files}{"/etc/hosts"}', '--cmd', $^X . ' -pe "s/[0-8]/9/g"', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
