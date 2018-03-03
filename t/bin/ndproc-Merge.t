@@ -2,16 +2,18 @@ use strict;
 use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
-use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 use App::NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my @cmd = ($^X, catfile('..', '..', '..', 'ndproc'), '--module', 'Merge');
+my $mod = 'App::NDTools::NDProc';
+my @cmd = ($mod, '--module', 'Merge');
+
+require_ok($mod) || BAIL_OUT("Failed to load $mod");
 
 $test = "dump_rules";
 run_ok(
