@@ -208,10 +208,14 @@ run_ok(
     exit => 1
 );
 
-$test = "stdin_stdout";
-run_ok(
-    name => $test,
-    cmd => [ "$^X -pe '' _cfg.alpha.json | $^X $bin --module Remove --path '{files}' -" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
-);
+SKIP: {
+    skip "Don't know how to test pipes on win32", 1 if ($^O eq 'MSWin32');
+
+    $test = "stdin_stdout";
+    run_ok(
+        name => $test,
+        cmd => [ "$^X -pe '' _cfg.alpha.json | $^X $bin --module Remove --path '{files}' -" ],
+        stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    );
+}
 
