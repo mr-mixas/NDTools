@@ -4,3 +4,7 @@ CWD=`pwd -P`
 
 export PATH=${CWD}:$PATH
 export PERL5LIB=~/perl5/lib/perl5/:${CWD}/lib
+
+eval `perl -Mlocal::lib=$CWD/depends`
+cpanm --quiet --installdeps --with-develop --notest .
+
