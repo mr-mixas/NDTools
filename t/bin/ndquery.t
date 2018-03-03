@@ -19,13 +19,17 @@ my @cmd = ($mod);
 
 require_ok($mod) || BAIL_OUT("Failed to load $mod");
 
-$test = "noargs";
-run_ok(
-    name => $test,
-    cmd => [ "$^X $bin < /dev/null" ],
-    stderr => qr/ FATAL] Failed to decode /,
-    exit => 4
-);
+SKIP: {
+    skip "Unix specific", 1 if ($^O eq 'MSWin32');
+
+    $test = "noargs";
+    run_ok(
+        name => $test,
+        cmd => [ "$^X $bin < /dev/null" ],
+        stderr => qr/ FATAL] Failed to decode /,
+        exit => 4
+    );
+}
 
 $test = "verbose";
 run_ok(

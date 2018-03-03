@@ -124,13 +124,18 @@ run_ok(
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
-$test = "number_2";
-run_ok(
-    name => $test,
-    pre => sub { copy("_empty_hash.json", "$test.got") },
-    cmd => [ @cmd, '--path', '{value}', '--number', '6.23E24', "$test.got" ],
-    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
-);
+SKIP: {
+    skip "Scientific notation differs on win32 (6.23e+24 vs 6.23e+024)",
+        1 if ($^O eq 'MSWin32');
+
+    $test = "number_2";
+    run_ok(
+        name => $test,
+        pre => sub { copy("_empty_hash.json", "$test.got") },
+        cmd => [ @cmd, '--path', '{value}', '--number', '6.23E24', "$test.got" ],
+        test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+    );
+}
 
 $test = "number_3";
 run_ok(

@@ -211,7 +211,7 @@ run_ok(
 $test = "stdin_stdout";
 run_ok(
     name => $test,
-    cmd => [ "cat _cfg.alpha.json | $^X $bin --module Remove --path '{files}' -" ],
+    cmd => [ "$^X -pe '' _cfg.alpha.json | $^X $bin --module Remove --path '{files}' -" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
