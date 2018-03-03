@@ -5,12 +5,13 @@ use warnings FATAL => 'all';
 
 use App::NDTools::INC;
 use App::NDTools::Slurp qw(s_dump s_load);
-use Encode::Locale qw(decode_argv);
+use Encode::Locale;
+use Encode qw(decode);
 use Getopt::Long qw(GetOptionsFromArray :config bundling);
 use Log::Log4Cli;
 use Struct::Path 0.80 qw(path);
 
-our $VERSION = '0.28';
+our $VERSION = '0.29';
 
 sub arg_opts {
     my $self = shift;
@@ -88,10 +89,12 @@ sub load_struct {
 }
 
 sub new {
-    my $self = bless { ARGV => \@_ }, shift;
-    $self->{OPTS} = $self->defaults();
+    my $self = bless {}, shift;
 
-    decode_argv(Encode::FB_CROAK);
+    $self->{OPTS} = $self->defaults();
+    $self->{ARGV} =
+        [ map { decode(locale => "$_", Encode::FB_CROAK) } @_ ? @_ : @ARGV ];
+
     unless (GetOptionsFromArray ($self->{ARGV}, $self->arg_opts)) {
         $self->usage;
         die_fatal "Unsupported opts used", 1;

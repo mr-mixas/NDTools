@@ -4,21 +4,25 @@ use warnings FATAL => 'all';
 use File::Copy qw(copy);
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 40;
+use Test::More tests => 41;
 
 use App::NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my @cmd = ($^X, catfile('..', '..', '..', 'ndquery'));
+my $bin = catfile('..', '..', '..', 'ndquery');
+my $mod = 'App::NDTools::NDQuery';
+my @cmd = ($mod);
 
 ### essential tests
+
+require_ok($mod) || BAIL_OUT("Failed to load $mod");
 
 $test = "noargs";
 run_ok(
     name => $test,
-    cmd => [ "@cmd < /dev/null" ],
+    cmd => [ "$^X $bin < /dev/null" ],
     stderr => qr/ FATAL] Failed to decode /,
     exit => 4
 );
@@ -34,7 +38,7 @@ run_ok(
 $test = "help";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--help', '-h' ],
+    cmd => [ $^X, $bin, '--help', '-h' ],
     stderr => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
@@ -190,7 +194,7 @@ run_ok(
 $test = "md5_stdin";
 run_ok(
     name => $test,
-    cmd => [ "@cmd --md5 --path [0]{File}[0]{label} < _menu.a.json" ],
+    cmd => [ "$^X $bin --md5 --path [0]{File}[0]{label} < _menu.a.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
@@ -236,7 +240,7 @@ SKIP: {
     run_ok(
         name => $test,
         cmd => [ @cmd, '--path', '{"текст"}', "_text-utf8.a.json" ],
-        stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+        stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test, { encoding => 'UTF-8' }) },
     );
 }
 

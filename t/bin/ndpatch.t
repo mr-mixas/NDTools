@@ -4,16 +4,20 @@ use warnings FATAL => 'all';
 use File::Copy qw(copy);
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 use App::NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my @cmd = ($^X, catfile('..', '..', '..', 'ndpatch'));
+my $bin = catfile('..', '..', '..', 'ndpatch');
+my $mod = 'App::NDTools::NDPatch';
+my @cmd = ($mod);
 
 ### essential tests
+
+require_ok($mod) || BAIL_OUT("Failed to load $mod");
 
 $test = "noargs";
 run_ok(
@@ -34,7 +38,7 @@ run_ok(
 $test = "help";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--help', '-h' ],
+    cmd => [ $^X, $bin, '--help', '-h' ], # argv pod inside bin
     stderr => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 

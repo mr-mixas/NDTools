@@ -4,16 +4,20 @@ use warnings FATAL => 'all';
 use File::Copy qw(copy);
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 24;
+use Test::More tests => 25;
 
 use App::NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my @cmd = ($^X, catfile('..', '..', '..', 'ndproc'));
+my $bin = catfile('..', '..', '..', 'ndproc');
+my $mod = 'App::NDTools::NDProc';
+my @cmd = ($mod);
 
 ### essential tests
+
+require_ok($mod) || BAIL_OUT("Failed to load $mod");
 
 $test = "noargs";
 run_ok(
@@ -26,7 +30,7 @@ run_ok(
 $test = "verbose";
 run_ok(
     name => $test,
-    cmd => [ @cmd, qw(-vv -v4 --verbose --verbose 4 -V)],
+    cmd => [ $^X, $bin, '-vv', '-v4', '--verbose', '--verbose', '4', '-V'], # FIXME: get rid of exit(0) in arg parser and use mod here
     stderr => qr/ TRACE] Indexing modules/, # FIXME: there must be no actions on -V
     stdout => qr/^\d+\.\d+/,
 );
@@ -34,7 +38,7 @@ run_ok(
 $test = "help";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--help', '-h' ],
+    cmd => [ $^X, $bin, '--help', '-h' ], # FIXME: two issues: exit(0) in arg parser and no pod in mod
     stderr => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
@@ -207,7 +211,7 @@ run_ok(
 $test = "stdin_stdout";
 run_ok(
     name => $test,
-    cmd => [ "cat _cfg.alpha.json | @cmd --module Remove --path '{files}' -" ],
+    cmd => [ "cat _cfg.alpha.json | $^X $bin --module Remove --path '{files}' -" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 

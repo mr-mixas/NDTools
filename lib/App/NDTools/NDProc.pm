@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 use parent 'App::NDTools::NDTool';
 
-use Getopt::Long qw(GetOptionsFromArray :config bundling pass_through);
+use Getopt::Long qw(GetOptionsFromArray :config bundling);
 use Log::Log4Cli;
 use Module::Find qw(findsubmod);
 use App::NDTools::Slurp qw(s_decode s_dump s_encode);
@@ -13,10 +13,12 @@ use Struct::Diff 0.94 qw(diff split_diff);
 use Struct::Path 0.80 qw(path);
 use Struct::Path::PerlStyle 0.80 qw(str2path);
 
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 
 sub arg_opts {
     my $self = shift;
+
+    Getopt::Long::Configure('pass_through');
 
     my %arg_opts = (
         $self->SUPER::arg_opts(),

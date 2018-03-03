@@ -3,16 +3,20 @@ use warnings FATAL => 'all';
 
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 52;
+use Test::More tests => 53;
 
 use App::NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my @cmd = ($^X, catfile('..', '..', '..', 'nddiff'));
+my $bin = catfile('..', '..', '..', 'nddiff');
+my $mod = 'App::NDTools::NDDiff';
+my @cmd = ($mod);
 
 ### essential tests
+
+require_ok($mod) || BAIL_OUT("Failed to load $mod");
 
 $test = "noargs";
 run_ok(
@@ -34,7 +38,7 @@ run_ok(
 $test = "help";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--help', '-h' ],
+    cmd => [ $^X, $bin, '--help', '-h' ], # argv pod inside bin
     stderr => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 0,
 );
@@ -210,7 +214,7 @@ SKIP: {
     run_ok(
         name => $test,
         cmd => [ @cmd, '--grep', '{"текст"}', "_text-utf8.a.json", "_text-utf8.b.json" ],
-        stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+        stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test, { encoding => 'UTF-8' }) },
         exit => 8,
     );
 }
@@ -337,7 +341,7 @@ $test = "term_text_ctx_04";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--ctx-text', '0', "_text-utf8.a.json", "_text-utf8.b.json" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test, { encoding => 'UTF-8' }) },
     exit => 8,
 );
 
@@ -345,7 +349,7 @@ $test = "term_text_ctx_05";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--ctx-text', '1', "_text-utf8.a.json", "_text-utf8.b.json" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test, { encoding => 'UTF-8' }) },
     exit => 8,
 );
 
@@ -353,7 +357,7 @@ $test = "term_text_ctx_06";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--ctx-text', '2', "_text-utf8.a.json", "_text-utf8.b.json" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test, { encoding => 'UTF-8' }) },
     exit => 8,
 );
 
@@ -361,7 +365,7 @@ $test = "term_text_ctx_07";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--ctx-text', '3', "_text-utf8.a.json", "_text-utf8.b.json" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test, { encoding => 'UTF-8' }) },
     exit => 8,
 );
 
@@ -369,7 +373,7 @@ $test = "term_text_ctx_08";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--ctx-text', '9', "_text-utf8.a.json", "_text-utf8.b.json" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test, { encoding => 'UTF-8' }) },
     exit => 8,
 );
 
@@ -433,7 +437,7 @@ $test = "term_text_utf8";
 run_ok(
     name => $test,
     cmd => [ @cmd, "_text-utf8.a.json", "_text-utf8.b.json" ],
-    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test, { encoding => 'UTF-8' }) },
     exit => 8,
 );
 

@@ -4,14 +4,18 @@ use warnings FATAL => 'all';
 use File::Copy qw(copy);
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 24;
+use Test::More tests => 25;
 
 use App::NDTools::Test;
 
 chdir t_dir or die "Failed to change test dir";
 
 my $test;
-my @cmd = ($^X, catfile('..', '..', '..', 'ndproc'), '--module', 'Insert');
+my $bin = catfile('..', '..', '..', 'ndproc');
+my $mod = 'App::NDTools::NDProc';
+my @cmd = ($mod, '--module', 'Insert');
+
+require_ok($mod) || BAIL_OUT("Failed to load $mod");
 
 $test = "bool_0";
 run_ok(
@@ -65,7 +69,7 @@ $test = "bool_6";
 run_ok(
     name => $test,
     pre => sub { copy("_empty_hash.json", "$test.got") },
-    cmd => [ @cmd, '--path', '{value}', '--bool', ' ', "$test.got" ],
+    cmd => [ $^X, $bin, '-m','Insert', '--path', '{value}', '--bool', ' ', "$test.got" ], # FIXME: get rid of exit(0) in arg parser and use mod here
     stderr => qr/ ERROR] Unsuitable value for --boolean/,
     exit => 1,
 );
@@ -74,7 +78,7 @@ $test = "bool_7";
 run_ok(
     name => $test,
     pre => sub { copy("_empty_hash.json", "$test.got") },
-    cmd => [ @cmd, '--path', '{value}', '--bool', '', "$test.got" ],
+    cmd => [ $^X, $bin, '-m','Insert', '--path', '{value}', '--bool', '', "$test.got" ], # FIXME: get rid of exit(0) in arg parser and use mod here
     stderr => qr/ ERROR] Unsuitable value for --boolean/,
     exit => 1,
 );
@@ -148,7 +152,7 @@ $test = "number_5";
 run_ok(
     name => $test,
     pre => sub { copy("_empty_hash.json", "$test.got") },
-    cmd => [ @cmd, '--path', '{value}', '--number', 'garbage', "$test.got" ],
+    cmd => [ $^X, $bin, '-m','Insert', '--path', '{value}', '--number', 'garbage', "$test.got" ], # FIXME: get rid of exit(0) in arg parser and use mod here
     stderr => qr/ ERROR] Unsuitable value for --number/,
     exit => 1,
 );
