@@ -2,6 +2,7 @@
 /.build/
 _build/
 cover_db/
+depends/
 inc/
 Build
 !Build/
@@ -13,6 +14,7 @@ Build.bat
 /META.yml
 /META.json
 /MYMETA.*
+/ndtools_[0-9]*
 nytprof.out
 /pm_to_blib
 *.o
