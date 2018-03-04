@@ -1,3 +1,11 @@
+ndtools (0.5.2) unstable; urgency=low
+
+  * fix failures with some Getopt::Long versions
+  * code refactorings
+  * docs corrected
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Sun, 04 Mar 2018 14:57:34 +0300
+
 ndtools (0.5.1) unstable; urgency=low
 
   * nddiff: diff multiple arguments supported
