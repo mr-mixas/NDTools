@@ -83,12 +83,12 @@ Blame calculation toggle. Enabled by default.
 
 =item B<--command|--cmd> E<lt>commandE<gt>
 
-Command to run. Exit 0 expected for success. JSON emitted to it's STDERR
-will be applied to original structure.
+Command to run. JSON encoded structure passed to it's STDIN and it's STDOUT
+will be applied to original structure. Exit 0 expected for success.
 
 =item B<--path> E<lt>pathE<gt>
 
-Structure to send to cammand's STDIN.
+Path to substructure to send to cammand.
 
 =item B<--preserve> E<lt>pathE<gt>
 
