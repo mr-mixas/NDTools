@@ -26,7 +26,7 @@ veryclean:
 	rm -rf $(INC_DIR)
 
 $(INC_DIR):
-	sh -c 'cd .. && . SOURCEME' # will install depends
+	sh -c 'cd .. && . ./SOURCEME' # fetch depends
 	cp -al ../depends/lib/perl5/ $@
 	find $@ -path '*/.meta/*' -delete
 	find $@ -type f -name .packlist -delete
