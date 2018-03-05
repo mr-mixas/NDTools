@@ -10,7 +10,7 @@ use App::NDTools::Slurp qw(s_decode s_encode);
 use Struct::Path 0.80 qw(path);
 use Struct::Path::PerlStyle 0.80 qw(str2path);
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub MODINFO { "Modify structure using external process" }
 
@@ -20,7 +20,6 @@ sub arg_opts {
     return (
         $self->SUPER::arg_opts(),
         'command|cmd=s' => \$self->{OPTS}->{command},
-        'preserve=s@' => \$self->{OPTS}->{preserve},
         'strict' => \$self->{OPTS}->{strict},
     )
 }

@@ -12,7 +12,7 @@ use Storable qw(dclone);
 use Struct::Path 0.80 qw(implicit_step path);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 
 sub MODINFO { "Merge structures according provided rules" }
 
@@ -35,7 +35,6 @@ sub arg_opts {
         'strict!' => sub {
             $self->set_path_related_opt($_[0], $_[1]),
         },
-        'preserve=s@' => \$self->{OPTS}->{preserve},
         'style=s' => sub {
             $self->set_path_related_opt($_[0], $_[1])
         },
