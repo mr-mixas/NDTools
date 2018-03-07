@@ -127,7 +127,7 @@ String to insert.
 
 =head1 SEE ALSO
 
-L<ndproc(1)>, L<ndproc-modules>
+L<ndproc>, L<ndproc-modules>
 
-L<nddiff(1)>, L<ndquery(1)>, L<Struct::Path::PerlStyle>
+L<nddiff>, L<ndquery>, L<Struct::Path::PerlStyle>
 

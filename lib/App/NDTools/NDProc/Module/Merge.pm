@@ -268,7 +268,7 @@ Default is B<R_OVERRIDE>
 
 =head1 SEE ALSO
 
-L<ndproc(1)>, L<ndproc-modules(1)>
+L<ndproc>, L<ndproc-modules>
 
-L<nddiff(1)>, L<ndquery(1)>, L<Struct::Path::PerlStyle>
+L<nddiff>, L<ndquery>, L<Struct::Path::PerlStyle>
 
