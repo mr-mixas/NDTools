@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-our $VERSION = '0.35';
+our $VERSION = '0.36';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 
@@ -54,7 +54,7 @@ sub configure {
 
     $self->SUPER::configure();
 
-    $self->{OPTS}->{colors} = -t STDOUT ? 1 : 0
+    $self->{OPTS}->{colors} = $self->{TTY}
         unless (defined $self->{OPTS}->{colors});
 
     for (@{$self->{OPTS}->{grep}}, @{$self->{OPTS}->{ignore}}) {
@@ -384,8 +384,7 @@ sub print_term_block {
 sub print_term_header {
     my ($self, @names) = @_;
 
-    return unless (-t STDOUT); # don't dump to pipes
-    return if ($self->{OPTS}->{quiet});
+    return if (!$self->{TTY} or $self->{OPTS}->{quiet});
 
     my $header = @names == 1 ? $names[0] :
         "--- a: $names[0] \n+++ b: $names[1]";
