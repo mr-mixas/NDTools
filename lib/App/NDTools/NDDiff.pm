@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-our $VERSION = '0.33';
+our $VERSION = '0.34';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 
@@ -106,6 +106,13 @@ sub diff {
         $old, $new,
         noU => $self->{OPTS}->{full} ? 0 : 1,
     );
+
+    # retrieve result from wrapper (see load() for more info)
+    if (exists $diff->{D}) {
+        $diff = $diff->{D}->[0];
+    } elsif (exists $diff->{U}) {
+        $diff->{U} = $diff->{U}->[0];
+    }
 
     if ($self->{OPTS}->{ofmt} eq 'term') {
         $self->diff_term($diff) or return undef;
@@ -279,13 +286,13 @@ sub exec {
 
     while (@{$self->{ARGV}}) {
         my $name = shift @{$self->{ARGV}};
-        my $data = $self->load($name) or die_fatal undef, 1;
+        my $data = $self->load($name);
 
         my $diff;
 
         if ($self->{OPTS}->{show}) {
             $self->print_term_header($name);
-            $diff = $data;
+            $diff = $data->[0];
         } else {
             push @items, { name => $name, data => $data };
             next unless (@items > 1);
@@ -311,16 +318,17 @@ sub exec {
 sub load {
     my $self = shift;
 
-    my $data = $self->load_struct($_[0], $self->{OPTS}->{ifmt})
-        or return undef;
+    my @data = $self->load_struct($_[0], $self->{OPTS}->{ifmt});
 
-    ($data) = $self->grep($self->{OPTS}->{grep}, $data)
+    # array used to indicate absent value for grep result
+    @data = $self->grep($self->{OPTS}->{grep}, $data[0])
         if (@{$self->{OPTS}->{grep}});
 
-    map { path($data, $_, delete => 1) } @{$self->{OPTS}->{ignore}}
-        if (ref $data);
+    if (@data and ref $data[0]) {
+        map { path($data[0], $_, delete => 1) } @{$self->{OPTS}->{ignore}}
+    }
 
-    return $data;
+    return \@data;
 }
 
 sub print_brief_block {

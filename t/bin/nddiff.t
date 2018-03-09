@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 53;
+use Test::More tests => 54;
 
 use App::NDTools::Test;
 
@@ -203,6 +203,14 @@ $test = "term_grep_2";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--grep', '{fqdn}', '--grep', '{mtime}', "_cfg.alpha.json", "_cfg.beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_grep_absent_part";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '[1]{Edit}[5]{id}', "_menu.a.json", "_menu.b.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
