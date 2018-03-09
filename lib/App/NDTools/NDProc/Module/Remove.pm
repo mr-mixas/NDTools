@@ -62,11 +62,11 @@ Path in the structure to remove. May be used several times.
 
 =item B<--preserve> E<lt>pathE<gt>
 
-Preserve specified structure parts. May be used several times.
+Preserve specified substructure. May be used several times.
 
 =item B<--strict>
 
-Fail if path specified for remove doesn't exists.
+Fail if path specified for remove doesn't exist.
 
 =back
 

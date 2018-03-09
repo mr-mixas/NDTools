@@ -220,19 +220,19 @@ omitted or empty. May be specified several times.
 
 =item B<--preserve> E<lt>pathE<gt>
 
-Preserve specified parts from original structure. Rule-wide option. May be used
-several times.
+Preserve specified substructure. Rule-wide option. May be used several times.
 
 =item B<--source> E<lt>uriE<gt>
 
 Source to merge with. Original processing structure will be used if option
-specified, but value not defined or empty. Rule-wide option. May be used several
-times.
+specified, but value not defined or empty. Rule-wide option. May be used
+several times.
 
 =item B<--[no]strict>
 
-Fail if specified path doesn't exists in source structure. Positional opt - define
-rule default if used before --merge, per-merge opt otherwise. Enabled by default.
+Fail if specified path doesn't exist in source structure. Positional opt -
+defines rule default if used before --merge, per-merge opt otherwise. Enabled
+by default.
 
 =item B<--style> E<lt>styleE<gt>
 
@@ -243,13 +243,7 @@ per-merge opt otherwise.
 
 =item B<L_ADDITIVE>, B<R_ADDITIVE>
 
-Hashes merged, arrays joined, undefined scalars overrided. Left and right precedence.
-
-=item B<L_JSON_MERGE_PATCH>, B<R_JSON_MERGE_PATCH>
-
-JSON Merge Patch (L<rfc7386|https://tools.ietf.org/html/rfc7386>). Almost the
-same as C<L_OVERRIDE> and C<R_OVERRIDE>, but hash keys with undef values in the
-patch cause removal of existing keys in the main structure. Left and right
+Hashes merged, arrays joined, undefined scalars overrided. Left and right
 precedence.
 
 =item B<L_OVERRIDE>, B<R_OVERRIDE>

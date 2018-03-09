@@ -70,7 +70,7 @@ __END__
 
 =head1 NAME
 
-Pipe - pipe structure to external program and apply result.
+Pipe - pass structure to external program and apply result.
 
 =head1 OPTIONS
 
@@ -83,19 +83,19 @@ Blame calculation toggle. Enabled by default.
 =item B<--command|--cmd> E<lt>commandE<gt>
 
 Command to run. JSON encoded structure passed to it's STDIN and it's STDOUT
-will be applied to original structure. Exit 0 expected for success.
+applied to original structure. Exit 0 expected for success.
 
 =item B<--path> E<lt>pathE<gt>
 
-Path to substructure to send to cammand.
+Path to substructure to deal with.
 
 =item B<--preserve> E<lt>pathE<gt>
 
-Preserve specified structure parts. May be used several times.
+Preserve specified substructure. May be used several times.
 
 =item B<--strict>
 
-Fail if specified path doesn't exists.
+Fail if specified path doesn't exist.
 
 =back
 

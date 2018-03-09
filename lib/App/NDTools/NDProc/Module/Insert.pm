@@ -97,7 +97,7 @@ Boolean value to insert.
 
 =item B<--file|-f> E<lt>fileE<gt>
 
-Load substructure from file.
+Load inserting value from file.
 
 =item B<--file-fmt> E<lt><RAW|JSON|YAML>E<gt>
 
@@ -117,7 +117,7 @@ Path in the structure to deal with. May be used several times.
 
 =item B<--preserve> E<lt>pathE<gt>
 
-Preserve specified structure parts. May be used several times.
+Preserve specified substructure. May be used several times.
 
 =item B<--string> E<lt>stringE<gt>
 
