@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-our $VERSION = '0.36';
+our $VERSION = '0.37';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 
@@ -181,7 +181,7 @@ sub diff_term {
                 pop @new; # -"-
             }
 
-            ($o, $n) = _lcsidx2ranges(Algorithm::Diff::LCSidx \@old, \@new);
+            ($o, $n) = _lcsidx2ranges(Algorithm::Diff::LCSidx(\@old, \@new));
             ($po, $pn) = (0, 0);
 
             while (@{$o}) {
