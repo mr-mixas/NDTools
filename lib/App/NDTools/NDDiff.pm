@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-our $VERSION = '0.34';
+our $VERSION = '0.35';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 
@@ -385,6 +385,7 @@ sub print_term_header {
     my ($self, @names) = @_;
 
     return unless (-t STDOUT); # don't dump to pipes
+    return if ($self->{OPTS}->{quiet});
 
     my $header = @names == 1 ? $names[0] :
         "--- a: $names[0] \n+++ b: $names[1]";
