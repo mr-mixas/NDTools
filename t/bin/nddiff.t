@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 54;
+use Test::More tests => 55;
 
 use App::NDTools::Test;
 
@@ -263,6 +263,14 @@ run_ok(
     cmd => [ @cmd, '--show', '--brief', "$test.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
+);
+
+$test = "term_show_invalid";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--show', "$test.json" ],
+    stderr => qr/ FATAL] Diff validation failed\. /,
+    exit => 1,
 );
 
 $test = "term_quiet";

@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-our $VERSION = '0.37';
+our $VERSION = '0.38';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 
@@ -293,6 +293,15 @@ sub exec {
         if ($self->{OPTS}->{show}) {
             $self->print_term_header($name);
             $diff = $data->[0];
+
+            if (my @errs = Struct::Diff::valid_diff($diff)) {
+                while (@errs) {
+                    my ($path, $type) = splice @errs, 0, 2;
+                    log_error { "$name: $type " . path2str($path) };
+                }
+
+                die_fatal "Diff validation failed", 1;
+            }
         } else {
             push @items, { name => $name, data => $data };
             next unless (@items > 1);
