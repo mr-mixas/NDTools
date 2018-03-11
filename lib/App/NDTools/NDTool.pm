@@ -7,11 +7,11 @@ use App::NDTools::INC;
 use App::NDTools::Slurp qw(s_dump s_load);
 use Encode::Locale;
 use Encode qw(decode);
-use Getopt::Long qw(GetOptionsFromArray :config bundling);
+use Getopt::Long qw(GetOptionsFromArray :config bundling noignore_case);
 use Log::Log4Cli;
 use Struct::Path 0.80 qw(path);
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 sub arg_opts {
     my $self = shift;
