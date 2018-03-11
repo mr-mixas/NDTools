@@ -1,3 +1,12 @@
+ndtools (0.5.3) unstable; urgency=low
+
+  * nddiff: validate diff when --show opt used
+  * nddiff: don't print diff header when --quiet opt used
+  * nddiff: grep failures fixed on unexisted substructures
+  * docs improved
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Sun, 11 Mar 2018 15:04:55 +0300
+
 ndtools (0.5.2) unstable; urgency=low
 
   * fix failures with some Getopt::Long versions
