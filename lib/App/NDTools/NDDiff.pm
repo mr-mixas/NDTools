@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-our $VERSION = '0.38';
+our $VERSION = '0.39';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 
@@ -22,10 +22,15 @@ sub arg_opts {
 
     return (
         $self->SUPER::arg_opts(),
+        'A!' => \$self->{OPTS}->{diff}->{A},
+        'N!' => \$self->{OPTS}->{diff}->{N},
+        'O!' => \$self->{OPTS}->{diff}->{O},
+        'R!' => \$self->{OPTS}->{diff}->{R},
+        'U!' => \$self->{OPTS}->{diff}->{U},
         'brief' => sub { $self->{OPTS}->{ofmt} = $_[0] },
         'colors!' => \$self->{OPTS}->{colors},
         'ctx-text=i' => \$self->{OPTS}->{'ctx-text'},
-        'full' => \$self->{OPTS}->{full},
+        'full' => \$self->{OPTS}->{full}, # deprecated
         'full-headers' => \$self->{OPTS}->{'full-headers'},
         'grep=s@' => \$self->{OPTS}->{grep},
         'json' => sub { $self->{OPTS}->{ofmt} = $_[0] },
@@ -90,21 +95,39 @@ sub defaults {
             },
         },
         'ofmt' => 'term',
+        'diff' => {
+            'A' => 1,
+            'N' => 1,
+            'O' => 1,
+            'R' => 1,
+            'U' => 0,
+        },
     };
+
     $out->{term}{line}{N} = $out->{term}{line}{A};
     $out->{term}{line}{O} = $out->{term}{line}{R};
     $out->{term}{sign}{N} = $out->{term}{sign}{A};
     $out->{term}{sign}{O} = $out->{term}{sign}{R};
+
     return $out;
 }
 
 sub diff {
     my ($self, $old, $new) = @_;
 
+    if ($self->{OPTS}->{full}) {
+        log_alert {
+            '--full opt is deprecated and will be removed soon. ' .
+            '--U should be used instead'
+        };
+        map {$self->{OPTS}->{diff}->{$_} = 1 } keys %{$self->{OPTS}->{diff}};
+    }
+
     log_debug { "Calculating diff for structure" };
     my $diff = Struct::Diff::diff(
         $old, $new,
-        noU => $self->{OPTS}->{full} ? 0 : 1,
+        map { ("no$_" => 1) } grep { !$self->{OPTS}->{diff}->{$_} }
+            keys %{$self->{OPTS}->{diff}},
     );
 
     # retrieve result from wrapper (see load() for more info)
@@ -162,10 +185,6 @@ sub diff_term {
         (undef, $dref) = splice @list, 0, 2;
 
         next unless (exists ${$dref}->{N});
-        unless (exists ${$dref}->{O}) {
-            log_error { "Incomplete diff passed (old value is absent)" };
-            return undef;
-        }
 
         my @old = split($/, ${$dref}->{O}, -1)
             if (${$dref}->{O} and not ref ${$dref}->{O});

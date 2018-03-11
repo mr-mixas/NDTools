@@ -1,6 +1,5 @@
 nddiff
     --ctx-struct <num>
-    --X --noX (hide/unhide diff parts)
     Fix text diff header
 
 ndproc
