@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(colored);
 
-our $VERSION = '0.39';
+our $VERSION = '0.40';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 
@@ -144,52 +144,22 @@ sub diff {
     return $diff;
 }
 
-sub _lcsidx2ranges {
-    my ($in_a, $in_b) = @_;
-
-    return [], [] unless (@{$in_a});
-
-    my @out_a = [ shift @{$in_a} ];
-    my @out_b = [ shift @{$in_b} ];
-
-    while (@{$in_a}) {
-        my $i_a = shift @{$in_a};
-        my $i_b = shift @{$in_b};
-        if (
-            ($i_a - $out_a[-1][-1] < 2) and
-            ($i_b - $out_b[-1][-1] < 2)
-        ) { # update ranges - both sequences are continous
-            $out_a[-1][1] = $i_a;
-            $out_b[-1][1] = $i_b;
-        } else { # new ranges
-            push @out_a, [ $i_a ];
-            push @out_b, [ $i_b ];
-        }
-    }
-
-    return \@out_a, \@out_b;
-}
-
 sub diff_term {
     my ($self, $diff) = @_;
 
     log_debug { "Calculating diffs for text values" };
 
     my $dref;       # ref to diff
-    my ($o, $n);    # LCS ranges
-    my ($po, $pn);  # current positions in splitted texts
-    my ($ro, $rn);  # current LCS range
     my @list = Struct::Diff::list_diff($diff);
 
     while (@list) {
         (undef, $dref) = splice @list, 0, 2;
 
         next unless (exists ${$dref}->{N});
+        next if (ref ${$dref}->{O} or ref ${$dref}->{N});
 
-        my @old = split($/, ${$dref}->{O}, -1)
-            if (${$dref}->{O} and not ref ${$dref}->{O});
-        my @new = split($/, ${$dref}->{N}, -1)
-            if (${$dref}->{N} and not ref ${$dref}->{N});
+        my @old = split($/, ${$dref}->{O}, -1) if (${$dref}->{O});
+        my @new = split($/, ${$dref}->{N}, -1) if (${$dref}->{N});
 
         if (@old > 1 or @new > 1) {
             delete ${$dref}->{O};
@@ -200,25 +170,22 @@ sub diff_term {
                 pop @new; # -"-
             }
 
-            ($o, $n) = _lcsidx2ranges(Algorithm::Diff::LCSidx(\@old, \@new));
-            ($po, $pn) = (0, 0);
+            my @cdiff = Algorithm::Diff::compact_diff(\@old, \@new);
+            my $match = 0;
 
-            while (@{$o}) {
-                ($ro, $rn) = (shift @{$o}, shift @{$n});
-                push @{${$dref}->{T}}, { R => [ @old[$po .. $ro->[0] - 1] ] }
-                    if ($ro->[0] > $po);
-                push @{${$dref}->{T}}, { A => [ @new[$pn .. $rn->[0] - 1] ] }
-                    if ($rn->[0] > $pn);
-                push @{${$dref}->{T}}, { U => [ @new[$rn->[0] .. $rn->[-1]] ] };
-                $po = $ro->[-1] + 1;
-                $pn = $rn->[-1] + 1;
+            while (@cdiff > 2) {
+                my @del = @old[$cdiff[0] .. $cdiff[2] - 1];
+                my @add = @new[$cdiff[1] .. $cdiff[3] - 1];
+
+                if ($match = !$match) {
+                    push @{${$dref}->{T}}, 'U', \@del if (@del);
+                } else {
+                    push @{${$dref}->{T}}, 'R', \@del if (@del);
+                    push @{${$dref}->{T}}, 'A', \@add if (@add);
+                }
+
+                splice @cdiff, 0, 2;
             }
-
-            # collect tailing added/removed
-            push @{${$dref}->{T}}, { R => [ @old[$po .. $#old] ] }
-                if ($po <= $#old);
-            push @{${$dref}->{T}}, { A => [ @new[$pn .. $#new] ] }
-                if ($pn <= $#new);
         }
     }
 
@@ -453,8 +420,8 @@ sub term_value_diff_text {
     my ($self, $diff, $indent) = @_;
     my (@out, @head_ctx, @tail_ctx, $pos);
 
-    while (my $hunk = shift @{$diff}) {
-        my ($status, $lines) = each %{$hunk};
+    while (@{$diff}) {
+        my ($status, $lines) = splice @{$diff}, 0, 2;
         my $sign  = $self->{OPTS}->{term}->{sign}->{$status};
         my $color = $self->{OPTS}->{term}->{line}->{$status};
         $pos += @{$lines};
