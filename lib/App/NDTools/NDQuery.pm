@@ -10,9 +10,9 @@ use Log::Log4Cli;
 use App::NDTools::Slurp qw(s_dump);
 use Struct::Path 0.80 qw(list_paths path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
-use Term::ANSIColor qw(colored);
+use Term::ANSIColor qw(color);
 
-our $VERSION = '0.33';
+our $VERSION = '0.34';
 
 sub arg_opts {
     my $self = shift;
@@ -147,19 +147,21 @@ sub items {
 sub list {
     my ($self, $uri, $data) = @_;
 
+    my $base_pfx = $self->{OPTS}->{colors}
+        ? color($self->{OPTS}->{'color-common'}) : "";
+    my $base_sfx = $self->{OPTS}->{colors} ? color('reset') : "";
+
     for (@{$data}) {
         my @list = list_paths($_, depth => $self->{OPTS}->{depth});
-        my ($base, @delta, $line, $path, $prev, $value, @out);
+        my (@delta, $line, $path, $prev, $value, @out);
 
         while (@list) {
             ($path, $value) = splice @list, 0, 2;
 
             @delta = path_delta($prev, $path);
-            $base = [ @{$path}[0 .. @{$path} - @delta - 1] ];
-            $line = $self->{OPTS}->{colors}
-                ? colored(path2str($base), $self->{OPTS}->{'color-common'})
-                : path2str($base);
-            $line .= path2str(\@delta);
+            $line = $base_pfx .
+                path2str([@{$path}[0 .. @{$path} - @delta - 1]]) . $base_sfx .
+                path2str(\@delta);
 
             if ($self->{OPTS}->{values}) {
                 $line .= " = ";

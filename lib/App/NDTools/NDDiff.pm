@@ -11,11 +11,12 @@ use Log::Log4Cli 0.18;
 use Struct::Diff 0.94 qw();
 use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
-use Term::ANSIColor qw(colored);
+use Term::ANSIColor qw(color);
 
-our $VERSION = '0.40';
+our $VERSION = '0.41';
 
 my $JSON = JSON->new->canonical->allow_nonref;
+my %COLOR;
 
 sub arg_opts {
     my $self = shift;
@@ -62,6 +63,21 @@ sub configure {
     $self->{OPTS}->{colors} = $self->{TTY}
         unless (defined $self->{OPTS}->{colors});
 
+    # resolve colors
+    while (my ($k, $v) = each %{$self->{OPTS}->{term}->{line}}) {
+        if ($self->{OPTS}->{colors}) {
+            $COLOR{$k} = color($v);
+            $COLOR{"B$k"} = color("bold $v");
+        } else {
+            $COLOR{$k} = $COLOR{"B$k"} = '';
+        }
+    }
+
+    $COLOR{head} = $self->{OPTS}->{colors}
+        ? color($self->{OPTS}->{term}->{head}) : "";
+    $COLOR{reset} = $self->{OPTS}->{colors} ? color('reset') : "";
+
+    # resolve paths
     for (@{$self->{OPTS}->{grep}}, @{$self->{OPTS}->{ignore}}) {
         my $tmp = eval { str2path($_) };
         die_fatal "Failed to parse '$_'", 4 if ($@);
@@ -331,17 +347,14 @@ sub print_brief_block {
 
     return unless (@{$path}); # nothing to show
 
-    $path = [ @{$path} ]; # prevent passed path corruption (used later for items with same subpath)
     $status = 'D' if ($status eq 'N');
-    my $last = path2str([pop @{$path}]);
-    my $base = path2str($path);
 
-    if ($self->{OPTS}->{colors}) {
-        $last = colored($last, "bold " . $self->{OPTS}->{term}->{line}->{$status});
-        $base = colored($base, $self->{OPTS}->{term}->{line}->{U});
-    }
+    my $line = $self->{OPTS}->{term}->{sign}->{$status} . " " .
+        $COLOR{U} . path2str([splice @{$path}, 0, -1]) . $COLOR{reset};
+    $line .= $COLOR{"B$status"} . path2str($path) . $COLOR{reset}
+        if (@{$path});
 
-    print $self->{OPTS}->{term}->{sign}->{$status} . " " . $base . $last . "\n";
+    print $line . "\n";
 }
 
 sub print_term_block {
@@ -359,12 +372,13 @@ sub print_term_block {
         for (my $s = 0; $s < @{$path}; $s++) {
             next if (not $self->{OPTS}->{'full-headers'} and $s < @{$path} - @delta);
             my $line = sprintf("%" . $s * 2 . "s", "") . path2str([$path->[$s]]);
+
             if (($status eq 'A' or $status eq 'R') and $s == $#{$path}) {
-                $line = "$dsign $line";
-                $line = colored($line, "bold $color") if ($self->{OPTS}->{colors});
+                $line = $COLOR{"B$status"} . "$dsign $line" . $COLOR{reset};
             } else {
                 $line = "  $line";
             }
+
             push @lines, $line;
         }
     }
@@ -384,10 +398,7 @@ sub print_term_header {
     my $header = @names == 1 ? $names[0] :
         "--- a: $names[0] \n+++ b: $names[1]";
 
-    $header = colored($header, $self->{OPTS}->{term}->{head})
-        if ($self->{OPTS}->{colors});
-
-    print $header . "\n";
+    print $COLOR{head} . $header . $COLOR{reset}. "\n";
 }
 
 sub term_value_diff {
@@ -408,9 +419,7 @@ sub term_value_diff_default {
 
     for my $line (split($/, $value)) {
         substr($line, 0, 0, $self->{OPTS}->{term}->{sign}->{$status} . $indent . " ");
-        $line = colored($line, $self->{OPTS}->{term}->{line}->{$status})
-            if ($self->{OPTS}->{colors});
-        push @out, $line;
+        push @out, $COLOR{$status} . $line . $COLOR{reset};
     }
 
     return @out;
@@ -423,7 +432,6 @@ sub term_value_diff_text {
     while (@{$diff}) {
         my ($status, $lines) = splice @{$diff}, 0, 2;
         my $sign  = $self->{OPTS}->{term}->{sign}->{$status};
-        my $color = $self->{OPTS}->{term}->{line}->{$status};
         $pos += @{$lines};
 
         if ($status eq 'U') {
@@ -437,12 +445,10 @@ sub term_value_diff_text {
                 splice(@head_ctx) unless (@{$diff});
 
                 @head_ctx = map {
-                    my $l = $sign . " " . $indent . $_;
-                    $self->{OPTS}->{colors} ? colored($l, $color) : $l;
+                    $COLOR{$status} . $sign . " " . $indent . $_ . $COLOR{reset}
                 } @head_ctx;
                 @tail_ctx = map {
-                    my $l = $sign . " " . $indent . $_;
-                    $self->{OPTS}->{colors} ? colored($l, $color) : $l;
+                    $COLOR{$status} . $sign . " " . $indent . $_ . $COLOR{reset}
                 } @tail_ctx;
             } else {
                 splice(@{$lines}); # purge or will be printed in the next block
@@ -451,13 +457,12 @@ sub term_value_diff_text {
 
         push @out, splice @tail_ctx;
         if (@head_ctx or (not $self->{OPTS}->{'ctx-text'} and $status eq 'U' and @{$diff}) or not @out) {
-            my $l = $self->{OPTS}->{term}->{sign}->{'@'} . " " . $indent . "@@ $pos,- -,- @@";
-            push @out, $self->{OPTS}->{colors} ? colored($l, $self->{OPTS}->{term}->{line}->{'@'}) : $l;
+            push @out, $COLOR{$status} . $self->{OPTS}->{term}->{sign}->{'@'} .
+                " " . $indent . "@@ $pos,- -,- @@" . $COLOR{reset};
         }
         push @out, splice @head_ctx;
         push @out, map {
-            my $l = $sign . " " . $indent . $_;
-            $self->{OPTS}->{colors} ? colored($l, $color) : $l;
+            $COLOR{$status} . $sign . " " . $indent . $_ . $COLOR{reset}
         } @{$lines};
     }
 
