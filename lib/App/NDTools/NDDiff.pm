@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.41';
+our $VERSION = '0.42';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -153,9 +153,7 @@ sub diff {
         $diff->{U} = $diff->{U}->[0];
     }
 
-    if ($self->{OPTS}->{ofmt} eq 'term') {
-        $self->diff_term($diff) or return undef;
-    }
+    $self->diff_term($diff) if ($self->{OPTS}->{ofmt} eq 'term');
 
     return $diff;
 }
@@ -310,14 +308,12 @@ sub exec {
 
             $self->print_term_header($items[0]->{name}, $items[1]->{name});
 
-            $diff = $self->diff($items[0]->{data}, $items[1]->{data})
-                or die_fatal undef, 1;
+            $diff = $self->diff($items[0]->{data}, $items[1]->{data});
 
             shift @items;
         }
 
-        $self->dump($diff) or die_fatal undef, 1
-            unless ($self->{OPTS}->{quiet});
+        $self->dump($diff) unless ($self->{OPTS}->{quiet});
 
         $self->{status} = 8 unless (not keys %{$diff} or exists $diff->{U});
     }
@@ -360,10 +356,9 @@ sub print_brief_block {
 sub print_term_block {
     my ($self, $value, $path, $status) = @_;
 
-    log_trace { "'" . path2str($path) . "' (" . $status . ")" };
+    log_trace { "'" . path2str($path) . "' ($status)" };
 
     my @lines;
-    my $color = $self->{OPTS}->{term}->{line}->{$status};
     my $dsign = $self->{OPTS}->{term}->{sign}->{$status};
 
     # diff for path
@@ -371,8 +366,8 @@ sub print_term_block {
         $self->{'hdr_path'} = [@{$path}];
         for (my $s = 0; $s < @{$path}; $s++) {
             next if (not $self->{OPTS}->{'full-headers'} and $s < @{$path} - @delta);
-            my $line = sprintf("%" . $s * 2 . "s", "") . path2str([$path->[$s]]);
 
+            my $line = "  " x $s . path2str([$path->[$s]]);
             if (($status eq 'A' or $status eq 'R') and $s == $#{$path}) {
                 $line = $COLOR{"B$status"} . "$dsign $line" . $COLOR{reset};
             } else {
@@ -384,8 +379,7 @@ sub print_term_block {
     }
 
     # diff for value
-    my $indent = sprintf "%" . @{$path} * 2 . "s", "";
-    push @lines, $self->term_value_diff($value, $status, $indent);
+    push @lines, $self->term_value_diff($value, $status, "  " x @{$path});
 
     print join("\n", @lines) . "\n";
 }
