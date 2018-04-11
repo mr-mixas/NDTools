@@ -1,6 +1,5 @@
 nddiff
     --ctx-struct <num>
-    Fix text diff header
 
 ndproc
     --list-sources <rules>

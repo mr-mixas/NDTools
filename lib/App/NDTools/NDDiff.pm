@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 use parent 'App::NDTools::NDTool';
 
-use Algorithm::Diff;
+use Algorithm::Diff qw(compact_diff);
 use JSON qw();
 use App::NDTools::Slurp qw(s_dump);
 use Log::Log4Cli 0.18;
@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.42';
+our $VERSION = '0.43';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -184,18 +184,51 @@ sub diff_term {
                 pop @new; # -"-
             }
 
-            my @cdiff = Algorithm::Diff::compact_diff(\@old, \@new);
-            my $match = 0;
+            my @cdiff = compact_diff(\@old, \@new);
+            my ($match, $header);
 
             while (@cdiff > 2) {
                 my @del = @old[$cdiff[0] .. $cdiff[2] - 1];
                 my @add = @new[$cdiff[1] .. $cdiff[3] - 1];
 
                 if ($match = !$match) {
-                    push @{${$dref}->{T}}, 'U', \@del if (@del);
+                    # trailing context
+                    if ($header) {
+                        my @tail = splice @del, 0, $self->{OPTS}->{'ctx-text'};
+                        push @{${$dref}->{T}}, 'U', \@tail;
+
+                        $header->[1] += @tail;
+                        $header->[3] += @tail;
+                    }
+
+                    # leading context
+                    if (@cdiff > 4) {
+                        my @rest = splice @del, 0, $self->{OPTS}->{'ctx-text'}
+                            ? $self->{OPTS}->{'ctx-text'} * -1 : scalar @del;
+
+                        if (@rest or !$header) {
+                            push @{${$dref}->{T}}, '@', $header = [
+                                $cdiff[2] - @del + 1, 0,
+                                $cdiff[3] - @del + 1, 0,
+                            ];
+                        }
+
+                        if (@del) {
+                            push @{${$dref}->{T}}, 'U', \@del;
+                            $header->[1] += @del;
+                            $header->[3] += @del;
+                        }
+                    }
                 } else {
-                    push @{${$dref}->{T}}, 'R', \@del if (@del);
-                    push @{${$dref}->{T}}, 'A', \@add if (@add);
+                    if (@del) {
+                        push @{${$dref}->{T}}, 'R', \@del;
+                        $header->[1] += @del;
+                    }
+
+                    if (@add) {
+                        push @{${$dref}->{T}}, 'A', \@add;
+                        $header->[3] += @add;
+                    }
                 }
 
                 splice @cdiff, 0, 2;
@@ -421,43 +454,23 @@ sub term_value_diff_default {
 
 sub term_value_diff_text {
     my ($self, $diff, $indent) = @_;
-    my (@out, @head_ctx, @tail_ctx, $pos);
+    my (@hdr, $lines, @out, $pfx, $sfx, $status);
+
+    $sfx = $COLOR{reset};
 
     while (@{$diff}) {
-        my ($status, $lines) = splice @{$diff}, 0, 2;
-        my $sign  = $self->{OPTS}->{term}->{sign}->{$status};
-        $pos += @{$lines};
+        ($status, $lines) = splice @{$diff}, 0, 2;
 
-        if ($status eq 'U') {
-            if ($self->{OPTS}->{'ctx-text'}) {
-                @head_ctx = splice(@{$lines});                                  # before changes
-                @tail_ctx = splice(@head_ctx, 0, $self->{OPTS}->{'ctx-text'})   # after changes
-                    if (@out);
-                splice(@head_ctx, 0, @head_ctx - $self->{OPTS}->{'ctx-text'})
-                    if (@head_ctx > $self->{OPTS}->{'ctx-text'});
+        $pfx = $COLOR{$status} . $self->{OPTS}->{term}->{sign}->{$status} .
+            " " . $indent;
 
-                splice(@head_ctx) unless (@{$diff});
-
-                @head_ctx = map {
-                    $COLOR{$status} . $sign . " " . $indent . $_ . $COLOR{reset}
-                } @head_ctx;
-                @tail_ctx = map {
-                    $COLOR{$status} . $sign . " " . $indent . $_ . $COLOR{reset}
-                } @tail_ctx;
-            } else {
-                splice(@{$lines}); # purge or will be printed in the next block
-            }
+        if ($status eq '@') {
+            @hdr = splice @{$lines};
+            $lines->[0] = "@@ -$hdr[0]" . ($hdr[1] > 1 ? ",$hdr[1] " : "") .
+                " +$hdr[2]" . ($hdr[3] > 1 ? ",$hdr[3] @@" : " @@");
         }
 
-        push @out, splice @tail_ctx;
-        if (@head_ctx or (not $self->{OPTS}->{'ctx-text'} and $status eq 'U' and @{$diff}) or not @out) {
-            push @out, $COLOR{$status} . $self->{OPTS}->{term}->{sign}->{'@'} .
-                " " . $indent . "@@ $pos,- -,- @@" . $COLOR{reset};
-        }
-        push @out, splice @head_ctx;
-        push @out, map {
-            $COLOR{$status} . $sign . " " . $indent . $_ . $COLOR{reset}
-        } @{$lines};
+        map { substr($_ , 0, 0, $pfx); $_ .= $sfx; push @out, $_ } @{$lines};
     }
 
     return @out;
