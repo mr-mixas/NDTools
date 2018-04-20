@@ -4,7 +4,7 @@ use warnings FATAL => 'all';
 use File::Copy qw(copy);
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 41;
+use Test::More tests => 44;
 
 use App::NDTools::Test;
 
@@ -94,6 +94,27 @@ $test = "grep_3";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--grep', '[1]{Edit}[-1,-3]', "_menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "grep_4";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '[2,0]', "_menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "grep_5";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '[2,0]{}[]{id}', "_menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "grep_6";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--grep', '[2,0]{}[]{id}', '--grep', '[0,2]{}[1]{label}', "_menu.a.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
