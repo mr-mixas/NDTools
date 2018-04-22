@@ -17,7 +17,7 @@ WriteMakefile(
     },
     BUILD_REQUIRES => {
         'Storable'              => 0,
-        'Test::File::Contents'  => 0,
+        'Test::File::Contents'  => 0.23,
         'Test::More'            => 0,
     },
     EXE_FILES => [
