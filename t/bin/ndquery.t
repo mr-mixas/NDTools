@@ -135,28 +135,28 @@ run_ok(
 $test = "items_array";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--items', '--path', '[]{}', "_menu.a.json" ],
+    cmd => [ @cmd, '--keys', '--path', '[]{}', "_menu.a.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
 $test = "items_bool";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--items', '--path', '{}[]', "_bool.a.json" ],
+    cmd => [ @cmd, '--keys', '--path', '{}[]', "_bool.a.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
 $test = "items_hash";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--items', "_cfg.alpha.json" ],
+    cmd => [ @cmd, '--keys', "_cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
 $test = "items_undef";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--items', '--path', '[]{Edit}[](not defined)', "_menu.a.json" ],
+    cmd => [ @cmd, '--keys', '--path', '[]{Edit}[](not defined)', "_menu.a.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 

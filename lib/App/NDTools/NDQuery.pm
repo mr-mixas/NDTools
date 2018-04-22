@@ -12,7 +12,7 @@ use Struct::Path 0.80 qw(list_paths path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.35';
+our $VERSION = '0.36';
 
 sub arg_opts {
     my $self = shift;
@@ -23,7 +23,7 @@ sub arg_opts {
         'delete|ignore=s@' => \$self->{OPTS}->{delete},
         'depth|d=i' => \$self->{OPTS}->{depth},
         'grep=s@' => \$self->{OPTS}->{grep},
-        'items' => \$self->{OPTS}->{items},
+        'keys' => \$self->{OPTS}->{keys},
         'list|l' => \$self->{OPTS}->{list},
         'md5' => \$self->{OPTS}->{md5},
         'path|p=s' => \$self->{OPTS}->{path},
@@ -38,8 +38,8 @@ sub check_args {
     my $self = shift;
 
     if ($self->{OPTS}->{replace}) {
-        die_fatal "--replace opt can't be used with --items", 1
-            if ($self->{OPTS}->{items});
+        die_fatal "--replace opt can't be used with --keys", 1
+            if ($self->{OPTS}->{keys});
         die_fatal "--replace opt can't be used with --list", 1
             if ($self->{OPTS}->{list});
         die_fatal "--replace opt can't be used with --md5", 1
@@ -111,8 +111,8 @@ sub exec {
             map { path($_, $spath, delete => 1) if (ref $_) } @data;
         }
 
-        if ($self->{OPTS}->{items}) {
-            $self->items(\@data);
+        if ($self->{OPTS}->{keys}) {
+            $self->list_keys(\@data);
         } elsif ($self->{OPTS}->{list}) {
             $self->list($uri, \@data);
         } elsif ($self->{OPTS}->{md5}) {
@@ -127,7 +127,7 @@ sub exec {
 
 my $JSON = JSON->new->canonical->allow_nonref;
 
-sub items {
+sub list_keys {
     my ($self, $data) = @_;
     my @out;
 
