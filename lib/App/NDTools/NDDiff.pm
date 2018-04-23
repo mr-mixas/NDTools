@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.43';
+our $VERSION = '0.44';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -103,11 +103,11 @@ sub defaults {
                 '@' => 'magenta',
             },
             'sign' => {
-                'A' => '+',
-                'D' => '!',
-                'U' => ' ',
-                'R' => '-',
-                '@' => ' ',
+                'A' => '+ ',
+                'D' => '! ',
+                'U' => '  ',
+                'R' => '- ',
+                '@' => '  ',
             },
         },
         'ofmt' => 'term',
@@ -378,7 +378,7 @@ sub print_brief_block {
 
     $status = 'D' if ($status eq 'N');
 
-    my $line = $self->{OPTS}->{term}->{sign}->{$status} . " " .
+    my $line = $self->{OPTS}->{term}->{sign}->{$status} .
         $COLOR{U} . path2str([splice @{$path}, 0, -1]) . $COLOR{reset};
     $line .= $COLOR{"B$status"} . path2str($path) . $COLOR{reset}
         if (@{$path});
@@ -402,7 +402,7 @@ sub print_term_block {
 
             my $line = "  " x $s . path2str([$path->[$s]]);
             if (($status eq 'A' or $status eq 'R') and $s == $#{$path}) {
-                $line = $COLOR{"B$status"} . "$dsign $line" . $COLOR{reset};
+                $line = $COLOR{"B$status"} . $dsign . $line . $COLOR{reset};
             } else {
                 $line = "  $line";
             }
@@ -445,7 +445,7 @@ sub term_value_diff_default {
         if (ref $value or not defined $value);
 
     for my $line (split($/, $value)) {
-        substr($line, 0, 0, $self->{OPTS}->{term}->{sign}->{$status} . $indent . " ");
+        substr($line, 0, 0, $self->{OPTS}->{term}->{sign}->{$status} . $indent);
         push @out, $COLOR{$status} . $line . $COLOR{reset};
     }
 
@@ -462,7 +462,7 @@ sub term_value_diff_text {
         ($status, $lines) = splice @{$diff}, 0, 2;
 
         $pfx = $COLOR{$status} . $self->{OPTS}->{term}->{sign}->{$status} .
-            " " . $indent;
+            $indent;
 
         if ($status eq '@') {
             @hdr = splice @{$lines};
