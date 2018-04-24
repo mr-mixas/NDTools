@@ -33,6 +33,8 @@ t/bin/nddiff.d/_menu.a.json
 t/bin/nddiff.d/_menu.b.json
 t/bin/nddiff.d/_numbers.a.json
 t/bin/nddiff.d/_numbers.b.json
+t/bin/nddiff.d/_omitted_index.a.json
+t/bin/nddiff.d/_omitted_index.b.json
 t/bin/nddiff.d/_struct-subkey-AR.a.json
 t/bin/nddiff.d/_struct-subkey-AR.b.json
 t/bin/nddiff.d/_text-AR.a.json
@@ -58,6 +60,7 @@ t/bin/nddiff.d/json_ignore.exp
 t/bin/nddiff.d/json_ignore_unexisted_path.exp
 t/bin/nddiff.d/json_nopretty.exp
 t/bin/nddiff.d/json_numbers.exp
+t/bin/nddiff.d/json_omitted_index.exp
 t/bin/nddiff.d/ofmt_yaml.exp
 t/bin/nddiff.d/rules.exp
 t/bin/nddiff.d/term_array_0.exp
@@ -78,6 +81,7 @@ t/bin/nddiff.d/term_noNO.exp
 t/bin/nddiff.d/term_noO.exp
 t/bin/nddiff.d/term_nopretty.exp
 t/bin/nddiff.d/term_noR.exp
+t/bin/nddiff.d/term_omitted_index.exp
 t/bin/nddiff.d/term_path.exp
 t/bin/nddiff.d/term_show.exp
 t/bin/nddiff.d/term_show.json

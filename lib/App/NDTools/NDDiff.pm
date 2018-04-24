@@ -8,12 +8,12 @@ use Algorithm::Diff qw(compact_diff);
 use JSON qw();
 use App::NDTools::Slurp qw(s_dump);
 use Log::Log4Cli 0.18;
-use Struct::Diff 0.94 qw();
+use Struct::Diff 0.96 qw();
 use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.44';
+our $VERSION = '0.45';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
