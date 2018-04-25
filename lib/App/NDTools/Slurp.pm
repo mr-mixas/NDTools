@@ -9,7 +9,7 @@ use open qw(:std :utf8);
 
 use File::Basename qw(basename);
 use JSON qw();
-use Scalar::Util qw(readonly);
+use Scalar::Util qw(isdual readonly);
 use YAML::XS qw();
 
 use App::NDTools::INC;
@@ -36,17 +36,21 @@ our %FORMATS = (
 
 # YAML::XS decode boolean values as PL_sv_yes and PL_sv_no, both - read only
 # at leas until https://github.com/ingydotnet/yaml-libyaml-pm/issues/25
-sub _fix_decoded_yaml_bools($) {
+# second thing here - we numify dualvars (YAML::XS load integers as dualvars,
+# but JSON dumps dualvars as strings =(
+sub _fix_decoded_yaml($) {
     my @stack = (\$_[0]);
     my $ref;
 
     while ($ref = shift @stack) {
         if (ref ${$ref} eq 'ARRAY') {
-            for (reverse 0 .. $#{${$ref}}) {
+            for (0 .. $#{${$ref}}) {
                 if (ref ${$ref}->[$_]) {
                     push @stack, \${$ref}->[$_];
                 } elsif (readonly ${$ref}->[$_]) {
                     splice @{${$ref}}, $_, 1, (${$ref}->[$_] ? JSON::true : JSON::false);
+                } elsif (isdual ${$ref}->[$_]) {
+                    ${$ref}->[$_] += 0;
                 }
             }
         } elsif (ref ${$ref} eq 'HASH') {
@@ -55,8 +59,12 @@ sub _fix_decoded_yaml_bools($) {
                     push @stack, \${$ref}->{$_};
                 } elsif (readonly ${$ref}->{$_}) {
                     ${$ref}->{$_} = delete ${$ref}->{$_} ? JSON::true : JSON::false;
+                } elsif (isdual ${$ref}->{$_}) {
+                    ${$ref}->{$_} += 0;
                 }
             }
+        } elsif (isdual ${$ref}) {
+            ${$ref} += 0;
         }
     }
 }
@@ -70,7 +78,7 @@ sub s_decode($$;$) {
     } elsif ($format eq 'YAML') {
         $data = eval { YAML::XS::Load($data) };
         die_fatal "Failed to decode '$fmt': " . $@, 4 if $@;
-        _fix_decoded_yaml_bools($data);
+        _fix_decoded_yaml($data); # booleans and dualvars
     } elsif ($format eq 'RAW') {
         ;
     } else {

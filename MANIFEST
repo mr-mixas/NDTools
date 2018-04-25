@@ -244,8 +244,14 @@ t/bin/ndquery.d/grep_6.exp
 t/bin/ndquery.d/help.exp
 t/bin/ndquery.d/ifmt_yaml.data
 t/bin/ndquery.d/ifmt_yaml.exp
+t/bin/ndquery.d/ifmt_yaml_number_nonref.data
+t/bin/ndquery.d/ifmt_yaml_number_nonref.exp
+t/bin/ndquery.d/ifmt_yaml_numbers.data
+t/bin/ndquery.d/ifmt_yaml_numbers.exp
 t/bin/ndquery.d/ifmt_yaml_ofmt_yaml.data
 t/bin/ndquery.d/ifmt_yaml_ofmt_yaml.exp
+t/bin/ndquery.d/ifmt_yaml_string_nonref.data
+t/bin/ndquery.d/ifmt_yaml_string_nonref.exp
 t/bin/ndquery.d/items_array.exp
 t/bin/ndquery.d/items_bool.exp
 t/bin/ndquery.d/items_hash.exp
