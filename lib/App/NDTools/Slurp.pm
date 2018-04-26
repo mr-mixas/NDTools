@@ -34,6 +34,11 @@ our %FORMATS = (
     },
 );
 
+use constant {
+    TRUE  => JSON::true,
+    FALSE => JSON::false,
+};
+
 # YAML::XS decode boolean values as PL_sv_yes and PL_sv_no, both - read only
 # at leas until https://github.com/ingydotnet/yaml-libyaml-pm/issues/25
 # second thing here - we numify dualvars (YAML::XS load integers as dualvars,
@@ -48,7 +53,7 @@ sub _fix_decoded_yaml($) {
                 if (ref ${$ref}->[$_]) {
                     push @stack, \${$ref}->[$_];
                 } elsif (readonly ${$ref}->[$_]) {
-                    splice @{${$ref}}, $_, 1, (${$ref}->[$_] ? JSON::true : JSON::false);
+                    splice @{${$ref}}, $_, 1, (${$ref}->[$_] ? TRUE : FALSE);
                 } elsif (isdual ${$ref}->[$_]) {
                     ${$ref}->[$_] += 0;
                 }
@@ -58,7 +63,7 @@ sub _fix_decoded_yaml($) {
                 if (ref ${$ref}->{$_}) {
                     push @stack, \${$ref}->{$_};
                 } elsif (readonly ${$ref}->{$_}) {
-                    ${$ref}->{$_} = delete ${$ref}->{$_} ? JSON::true : JSON::false;
+                    ${$ref}->{$_} = delete ${$ref}->{$_} ? TRUE : FALSE;
                 } elsif (isdual ${$ref}->{$_}) {
                     ${$ref}->{$_} += 0;
                 }
@@ -74,7 +79,15 @@ sub s_decode($$;$) {
     my $format = uc($fmt);
 
     if ($format eq 'JSON') {
-        $data = eval { JSON::from_json($data, {%{$FORMATS{JSON}}, %{$opts || {}}}) };
+        my $o = { %{$FORMATS{JSON}}, %{$opts || {}} };
+        $data = eval {
+            JSON->new(
+                )->allow_nonref($o->{allow_nonref}
+                )->canonical($o->{canonical}
+                )->pretty($o->{pretty}
+                )->relaxed($o->{relaxed}
+            )->decode($data);
+        };
     } elsif ($format eq 'YAML') {
         $data = eval { YAML::XS::Load($data) };
         die_fatal "Failed to decode '$fmt': " . $@, 4 if $@;
@@ -84,6 +97,7 @@ sub s_decode($$;$) {
     } else {
         die_fatal "Unable to decode '$fmt' (not supported)";
     }
+
     die_fatal "Failed to decode '$fmt': " . $@, 4 if $@;
 
     return $data;
@@ -91,10 +105,12 @@ sub s_decode($$;$) {
 
 sub s_dump(@) {
     my ($uri, $fmt, $opts) = (shift, shift, shift);
+
     $uri = \*STDOUT if ($uri eq '-');
 
     $fmt = s_fmt_by_uri($uri) unless (defined $fmt);
     my $data = join('', map { s_encode($_, $fmt, $opts) } @_);
+
     if (ref $uri eq 'GLOB') {
         print $uri $data;
     } else {
@@ -115,7 +131,14 @@ sub s_encode($$;$) {
     my $format = uc($fmt);
 
     if ($format eq 'JSON' or $format eq 'RAW' and ref $data) {
-        $data = eval { JSON::to_json($data, {%{$FORMATS{JSON}}, %{$opts || {}}}) };
+        my $o = { %{$FORMATS{JSON}}, %{$opts || {}} };
+        $data = eval {
+            JSON->new(
+                )->allow_nonref($o->{allow_nonref}
+                )->canonical($o->{canonical}
+                )->pretty($o->{pretty}
+            )->encode($data);
+        };
     } elsif ($format eq 'YAML') {
         $data = eval { YAML::XS::Dump($data) };
     } elsif ($format eq 'RAW') {
@@ -123,6 +146,7 @@ sub s_encode($$;$) {
     } else {
         die_fatal "Unable to encode to '$fmt' (not supported)";
     }
+
     die_fatal "Failed to encode structure to $fmt: " . $@, 4 if $@;
 
     return $data;
@@ -134,15 +158,17 @@ sub s_fmt_by_uri($) {
         my $ext = uc(pop @names);
         return 'YAML' if ($ext eq 'YML' or $ext eq 'YAML');
     }
+
     return 'JSON'; # by default
 }
 
 sub s_load($$;@) {
     my ($uri, $fmt, %opts) = @_;
-    $uri = \*STDIN if ($uri eq '-');
 
+    $uri = \*STDIN if ($uri eq '-');
     my $data = s_load_uri($uri);
     $fmt = s_fmt_by_uri($uri) unless (defined $fmt);
+
     return s_decode($data, $fmt);
 }
 
@@ -153,7 +179,8 @@ sub s_load_uri($) {
     if (ref $uri eq 'GLOB') {
         $data = do { local $/; <$uri> };
     } else {
-        open(my $fh, '<', $uri) or die_fatal "Failed to open file '$uri' ($!)", 2;
+        open(my $fh, '<', $uri) or
+            die_fatal "Failed to open file '$uri' ($!)", 2;
         $data = do { local $/; <$fh> }; # load whole file
         close($fh);
     }
