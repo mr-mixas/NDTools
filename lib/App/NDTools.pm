@@ -17,11 +17,11 @@ App::NDTools - command line tools for nested structures
 
 =head1 VERSION
 
-Version 0.5.4
+Version 0.5.5
 
 =cut
 
-our $VERSION = "0.5.4";
+our $VERSION = "0.5.5";
 
 =head1 DESCRIPTION
 
@@ -45,7 +45,7 @@ Process structure using rules and modules.
 
 =item B<L<ndquery>>
 
-Examine structure with ease.
+Examine structure and dump it's parts.
 
 =back
 
@@ -63,7 +63,7 @@ Build and install deb package:
     make -C dist deb
     sudo dpkg -i ndtools_*.deb
 
-Play without installation:
+Use without installation:
 
     git clone https://github.com/mr-mixas/NDTools.git
     cd NDTools
@@ -79,7 +79,8 @@ Report bugs to L<https://github.com/mr-mixas/NDTools/issues>
 
 =head1 SEE ALSO
 
-L<jq|https://stedolan.github.io/jq/>
+L<jq|https://stedolan.github.io/jq/>,
+L<json-delta|https://json-delta.readthedocs.io/en/latest/>
 
 L<Struct::Diff>, L<Struct::Path>, L<Struct::Path::PerlStyle>
 

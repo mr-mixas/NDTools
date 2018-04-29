@@ -118,7 +118,7 @@ Same as above, but without added items:
  1   Generic error code.
  2   I/O Error.
  4   Path related errors.
- 8   Diff exists.
+ 8   Difference found.
 
 =head1 BUGS
 
