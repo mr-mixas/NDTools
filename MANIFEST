@@ -267,6 +267,14 @@ t/bin/ndquery.d/md5_path.exp
 t/bin/ndquery.d/md5_stdin.exp
 t/bin/ndquery.d/nopretty.exp
 t/bin/ndquery.d/ofmt_yaml.exp
+t/bin/ndquery.d/ofmt_yaml_bool.exp
+t/bin/ndquery.d/ofmt_yaml_bool.num.exp
+t/bin/ndquery.d/ofmt_yaml_bool_nonref_false.exp
+t/bin/ndquery.d/ofmt_yaml_bool_nonref_false.json
+t/bin/ndquery.d/ofmt_yaml_bool_nonref_false.num.exp
+t/bin/ndquery.d/ofmt_yaml_bool_nonref_true.exp
+t/bin/ndquery.d/ofmt_yaml_bool_nonref_true.json
+t/bin/ndquery.d/ofmt_yaml_bool_nonref_true.num.exp
 t/bin/ndquery.d/path_0.exp
 t/bin/ndquery.d/path_1.exp
 t/bin/ndquery.d/path_2.exp

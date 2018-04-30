@@ -74,6 +74,53 @@ sub _fix_decoded_yaml($) {
     }
 }
 
+sub _encode_yaml($) {
+    return YAML::XS::Dump($_[0])
+        if ($YAML::XS::VERSION >= 0.67 and ref TRUE eq 'JSON::PP::Boolean');
+
+    # replace booleans for YAML::XS (accepts only boolean and JSON::PP::Boolean
+    # since 0.67 and PL_sv_yes/no in earlier versions). No roundtrip for
+    # versions < 0.67: 1 and 0 used for booleans (there is no way to set
+    # PL_sv_yes/no into arrays/hashes without XS code)
+
+    my ($false, $true) = (0, 1);
+
+    if ($YAML::XS::VERSION >= 0.67) {
+        require JSON::PP;
+        ($false, $true) = (JSON::PP::false(), JSON::PP::true());
+    }
+
+    local $YAML::XS::Boolean = "JSON::PP" if ($YAML::XS::VERSION >= 0.67);
+
+    my @stack = (\$_[0]);
+    my $ref;
+    my $bool_type = ref TRUE;
+
+    while ($ref = shift @stack) {
+        if (ref ${$ref} eq 'ARRAY') {
+            for (0 .. $#{${$ref}}) {
+                if (ref ${$ref}->[$_]) {
+                    push @stack, \${$ref}->[$_];
+                } elsif (ref ${$ref}->[$_] eq $bool_type) {
+                    ${$ref}->[$_] = ${$ref}->[$_] ? $true : $false;
+                }
+            }
+        } elsif (ref ${$ref} eq 'HASH') {
+            for (keys %{${$ref}}) {
+                if (ref ${$ref}->{$_}) {
+                    push @stack, \${$ref}->{$_};
+                } elsif (ref ${$ref}->{$_} eq $bool_type) {
+                    ${$ref}->{$_} = ${$ref}->{$_} ? $true : $false;
+                }
+            }
+        } elsif (ref ${$ref} eq $bool_type) {
+            ${$ref} = ${$ref} ? $true : $false;
+        }
+    }
+
+    return YAML::XS::Dump($_[0]);
+}
+
 sub s_decode($$;$) {
     my ($data, $fmt, $opts) = @_;
     my $format = uc($fmt);
@@ -140,7 +187,7 @@ sub s_encode($$;$) {
             )->encode($data);
         };
     } elsif ($format eq 'YAML') {
-        $data = eval { YAML::XS::Dump($data) };
+        $data = eval { _encode_yaml($data) };
     } elsif ($format eq 'RAW') {
         $data .= "\n";
     } else {
