@@ -10,7 +10,6 @@ use open qw(:std :utf8);
 use File::Basename qw(basename);
 use JSON qw();
 use Scalar::Util qw(isdual readonly);
-use YAML::XS qw();
 
 use App::NDTools::INC;
 use Log::Log4Cli;
@@ -39,12 +38,17 @@ use constant {
     FALSE => JSON::false,
 };
 
-# YAML::XS decode boolean values as PL_sv_yes and PL_sv_no, both - read only
-# at leas until https://github.com/ingydotnet/yaml-libyaml-pm/issues/25
-# second thing here - we numify dualvars (YAML::XS load integers as dualvars,
-# but JSON dumps dualvars as strings =(
-sub _fix_decoded_yaml($) {
-    my @stack = (\$_[0]);
+sub _decode_yaml($) {
+    require YAML::XS;
+
+    my $data = YAML::XS::Load($_[0]);
+
+    # YAML::XS decode boolean vals as PL_sv_yes and PL_sv_no, both - read only
+    # at least until https://github.com/ingydotnet/yaml-libyaml-pm/issues/25
+    # second thing here: get rid of dualvars: YAML::XS load numbers as
+    # dualvars, but JSON::XS dumps them as strings =(
+
+    my @stack = (\$data);
     my $ref;
 
     while ($ref = shift @stack) {
@@ -72,9 +76,13 @@ sub _fix_decoded_yaml($) {
             ${$ref} += 0;
         }
     }
+
+    return $data;
 }
 
 sub _encode_yaml($) {
+    require YAML::XS;
+
     return YAML::XS::Dump($_[0])
         if ($YAML::XS::VERSION >= 0.67 and ref TRUE eq 'JSON::PP::Boolean');
 
@@ -136,9 +144,7 @@ sub s_decode($$;$) {
             )->decode($data);
         };
     } elsif ($format eq 'YAML') {
-        $data = eval { YAML::XS::Load($data) };
-        die_fatal "Failed to decode '$fmt': " . $@, 4 if $@;
-        _fix_decoded_yaml($data); # booleans and dualvars
+        $data = eval { _decode_yaml($data) };
     } elsif ($format eq 'RAW') {
         ;
     } else {
