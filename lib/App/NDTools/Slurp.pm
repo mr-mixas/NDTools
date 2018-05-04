@@ -83,9 +83,6 @@ sub _decode_yaml($) {
 sub _encode_yaml($) {
     require YAML::XS;
 
-    return YAML::XS::Dump($_[0])
-        if ($YAML::XS::VERSION >= 0.67 and ref TRUE eq 'JSON::PP::Boolean');
-
     # replace booleans for YAML::XS (accepts only boolean and JSON::PP::Boolean
     # since 0.67 and PL_sv_yes/no in earlier versions). No roundtrip for
     # versions < 0.67: 1 and 0 used for booleans (there is no way to set
@@ -93,12 +90,14 @@ sub _encode_yaml($) {
 
     my ($false, $true) = (0, 1);
 
+    local $YAML::XS::Boolean = "JSON::PP" if ($YAML::XS::VERSION >= 0.67);
+
     if ($YAML::XS::VERSION >= 0.67) {
+        return YAML::XS::Dump($_[0]) if (ref TRUE eq 'JSON::PP::Boolean');
+
         require JSON::PP;
         ($false, $true) = (JSON::PP::false(), JSON::PP::true());
     }
-
-    local $YAML::XS::Boolean = "JSON::PP" if ($YAML::XS::VERSION >= 0.67);
 
     my @stack = (\$_[0]);
     my $ref;
