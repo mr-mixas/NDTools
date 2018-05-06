@@ -73,8 +73,9 @@ Use without installation:
 
 L<YAML::XS> should be additionally installed for YAML support.
 
-L<YAML::XS> >= 0.67 required for correct booleans dump support (L<JSON::PP>
-required as well), 1 for true and 0 for false used in erlear versions.
+L<YAML::XS> 0.67 or later required for correct booleans dump support
+(L<JSON::PP> required as well), C<1> for true and C<0> for false used
+in earlear versions.
 
 =head1 AUTHOR
 
