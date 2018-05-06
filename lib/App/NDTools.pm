@@ -69,6 +69,13 @@ Use without installation:
     cd NDTools
     source ./SOURCEME # install depends to the current directory and set ENV
 
+=head1 LIMITATIONS
+
+L<YAML::XS> should be additionally installed for YAML support.
+
+L<YAML::XS> >= 0.67 required for correct booleans dump support (L<JSON::PP>
+required as well), 1 for true and 0 for false used in erlear versions.
+
 =head1 AUTHOR
 
 Michael Samoglyadov, C<< <mixas at cpan.org> >>
