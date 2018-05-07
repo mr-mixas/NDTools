@@ -289,6 +289,9 @@ t/bin/ndquery.t
 t/lib/NDTools-NDDiff-text.d/text-123.json
 t/lib/NDTools-NDDiff-text.d/text-456.json
 t/lib/NDTools-NDDiff-text.t
+t/lib/NDTools-NDDiff.d/changed.a.json
+t/lib/NDTools-NDDiff.d/changed.b.json
+t/lib/NDTools-NDDiff.t
 t/lib/NDTools-NDProc-Module-Insert.t
 t/lib/NDTools-NDProc-Module-Merge.t
 t/lib/NDTools-NDProc-Module-Pipe.t

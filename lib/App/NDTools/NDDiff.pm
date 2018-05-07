@@ -420,12 +420,11 @@ sub print_term_block {
 sub print_term_header {
     my ($self, @names) = @_;
 
-    return if (!$self->{TTY} or $self->{OPTS}->{quiet});
-
-    my $header = @names == 1 ? $names[0] :
-        "--- a: $names[0] \n+++ b: $names[1]";
-
-    print $COLOR{head} . $header . $COLOR{reset}. "\n";
+    if ($self->{TTY} and not $self->{OPTS}->{quiet}) {
+        print $COLOR{head} .
+            (@names == 1 ? "!!! $names[0]" : "--- $names[0]\n+++ $names[1]") .
+            $COLOR{reset}. "\n";
+    }
 }
 
 sub term_value_diff {
