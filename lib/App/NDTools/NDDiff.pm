@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.45';
+our $VERSION = '0.46';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -374,14 +374,11 @@ sub load {
 sub print_brief_block {
     my ($self, $path, $status) = @_;
 
-    return unless (@{$path}); # nothing to show
-
     $status = 'D' if ($status eq 'N');
 
     my $line = $self->{OPTS}->{term}->{sign}->{$status} .
         $COLOR{U} . path2str([splice @{$path}, 0, -1]) . $COLOR{reset};
-    $line .= $COLOR{"B$status"} . path2str($path) . $COLOR{reset}
-        if (@{$path});
+    $line .= $COLOR{"B$status"} . path2str($path) . $COLOR{reset};
 
     print $line . "\n";
 }

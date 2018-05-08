@@ -68,6 +68,9 @@ t/bin/nddiff.d/term_array_1.exp
 t/bin/nddiff.d/term_bool.exp
 t/bin/nddiff.d/term_brief.exp
 t/bin/nddiff.d/term_brief_colors.exp
+t/bin/nddiff.d/term_brief_nonref.a.data
+t/bin/nddiff.d/term_brief_nonref.b.data
+t/bin/nddiff.d/term_brief_nonref.exp
 t/bin/nddiff.d/term_colors.exp
 t/bin/nddiff.d/term_full_headers.exp
 t/bin/nddiff.d/term_grep_1.exp
