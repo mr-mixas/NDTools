@@ -1,5 +1,3 @@
-export DEVSCRIPTS_CHECK_DIRNAME_LEVEL=0
-
 INC_DIR=../lib/App/NDTools/INC
 NDTOOLS=nddiff ndpatch ndproc ndquery
 
@@ -8,7 +6,7 @@ NDTOOLS=nddiff ndpatch ndproc ndquery
 all:
 
 deb: depends man
-	debuild
+	debuild $(DEBUILD_OPTS)
 
 depends: $(INC_DIR)
 

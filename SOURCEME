@@ -6,5 +6,5 @@ export PATH=${CWD}:$PATH
 export PERL5LIB=${CWD}/lib:${CWD}/depends/lib
 
 eval `perl -Mlocal::lib=$CWD/depends`
-cpanm --quiet --installdeps --with-develop --notest .
+cpanm --installdeps --with-develop --notest .
 

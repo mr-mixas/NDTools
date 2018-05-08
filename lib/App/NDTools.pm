@@ -59,9 +59,7 @@ Build and install deb package:
 
     git clone https://github.com/mr-mixas/NDTools.git
     cd NDTools
-    vim dist/debian/changelog # change sign for last version
-    make -C dist deb
-    sudo dpkg -i ndtools_*.deb
+    DEBUILD_OPTS="--no-lintian -uc -us -b" make -C dist veryclean deb
 
 Use without installation:
 
