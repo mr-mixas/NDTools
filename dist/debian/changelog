@@ -1,3 +1,12 @@
+ndtools (0.5.5) unstable; urgency=low
+
+  * all: numbers load fixed for YAML
+  * all: booleans dump fixed for YAML
+  * all: nonref false values load fixed
+  * nddiff: --brief for nonrefs fixed
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Wed, 09 May 2018 00:16:17 +0300
+
 ndtools (0.5.4) unstable; urgency=low
 
   * nddiff: --{A,N,O,R,U} opts added, --full opt is deprecated

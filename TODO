@@ -14,20 +14,17 @@ App::NDTools::NDProc::Module
     complete rule using defaults if not all vital opts provided
     also - non default opts only when dump rules
 
-App::NDTools::NDProc::Module::Insert
-    --method append|override|prepend|shift # define a way to add items to arrays (override by default)
-
 App::NDTools::NDProc::Module::Merge
     --match <path> # (combined with path) -- to implement fair pairwise merge (filter like "defined" used)
     --structure # as --source alternative (JSON in args, raw structure in rule)
     make per-merge path opt to be able as list
 
-App::NDTools::NDProc::Module::Copy
-    --path --to --move
+App::NDTools::NDProc::Module::ListSort
+    --path --by <subpath> --numeric
 
 App::NDTools::NDProc::Module::Patch
     ndpatch should be as a wrapper for it?
 
-App::NDTools::NDProc::Module::Rules # Replace rule by external rules (recursive)
+App::NDTools::NDProc::Module::Include # Replace rule by external rules (recursive)
     support builtin rules as well
 
