@@ -34,6 +34,7 @@ WriteMakefile(
         },
     },
     PREREQ_PM => {
+        'B'                         => 0,
         'Encode::Locale'            => 0,
         'Hash::Merge'               => 0,
         'Hash::Merge::Extra'        => 0.06,
@@ -41,6 +42,7 @@ WriteMakefile(
         'JSON'                      => 0,
         'Log::Log4Cli'              => 0.21,
         'Module::Find'              => 0,
+        'Scalar::Util'              => 0,
         'Struct::Diff'              => 0.96,
         'Struct::Path'              => 0.81,
         'Struct::Path::PerlStyle'   => 0.80,
