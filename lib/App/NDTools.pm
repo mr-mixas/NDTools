@@ -25,7 +25,7 @@ our $VERSION = "0.5.6";
 
 =head1 DESCRIPTION
 
-Diff, patch, process and query nested structures with ease.
+Diff, patch, process and query JSON and YAML with ease.
 
 =head1 TOOLS
 
