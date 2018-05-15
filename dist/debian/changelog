@@ -1,3 +1,10 @@
+ndtools (0.5.6) unstable; urgency=low
+
+  * all: fix crashes when Scalar::Util < 1.26 installed
+  * docs improved
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Wed, 16 May 2018 00:18:56 +0300
+
 ndtools (0.5.5) unstable; urgency=low
 
   * all: numbers load fixed for YAML
