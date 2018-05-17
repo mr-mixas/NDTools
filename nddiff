@@ -37,7 +37,7 @@ Show where differences occured, but don't show what exactly changed.
 
 On/Off colors for diff.
 
-=item B<--ctx-text> [int]
+=item B<--ctx-text> E<lt>intE<gt>
 
 Amount of lines for multiline values context. Default is 3.
 

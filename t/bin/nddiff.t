@@ -69,12 +69,11 @@ run_ok(
     exit => 8,
 );
 
-$test = "json_full";
+$test = "json_U";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--json', '--full', "_menu.a.json", "_menu.b.json" ],
+    cmd => [ @cmd, '--json', '--U', "_menu.a.json", "_menu.b.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
-    stderr => qr/ ALERT] --full opt is deprecated and will be removed soon. --U should be used instead/,
     exit => 8,
 );
 

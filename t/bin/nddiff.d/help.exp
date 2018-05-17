@@ -14,7 +14,7 @@ Options:
     --[no]colors
         On/Off colors for diff.
 
-    --ctx-text [int]
+    --ctx-text <int>
         Amount of lines for multiline values context. Default is 3.
 
     --full-headers

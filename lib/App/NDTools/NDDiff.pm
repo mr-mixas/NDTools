@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.46';
+our $VERSION = '0.47';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -31,7 +31,6 @@ sub arg_opts {
         'brief' => sub { $self->{OPTS}->{ofmt} = $_[0] },
         'colors!' => \$self->{OPTS}->{colors},
         'ctx-text=i' => \$self->{OPTS}->{'ctx-text'},
-        'full' => \$self->{OPTS}->{full}, # deprecated
         'full-headers' => \$self->{OPTS}->{'full-headers'},
         'grep=s@' => \$self->{OPTS}->{grep},
         'json' => sub { $self->{OPTS}->{ofmt} = $_[0] },
@@ -93,24 +92,6 @@ sub defaults {
     my $out = {
         %{$self->SUPER::defaults()},
         'ctx-text' => 3,
-        'term' => {
-            'head' => 'yellow',
-            'line' => {
-                'A' => 'green',
-                'D' => 'yellow',
-                'U' => 'white',
-                'R' => 'red',
-                '@' => 'magenta',
-            },
-            'sign' => {
-                'A' => '+ ',
-                'D' => '! ',
-                'U' => '  ',
-                'R' => '- ',
-                '@' => '  ',
-            },
-        },
-        'ofmt' => 'term',
         'diff' => {
             'A' => 1,
             'N' => 1,
@@ -118,26 +99,35 @@ sub defaults {
             'R' => 1,
             'U' => 0,
         },
+        'ofmt' => 'term',
+        'term' => {
+            'head' => 'yellow',
+            'line' => {
+                'A' => 'green',
+                'D' => 'yellow',
+                'N' => 'green',
+                'O' => 'red',
+                'U' => 'white',
+                'R' => 'red',
+                '@' => 'magenta',
+            },
+            'sign' => {
+                'A' => '+ ',
+                'D' => '! ',
+                'N' => '+ ',
+                'O' => '- ',
+                'U' => '  ',
+                'R' => '- ',
+                '@' => '  ',
+            },
+        },
     };
-
-    $out->{term}{line}{N} = $out->{term}{line}{A};
-    $out->{term}{line}{O} = $out->{term}{line}{R};
-    $out->{term}{sign}{N} = $out->{term}{sign}{A};
-    $out->{term}{sign}{O} = $out->{term}{sign}{R};
 
     return $out;
 }
 
 sub diff {
     my ($self, $old, $new) = @_;
-
-    if ($self->{OPTS}->{full}) {
-        log_alert {
-            '--full opt is deprecated and will be removed soon. ' .
-            '--U should be used instead'
-        };
-        map {$self->{OPTS}->{diff}->{$_} = 1 } keys %{$self->{OPTS}->{diff}};
-    }
 
     log_debug { "Calculating diff for structure" };
     my $diff = Struct::Diff::diff(
@@ -163,7 +153,7 @@ sub diff_term {
 
     log_debug { "Calculating diffs for text values" };
 
-    my $dref;       # ref to diff
+    my $dref; # ref to diff
     my @list = Struct::Diff::list_diff($diff);
 
     while (@list) {
@@ -376,11 +366,9 @@ sub print_brief_block {
 
     $status = 'D' if ($status eq 'N');
 
-    my $line = $self->{OPTS}->{term}->{sign}->{$status} .
-        $COLOR{U} . path2str([splice @{$path}, 0, -1]) . $COLOR{reset};
-    $line .= $COLOR{"B$status"} . path2str($path) . $COLOR{reset};
-
-    print $line . "\n";
+    print $self->{OPTS}->{term}->{sign}->{$status} . $COLOR{U} .
+        path2str([splice @{$path}, 0, -1]) . $COLOR{reset} .
+        $COLOR{"B$status"} . path2str($path) . $COLOR{reset} . "\n";
 }
 
 sub print_term_block {
@@ -401,7 +389,7 @@ sub print_term_block {
             if (($status eq 'A' or $status eq 'R') and $s == $#{$path}) {
                 $line = $COLOR{"B$status"} . $dsign . $line . $COLOR{reset};
             } else {
-                $line = "  $line";
+                substr($line, 0, 0, "  ");
             }
 
             push @lines, $line;
