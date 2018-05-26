@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.47';
+our $VERSION = '0.48';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -31,7 +31,7 @@ sub arg_opts {
         'brief' => sub { $self->{OPTS}->{ofmt} = $_[0] },
         'colors!' => \$self->{OPTS}->{colors},
         'ctx-text=i' => \$self->{OPTS}->{'ctx-text'},
-        'full-headers' => \$self->{OPTS}->{'full-headers'},
+        'full-headers' => \$self->{OPTS}->{'full-headers'}, # deprecated since 17 May 2018
         'grep=s@' => \$self->{OPTS}->{grep},
         'json' => sub { $self->{OPTS}->{ofmt} = $_[0] },
         'ignore=s@' => \$self->{OPTS}->{ignore},
@@ -58,6 +58,14 @@ sub configure {
     my $self = shift;
 
     $self->SUPER::configure();
+
+    if ($self->{OPTS}->{'full-headers'}) {
+        log_alert {
+            '--full-headers opt is deprecated and will be removed soon. ' .
+            '--nopretty should be used instead'
+        };
+        $self->{OPTS}->{pretty} = 0;
+    }
 
     $self->{OPTS}->{colors} = $self->{TTY}
         unless (defined $self->{OPTS}->{colors});
@@ -383,7 +391,7 @@ sub print_term_block {
     if (@{$path} and my @delta = path_delta($self->{'hdr_path'}, $path)) {
         $self->{'hdr_path'} = [@{$path}];
         for (my $s = 0; $s < @{$path}; $s++) {
-            next if (not $self->{OPTS}->{'full-headers'} and $s < @{$path} - @delta);
+            next if ($self->{OPTS}->{pretty} and $s < @{$path} - @delta);
 
             my $line = "  " x $s . path2str([$path->[$s]]);
             if (($status eq 'A' or $status eq 'R') and $s == $#{$path}) {

@@ -170,7 +170,7 @@ run_ok(
 $test = "term_bool";
 run_ok(
     name => $test,
-    cmd => [ @cmd, '--nopretty', "_bool.a.json", "_bool.b.json" ],
+    cmd => [ @cmd, "_bool.a.json", "_bool.b.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
@@ -212,6 +212,7 @@ run_ok(
     name => $test,
     cmd => [ @cmd, '--full-headers', "_cfg.alpha.json", "_cfg.beta.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    stderr => qr/ ALERT] --full-headers opt is deprecated and will be removed soon/,
     exit => 8,
 );
 
