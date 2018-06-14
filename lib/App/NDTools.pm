@@ -59,7 +59,7 @@ Build deb package:
 
     git clone https://github.com/mr-mixas/NDTools.git
     cd NDTools
-    DEBUILD_OPTS="--no-lintian -uc -us -b" make -C dist veryclean deb
+    DEBUILD_OPTS="--no-lintian -uc -us -b" make -C dist deb
 
 Use without installation:
 
@@ -70,8 +70,8 @@ Use without installation:
 =head1 LIMITATIONS
 
 L<YAML::XS> should be additionally installed for YAML support. L<YAML::XS>
-C<0.67> or later and L<JSON::PP> required for correct booleans dump, C<1> for
-true and C<0> for false used in earlear L<YAML::XS> versions.
+C<0.67> or later and L<JSON::PP> required for correct booleans dump; C<1> for
+true and C<0> for false used for earlier L<YAML::XS> versions.
 
 =head1 AUTHOR
 
