@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 65;
+use Test::More tests => 66;
 
 use App::NDTools::Test;
 
@@ -317,6 +317,14 @@ $test = "term_nopretty";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--nopretty', "_menu.a.json", "_menu.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_nopretty_AR"; # Should be separated paths for A and R items
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--nopretty', "_bool.a.json", "_bool.b.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
