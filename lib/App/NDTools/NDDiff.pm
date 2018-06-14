@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.49';
+our $VERSION = '0.50';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -110,6 +110,7 @@ sub defaults {
         'ofmt' => 'term',
         'term' => {
             'head' => 'yellow',
+            'indt' => '  ',
             'line' => {
                 'A' => 'green',
                 'D' => 'yellow',
@@ -386,6 +387,7 @@ sub print_term_block {
 
     my @lines;
     my $dsign = $self->{OPTS}->{term}->{sign}->{$status};
+    my $indent = $self->{OPTS}->{term}->{indt};
 
     # diff for path
     if (@{$path} and my @delta = path_delta($self->{'hdr_path'}, $path)) {
@@ -393,12 +395,12 @@ sub print_term_block {
         my $s = $self->{OPTS}->{pretty} ? @{$path} - @delta : 0;
 
         while ($s < @{$path}) {
-            my $line = "  " x $s . path2str([$path->[$s]]);
+            my $line = $indent x $s . path2str([$path->[$s]]);
 
             if (($status eq 'A' or $status eq 'R') and $s == $#{$path}) {
                 $line = $COLOR{"B$status"} . $dsign . $line . $COLOR{reset};
             } else {
-                substr($line, 0, 0, "  ");
+                substr($line, 0, 0, $indent);
             }
 
             push @lines, $line;
@@ -407,7 +409,7 @@ sub print_term_block {
     }
 
     # diff for value
-    push @lines, $self->term_value_diff($value, $status, "  " x @{$path});
+    push @lines, $self->term_value_diff($value, $status, $indent x @{$path});
 
     print join("\n", @lines) . "\n";
 }
