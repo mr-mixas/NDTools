@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use Capture::Tiny qw(capture);
 use Test::File::Contents;
-use Test::More tests => 13;
+use Test::More tests => 16;
 
 use App::NDTools::Test;
 
@@ -48,13 +48,18 @@ my ($out, $err);
 file_contents_eq_or_diff('dump-opts.exp', $out, "Check dump-opts method output (STDOUT)");
 is($err, '', "STDERR for dump-opts method must be empty");
 
+($out, $err) = capture { eval { App::NDTools::NDTool->new('--some-unsupported-option') }};
+is($out, '', "STDOUT for usage method must be empty");
+like($err, qr/^Unknown option: some-unsupported-option/, "Unsupported option STDERR check");
+like($err, qr/Usage/, "STDERR should contain usage");
+
 ($out, $err) = capture { eval { App::NDTools::NDTool->new('--help') }};
 is($out, '', "STDOUT for usage method must be empty");
 file_contents_eq_or_diff('usage.exp', $err, "Usage text should go to STDERR");
 
-($out, $err) = capture { eval { App::NDTools::NDTool->new('--some-unsupported-option') }};
-is($out, '', "STDOUT for usage method must be empty");
-like($err, qr/^Unknown option: some-unsupported-option/, "Unsupported option STDERR check");
+($out, $err) = capture { eval { App::NDTools::NDTool->new('--version') }};
+like($out, qr/\d+\.\d+/, "STDOUT for usage method must be empty");
+is($err, '', "STDERR for version should be empty");
 
 is(
     join(" ", sort keys %{{ $tool->arg_opts() }}),
