@@ -44,7 +44,7 @@ $got = $tool->grep([$tmp], [[],{R => [qr/^NotExists/]},[],{K => ['id']}]);
 is_deeply($got, 0, "Grep doesn't match") || diag t_ab_cmp($got, $exp);
 
 my ($out, $err);
-($out, $err) = capture { eval { App::NDTools::NDTool->new('--dump-opts', 'foo') }};
+($out, $err) = capture { eval { App::NDTools::NDTool->new('--dump-opts') }};
 file_contents_eq_or_diff('dump-opts.exp', $out, "Check dump-opts method output (STDOUT)");
 is($err, '', "STDERR for dump-opts method must be empty");
 
