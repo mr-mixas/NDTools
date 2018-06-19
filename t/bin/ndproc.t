@@ -126,7 +126,7 @@ run_ok(
 $test = "module_unsupported_opt";
 run_ok(
     name => $test,
-    cmd => [ $^X, $bin, qw/--module Remove --unsupported-opt-test/ ],
+    cmd => [ @cmd, qw/--module Remove --unsupported-opt-test/ ],
     stderr => qr/Unknown option: unsupported-opt-test/,
     exit => 1
 );
