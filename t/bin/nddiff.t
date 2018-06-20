@@ -35,13 +35,16 @@ run_ok(
     exit => 0,
 );
 
+my $orig_program_name = $0;
+$0 = $bin; # Pod::Usage will be able to find binary with pod
 $test = "help";
 run_ok(
     name => $test,
-    cmd => [ $^X, $bin, '--help', '-h' ], # argv pod inside bin
+    cmd => [ @cmd, '--help', '-h' ], # argv pod inside bin
     stderr => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 0,
 );
+$0 = $orig_program_name; # just in case
 
 ### bin specific tests
 
