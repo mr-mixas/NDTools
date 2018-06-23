@@ -267,6 +267,7 @@ t/bin/ndquery.d/list_depth.exp
 t/bin/ndquery.d/list_path.exp
 t/bin/ndquery.d/list_values.exp
 t/bin/ndquery.d/list_values_depth.exp
+t/bin/ndquery.d/list_values_raw.exp
 t/bin/ndquery.d/md5.exp
 t/bin/ndquery.d/md5_path.exp
 t/bin/ndquery.d/md5_stdin.exp

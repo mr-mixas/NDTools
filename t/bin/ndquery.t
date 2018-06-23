@@ -4,7 +4,7 @@ use warnings FATAL => 'all';
 use File::Copy qw(copy);
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 50;
+use Test::More tests => 51;
 
 use App::NDTools::Test;
 
@@ -223,6 +223,13 @@ $test = "list_values_depth";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--list', '--values', '--depth', '3', "_menu.a.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+);
+
+$test = "list_values_raw";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--list', '--values', '--depth', '1', '--raw-output', "_cfg.alpha.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
 );
 
