@@ -13,7 +13,7 @@ use Struct::Diff 0.94 qw(diff split_diff);
 use Struct::Path 0.80 qw(path);
 use Struct::Path::PerlStyle 0.80 qw(str2path);
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 
 sub arg_opts {
     my $self = shift;
@@ -286,9 +286,7 @@ sub process_rules {
 
         my $changes = { rule_id => 0 + $rcnt };
         if (defined $rule->{blame} ? $rule->{blame} : $self->{OPTS}->{blame}) {
-            my $diff = split_diff(diff($result, ${$data}, noO => 1, noU => 1));
-            $changes->{R} = delete $diff->{a} if (exists $diff->{a}); # more obvious
-            $changes->{A} = delete $diff->{b} if (exists $diff->{b}); # --"--
+            $changes->{diff} = diff($result, ${$data}, noU => 1);
         }
         map { $changes->{$_} = $rule->{$_} if (defined $rule->{$_}) }
             qw(blame comment source); # preserve useful info

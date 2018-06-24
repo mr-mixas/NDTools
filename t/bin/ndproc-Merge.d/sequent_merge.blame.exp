@@ -1,23 +1,51 @@
 [
    {
-      "A" : {
-         "files" : {
-            "/etc/cron.d/beta" : "* * * * * root sleep 5",
-            "/etc/hostname" : "beta"
-         },
-         "fqdn" : "beta.example.org",
-         "mtime" : 1462431002
+      "diff" : {
+         "D" : {
+            "files" : {
+               "D" : {
+                  "/etc/cron.d/beta" : {
+                     "A" : "* * * * * root sleep 5"
+                  },
+                  "/etc/hostname" : {
+                     "N" : "beta",
+                     "O" : "alpha"
+                  }
+               }
+            },
+            "fqdn" : {
+               "N" : "beta.example.org",
+               "O" : "alpha.example.org"
+            },
+            "mtime" : {
+               "N" : 1462431002,
+               "O" : 1462431001
+            }
+         }
       },
       "rule_id" : 0,
       "source" : "_cfg.beta.json"
    },
    {
-      "A" : {
-         "files" : {
-            "/etc/hostname" : "gamma"
-         },
-         "fqdn" : "gamma.example.org",
-         "mtime" : 1462431003
+      "diff" : {
+         "D" : {
+            "files" : {
+               "D" : {
+                  "/etc/hostname" : {
+                     "N" : "gamma",
+                     "O" : "beta"
+                  }
+               }
+            },
+            "fqdn" : {
+               "N" : "gamma.example.org",
+               "O" : "beta.example.org"
+            },
+            "mtime" : {
+               "N" : 1462431003,
+               "O" : 1462431002
+            }
+         }
       },
       "rule_id" : 1,
       "source" : "_cfg.gamma.json"
