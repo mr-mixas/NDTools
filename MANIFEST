@@ -90,6 +90,8 @@ t/bin/nddiff.d/term_omitted_index.exp
 t/bin/nddiff.d/term_path.exp
 t/bin/nddiff.d/term_show.exp
 t/bin/nddiff.d/term_show.json
+t/bin/nddiff.d/term_show_blame.exp
+t/bin/nddiff.d/term_show_blame.json
 t/bin/nddiff.d/term_show_brief.exp
 t/bin/nddiff.d/term_show_brief.json
 t/bin/nddiff.d/term_show_invalid.json

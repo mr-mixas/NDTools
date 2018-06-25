@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.50';
+our $VERSION = '0.51';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -314,40 +314,49 @@ sub dump_term {
 
 sub exec {
     my $self = shift;
-    my @items;
+    my (@diffs, @files);
 
-    while (@{$self->{ARGV}}) {
-        my $name = shift @{$self->{ARGV}};
-        my $data = $self->load($name);
-
-        my $diff;
+    for (@{$self->{ARGV}}) {
+        push @files, { data => $self->load($_), name => $_ };
 
         if ($self->{OPTS}->{show}) {
-            $self->print_term_header($name);
-            $diff = $data->[0];
+            if (ref $files[0]->{data}->[0] eq 'ARRAY') { # ndproc's blame
+                for (@{$files[0]->{data}->[0]}) {
+                    push @diffs, $_->{diff},
+                        [ $files[0]->{name} . ', rule #' . $_->{rule_id} ];
+                }
+            } else { # regular diff dump
+                push @diffs, $files[0]->{data}->[0], [ $files[0]->{name} ];
+            }
+        } else { # one of the files to diff
+            next unless (@files > 1);
+            push @diffs, $self->diff($files[0]->{data}, $files[1]->{data});
+            push @diffs, [ $files[0]->{name}, $files[1]->{name} ];
+        }
 
-            if (my @errs = Struct::Diff::valid_diff($diff)) {
+        shift @files;
+
+        while (@diffs) {
+            my ($diff, $hdrs) = splice @diffs, 0, 2;
+
+            $self->print_term_header(@{$hdrs});
+
+            if (
+                $self->{OPTS}->{show} and
+                my @errs = Struct::Diff::valid_diff($diff)
+            ) {
                 while (@errs) {
                     my ($path, $type) = splice @errs, 0, 2;
-                    log_error { "$name: $type " . path2str($path) };
+                    log_error { "$type " . path2str($path) };
                 }
 
                 die_fatal "Diff validation failed", 1;
             }
-        } else {
-            push @items, { name => $name, data => $data };
-            next unless (@items > 1);
 
-            $self->print_term_header($items[0]->{name}, $items[1]->{name});
-
-            $diff = $self->diff($items[0]->{data}, $items[1]->{data});
-
-            shift @items;
+            $self->dump($diff) unless ($self->{OPTS}->{quiet});
+            $self->{status} = 8
+                unless (not keys %{$diff} or exists $diff->{U});
         }
-
-        $self->dump($diff) unless ($self->{OPTS}->{quiet});
-
-        $self->{status} = 8 unless (not keys %{$diff} or exists $diff->{U});
     }
 
     die_info "All done, no difference found", 0 unless ($self->{status});

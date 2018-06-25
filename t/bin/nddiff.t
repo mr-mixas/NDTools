@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 66;
+use Test::More tests => 67;
 
 use App::NDTools::Test;
 
@@ -341,6 +341,14 @@ run_ok(
 );
 
 $test = "term_show";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--show', "$test.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_show_blame";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--show', "$test.json" ],
