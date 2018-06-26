@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 69;
+use Test::More tests => 72;
 
 use App::NDTools::Test;
 
@@ -564,10 +564,34 @@ run_ok(
     exit => 8,
 );
 
+$test = "term_text_vs_empty_string";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "$test.a.json", "$test.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
 $test = "term_text_vs_ref";
 run_ok(
     name => $test,
     cmd => [ @cmd, "$test.a.json", "$test.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_vs_undef_0";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "term_text_vs_undef.a.json", "term_text_vs_undef.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_text_vs_undef_1";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, "term_text_vs_undef.b.json", "term_text_vs_undef.a.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );

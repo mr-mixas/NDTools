@@ -117,9 +117,16 @@ t/bin/nddiff.d/term_text_newlines_1.exp
 t/bin/nddiff.d/term_text_newlines_2.exp
 t/bin/nddiff.d/term_text_newlines_3.exp
 t/bin/nddiff.d/term_text_utf8.exp
+t/bin/nddiff.d/term_text_vs_empty_string.a.json
+t/bin/nddiff.d/term_text_vs_empty_string.b.json
+t/bin/nddiff.d/term_text_vs_empty_string.exp
 t/bin/nddiff.d/term_text_vs_ref.a.json
 t/bin/nddiff.d/term_text_vs_ref.b.json
 t/bin/nddiff.d/term_text_vs_ref.exp
+t/bin/nddiff.d/term_text_vs_undef.a.json
+t/bin/nddiff.d/term_text_vs_undef.b.json
+t/bin/nddiff.d/term_text_vs_undef_0.exp
+t/bin/nddiff.d/term_text_vs_undef_1.exp
 t/bin/nddiff.t
 t/bin/ndpatch.d/_menu.a.json
 t/bin/ndpatch.d/_menu.b.json
