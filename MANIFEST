@@ -73,6 +73,7 @@ t/bin/nddiff.d/term_brief_nonref.a.data
 t/bin/nddiff.d/term_brief_nonref.b.data
 t/bin/nddiff.d/term_brief_nonref.exp
 t/bin/nddiff.d/term_colors.exp
+t/bin/nddiff.d/term_colors_wU.exp
 t/bin/nddiff.d/term_full_headers.exp
 t/bin/nddiff.d/term_grep_1.exp
 t/bin/nddiff.d/term_grep_2.exp
@@ -127,6 +128,7 @@ t/bin/nddiff.d/term_text_vs_undef.a.json
 t/bin/nddiff.d/term_text_vs_undef.b.json
 t/bin/nddiff.d/term_text_vs_undef_0.exp
 t/bin/nddiff.d/term_text_vs_undef_1.exp
+t/bin/nddiff.d/term_wU.exp
 t/bin/nddiff.t
 t/bin/ndpatch.d/_menu.a.json
 t/bin/ndpatch.d/_menu.b.json

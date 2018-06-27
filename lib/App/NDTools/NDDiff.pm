@@ -13,7 +13,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.52';
+our $VERSION = '0.53';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -306,7 +306,7 @@ sub dump_term {
 
     while (@list) {
         ($path, $dref) = splice @list, 0, 2;
-        for $tag (qw{R O N A T}) {
+        for $tag (qw{R O N A T U}) {
             $self->print_term_block(${$dref}->{$tag}, $path, $tag)
                 if (exists ${$dref}->{$tag});
         }

@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 72;
+use Test::More tests => 74;
 
 use App::NDTools::Test;
 
@@ -210,6 +210,14 @@ run_ok(
     exit => 8,
 );
 
+$test = "term_colors_wU";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--colors', '-U', "_cfg.alpha.json", "_cfg.beta.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
 $test = "term_full_headers";
 run_ok(
     name => $test,
@@ -306,6 +314,14 @@ $test = "term_noR";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--noR', "_struct-subkey-AR.a.json", "_struct-subkey-AR.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "term_wU";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--U', "_bool.a.json", "_bool.b.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
