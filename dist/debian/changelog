@@ -1,3 +1,14 @@
+ndtools (0.5.7) unstable; urgency=low
+
+  * nddiff: obsolete --full opt removed
+  * nddiff: --full-headers opt deprecated
+  * nddiff: --show now supports ndproc blames
+  * nddiff: text vs undef diff fixed
+  * nddiff: unchanged items supported in term mode
+  * ndproc: regular diffs used in blame dumps
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Thu, 28 Jun 2018 10:09:01 +0300
+
 ndtools (0.5.6) unstable; urgency=low
 
   * all: fix crashes when Scalar::Util < 1.26 installed

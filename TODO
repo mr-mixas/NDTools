@@ -1,11 +1,9 @@
 nddiff
-    --ctx-struct <num>
+    --ctx-path <path>
+    --ofmt html
 
 ndproc
-    --list-sources <rules>
     --disable-rule <comma,separated,numbers,list>
-    --sqweeze-blame|--dedup-blame # make blame as small as possible (get rid of intermediate data)
-    tests -h -V, --dump-rules, noargs and so on for all modules
     PATH DEFINITION to all mods docs
     'optional' opt to mods opts %)
     validate_rules method for all modules
@@ -20,7 +18,7 @@ App::NDTools::NDProc::Module::Merge
     make per-merge path opt to be able as list
 
 App::NDTools::NDProc::Module::ListSort
-    --path --by <subpath> --numeric
+    --path <path> --by <subpath> --numeric --decs
 
 App::NDTools::NDProc::Module::Patch
     ndpatch should be as a wrapper for it?
