@@ -1,3 +1,10 @@
+ndtools (0.5.8) unstable; urgency=low
+
+  * all: fix crashes on YAML::XS version comparsion
+  * nddiff: texts diff rendering fixed for --show mode
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Mon, 02 Jul 2018 22:41:51 +0300
+
 ndtools (0.5.7) unstable; urgency=low
 
   * nddiff: obsolete --full opt removed

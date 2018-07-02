@@ -17,11 +17,11 @@ App::NDTools - command line tools for nested structures
 
 =head1 VERSION
 
-Version 0.5.7
+Version 0.5.8
 
 =cut
 
-our $VERSION = "0.5.7";
+our $VERSION = "0.5.8";
 
 =head1 DESCRIPTION
 
