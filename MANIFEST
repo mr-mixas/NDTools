@@ -207,7 +207,6 @@ t/bin/ndproc-Remove.d/_deep-down-lorem.a.json
 t/bin/ndproc-Remove.d/_empty_hash.json
 t/bin/ndproc-Remove.d/_menu.a.json
 t/bin/ndproc-Remove.d/path.exp
-t/bin/ndproc-Remove.d/path_absent.exp
 t/bin/ndproc-Remove.d/path_empty.exp
 t/bin/ndproc-Remove.d/preserve.exp
 t/bin/ndproc-Remove.t
