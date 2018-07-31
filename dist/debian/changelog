@@ -1,3 +1,11 @@
+ndtools (0.6.0) unstable; urgency=low
+
+  * ndproc-Insert: replace whole structure if path opt omitted
+  * ndproc-Remove: throw error when no one path specified to remove
+  * all: Struct::Path::PerlStyle updated to 0.90
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Tue, 31 Jul 2018 09:46:21 +0300
+
 ndtools (0.5.8) unstable; urgency=low
 
   * all: fix crashes on YAML::XS version comparsion

@@ -7,6 +7,7 @@ ndproc
     PATH DEFINITION to all mods docs
     'optional' opt to mods opts %)
     validate_rules method for all modules
+    'include' rule directive (replace rule by external rules, recursively)
 
 App::NDTools::NDProc::Module
     complete rule using defaults if not all vital opts provided
@@ -22,7 +23,4 @@ App::NDTools::NDProc::Module::ListSort
 
 App::NDTools::NDProc::Module::Patch
     ndpatch should be as a wrapper for it?
-
-App::NDTools::NDProc::Module::Include # Replace rule by external rules (recursive)
-    support builtin rules as well
 
