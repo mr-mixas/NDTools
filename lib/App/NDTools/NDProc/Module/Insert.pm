@@ -101,7 +101,7 @@ Boolean value to insert.
 
 Load inserting value from file.
 
-=item B<--file-fmt> E<lt><RAW|JSON|YAML>E<gt>
+=item B<--file-fmt> E<lt>RAW|JSON|YAMLE<gt>
 
 Input file format.
 
