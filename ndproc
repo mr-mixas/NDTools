@@ -22,10 +22,9 @@ Process nested data structures according provided rules
 
 =over 4
 
-=item B<--builtin-format> <""|JSON>
+=item B<--builtin-format> <RAW|JSON|YAML>
 
-Format for builtin things (C<--builtin-rules>, C<--embed-rules>). Raw structure
-will be used if omitted or empty.
+Format for builtin rules and blames. Raw structure used by default.
 
 =item B<--builtin-rules> E<lt>pathE<gt>
 
