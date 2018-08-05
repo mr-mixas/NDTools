@@ -175,6 +175,7 @@ t/bin/ndproc-Merge.d/_cfg.gamma.json
 t/bin/ndproc-Merge.d/_empty_list.json
 t/bin/ndproc-Merge.d/_menu.a.json
 t/bin/ndproc-Merge.d/_menu.b.json
+t/bin/ndproc-Merge.d/arg_structure.exp
 t/bin/ndproc-Merge.d/dump_rules.exp
 t/bin/ndproc-Merge.d/ignore.exp
 t/bin/ndproc-Merge.d/implicit_array_item_0.exp

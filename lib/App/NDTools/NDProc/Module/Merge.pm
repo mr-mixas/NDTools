@@ -12,7 +12,9 @@ use Storable qw(dclone);
 use Struct::Path 0.80 qw(implicit_step path);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 
-our $VERSION = '0.17';
+use App::NDTools::Slurp qw(s_decode s_encode);
+
+our $VERSION = '0.18';
 
 sub MODINFO { "Merge structures according provided rules" }
 
@@ -38,6 +40,9 @@ sub arg_opts {
         'strict!' => sub {
             $self->set_path_related_opt($_[0], $_[1]),
         },
+        'structure=s' => sub {
+            push @{$self->{rules}}, { structure => $_[1] };
+        },
         'style=s' => sub {
             $self->set_path_related_opt($_[0], $_[1])
         },
@@ -61,6 +66,9 @@ sub configure {
         # path as simple string if no no specific opts defined
         map { $_ = $_->{merge} if (exists $_->{merge} and keys %{$_} == 1) }
             @{$rule->{path}};
+
+        $rule->{structure} = s_decode($rule->{structure}, 'JSON')
+            if (exists $rule->{structure});
     }
 }
 
@@ -155,6 +163,11 @@ sub process_path {
     # merge whole source if path omitted
     $path->{merge} = '' unless (defined $path->{merge});
 
+    if (exists $opts->{structure}) {
+        $opts->{source} = s_encode($opts->{structure}, 'JSON', {pretty => 0});
+        $source = $opts->{structure}
+    }
+
     my $spath = eval { str2path($path->{merge}) };
     die_fatal "Failed to parse path ($@)", 4 if ($@);
 
@@ -230,6 +243,10 @@ Preserve specified substructure. Rule-wide option. May be used several times.
 Source to merge with. Original processing structure will be used if option
 specified, but value not defined or empty. Rule-wide option. May be used
 several times.
+
+=item B<--structure> E<lt>JSONE<gt>
+
+JSON structure to merge with. Rule-wide option. May be used several times.
 
 =item B<--[no]strict>
 

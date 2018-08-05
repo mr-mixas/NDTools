@@ -15,7 +15,6 @@ App::NDTools::NDProc::Module
 
 App::NDTools::NDProc::Module::Merge
     --match <path> # (combined with path) -- to implement fair pairwise merge (filter like "defined" used)
-    --structure # as --source alternative (JSON in args, raw structure in rule)
     make per-merge path opt to be able as list
 
 App::NDTools::NDProc::Module::ListSort
