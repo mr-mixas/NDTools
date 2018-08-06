@@ -43,6 +43,13 @@ Apply diff to the structure.
 
 Process structure using rules and modules.
 
+Available modules:
+
+    Insert     Insert value into structure
+    Merge      Merge structures according provided rules
+    Pipe       Modify structure using external process
+    Remove     Remove specified parts from structure
+
 =item B<L<ndquery>>
 
 Examine structure and dump it's parts.
