@@ -98,6 +98,9 @@ t/bin/nddiff.d/term_show_brief.json
 t/bin/nddiff.d/term_show_invalid.json
 t/bin/nddiff.d/term_show_text.exp
 t/bin/nddiff.d/term_show_text.json
+t/bin/nddiff.d/term_string_vs_number.a.json
+t/bin/nddiff.d/term_string_vs_number.b.json
+t/bin/nddiff.d/term_string_vs_number.exp
 t/bin/nddiff.d/term_subkey_AR.exp
 t/bin/nddiff.d/term_text.exp
 t/bin/nddiff.d/term_text_AR_0.exp
