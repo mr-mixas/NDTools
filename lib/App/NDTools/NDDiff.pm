@@ -14,7 +14,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.55';
+our $VERSION = '0.56';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -170,6 +170,7 @@ sub diff_term {
         next unless (exists ${$dref}->{N});
         next unless (defined ${$dref}->{O} and defined ${$dref}->{N});
         next if (ref ${$dref}->{O} or ref ${$dref}->{N});
+        next if (is_number(${$dref}->{O}) or is_number(${$dref}->{N}));
 
         my @old = split($/, ${$dref}->{O}, -1);
         my @new = split($/, ${$dref}->{N}, -1);

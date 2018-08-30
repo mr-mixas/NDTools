@@ -126,6 +126,9 @@ t/bin/nddiff.d/term_text_utf8.exp
 t/bin/nddiff.d/term_text_vs_empty_string.a.json
 t/bin/nddiff.d/term_text_vs_empty_string.b.json
 t/bin/nddiff.d/term_text_vs_empty_string.exp
+t/bin/nddiff.d/term_text_vs_number.a.json
+t/bin/nddiff.d/term_text_vs_number.b.json
+t/bin/nddiff.d/term_text_vs_number.exp
 t/bin/nddiff.d/term_text_vs_ref.a.json
 t/bin/nddiff.d/term_text_vs_ref.b.json
 t/bin/nddiff.d/term_text_vs_ref.exp
