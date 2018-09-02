@@ -53,11 +53,11 @@ Options:
         Print version and exit.
 
 Examples:
-    Simply merge three files using module 'Merge':
+    Simply merge three files using module "Merge":
 
         ndproc --module Merge a.json --source b.json --source c.json
 
-    Print usage for 'Merge' module:
+    Print usage for "Merge" module:
 
         ndproc --module Merge --help
 
