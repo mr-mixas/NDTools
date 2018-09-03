@@ -9,7 +9,9 @@ use Scalar::Util qw(looks_like_number);
 use Struct::Path 0.80 qw(path);
 use Struct::Path::PerlStyle 0.80 qw(str2path);
 
-our $VERSION = '0.15';
+use App::NDTools::Util qw(chomp_evaled_error);
+
+our $VERSION = '0.16';
 
 sub MODINFO { "Insert value into structure" }
 
@@ -73,7 +75,8 @@ sub process_path {
 
     log_info { 'Updating path "' . $path . '"' };
     eval { path(${$data}, $spath, assign => $opts->{value}, expand => 1) };
-    die_fatal "Failed to lookup path '$path' ($@)", 4 if ($@);
+    die_fatal "Failed to lookup path '$path' (" .
+        chomp_evaled_error($@) . ")", 4 if ($@);
 }
 
 
