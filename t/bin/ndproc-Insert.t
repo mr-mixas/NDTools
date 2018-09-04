@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 26;
+use Test::More tests => 28;
 
 use App::NDTools::Test;
 
@@ -14,6 +14,26 @@ my $mod = 'App::NDTools::NDProc';
 my @cmd = ($mod, '--module', 'Insert');
 
 require_ok($mod) || BAIL_OUT("Failed to load $mod");
+
+$test = "insert_untrue";
+run_ok(
+    name => $test,
+    pre => sub { copy("_empty_hash.json", "$test.got") },
+    cmd => [ @cmd, '--path', '{foo}', '--bool', 'untrue', "$test.got" ],
+    test => sub { files_eq_or_diff("_empty_hash.json", "$test.got", $test) }, # should remain unchanged
+    stderr => qr/ FATAL] Unsuitable value for --boolean\. /,
+    exit => 1,
+);
+
+$test = "insert_fALSE";
+run_ok(
+    name => $test,
+    pre => sub { copy("_empty_hash.json", "$test.got") },
+    cmd => [ @cmd, '--path', '{foo}', '--bool', 'fALSE', "$test.got" ],
+    test => sub { files_eq_or_diff("_empty_hash.json", "$test.got", $test) }, # should remain unchanged
+    stderr => qr/ FATAL] Unsuitable value for --boolean\. /,
+    exit => 1,
+);
 
 $test = "path_lookup_failed";
 run_ok(

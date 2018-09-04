@@ -11,7 +11,7 @@ use Struct::Path::PerlStyle 0.80 qw(str2path);
 
 use App::NDTools::Util qw(chomp_evaled_error);
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 sub MODINFO { "Insert value into structure" }
 
@@ -21,9 +21,9 @@ sub arg_opts {
     return (
         $self->SUPER::arg_opts(),
         'boolean=s' => sub {
-            if ($_[1] eq '1' or $_[1] =~ /(T|t)rue/) {
+            if ($_[1] eq '1' or $_[1] =~ /^(T|t)rue$/) {
                 $self->{OPTS}->{value} = JSON::true;
-            } elsif ($_[1] eq '0' or $_[1] =~ /(F|f)alse/) {
+            } elsif ($_[1] eq '0' or $_[1] =~ /^(F|f)alse$/) {
                 $self->{OPTS}->{value} = JSON::false;
             } else {
                 $self->{ARG_ERROR} = "Unsuitable value for --boolean";
