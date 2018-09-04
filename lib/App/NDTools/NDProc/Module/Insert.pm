@@ -7,11 +7,10 @@ use parent 'App::NDTools::NDProc::Module';
 use Log::Log4Cli;
 use Scalar::Util qw(looks_like_number);
 use Struct::Path 0.80 qw(path);
-use Struct::Path::PerlStyle 0.80 qw(str2path);
 
 use App::NDTools::Util qw(chomp_evaled_error);
 
-our $VERSION = '0.17';
+our $VERSION = '0.18';
 
 sub MODINFO { "Insert value into structure" }
 
@@ -68,10 +67,7 @@ sub configure {
 }
 
 sub process_path {
-    my ($self, $data, $path, $opts) = @_;
-
-    my $spath = eval { str2path($path) };
-    die_fatal "Failed to parse path ($@)", 4 if ($@);
+    my ($self, $data, $path, $spath,  $opts) = @_;
 
     log_info { 'Updating path "' . $path . '"' };
     eval { path(${$data}, $spath, assign => $opts->{value}, expand => 1) };

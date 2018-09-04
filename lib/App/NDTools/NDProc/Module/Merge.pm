@@ -14,7 +14,7 @@ use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 
 use App::NDTools::Slurp qw(s_decode s_encode);
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 sub MODINFO { "Merge structures according provided rules" }
 
@@ -158,7 +158,7 @@ sub process {
 }
 
 sub process_path {
-    my ($self, $data, $path, $opts, $source) = @_;
+    my ($self, $data, $path, undef, $opts, $source) = @_;
 
     # merge whole source if path omitted
     $path->{merge} = '' unless (defined $path->{merge});
