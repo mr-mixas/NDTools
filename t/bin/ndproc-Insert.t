@@ -41,7 +41,7 @@ run_ok(
     pre => sub { copy("_empty_hash.json", "$test.got") },
     cmd => [ @cmd, '--path', '(push @{$_{refs}}, undef){foo}', '--val', 'bar', "$test.got" ],
     test => sub { files_eq_or_diff("_empty_hash.json", "$test.got", $test) }, # should remain unchanged
-    stderr => qr/ FATAL] Failed to lookup path .*Reference expected for refs stack entry/,
+    stderr => qr/ FATAL] Failed to lookup path /,
     exit => 4,
 );
 
