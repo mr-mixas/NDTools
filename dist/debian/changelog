@@ -1,3 +1,15 @@
+ndtools (0.6.1) unstable; urgency=low
+
+  * nddiff: term diff fixed for text vs number case
+  * nddiff: term diff fixed for number vs its string form
+  * ndproc: RAW builtin format may be set explicitly now
+  * ndproc-Insert: more strict checks for boolean values
+  * ndproc-Insert: clear error for path lookup fails
+  * ndproc-Merge: --structure opt added
+  * depends and docs corrected
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Wed, 05 Sep 2018 13:39:03 +0300
+
 ndtools (0.6.0) unstable; urgency=low
 
   * ndproc-Insert: replace whole structure if path opt omitted
