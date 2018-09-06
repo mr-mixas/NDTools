@@ -14,7 +14,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.56';
+our $VERSION = '0.57';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -244,12 +244,14 @@ sub dump {
 
     log_debug { "Dumping results" };
 
-    if ($self->{OPTS}->{ofmt} eq 'term') {
-        $self->dump_term($diff);
-    } elsif ($self->{OPTS}->{ofmt} eq 'brief') {
-        $self->dump_brief($diff);
-    } elsif ($self->{OPTS}->{ofmt} eq 'rules') {
-        $self->dump_rules($diff);
+    my %formats = (
+        BRIEF   => \&dump_brief,
+        RULES   => \&dump_rules,
+        TERM    => \&dump_term,
+    );
+
+    if (my $dump = $formats{uc($self->{OPTS}->{ofmt})}) {
+        $dump->($self, $diff);
     } else {
         s_dump(\*STDOUT, $self->{OPTS}->{ofmt},
             {pretty => $self->{OPTS}->{pretty}}, $diff);
