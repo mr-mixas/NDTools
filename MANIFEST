@@ -74,7 +74,6 @@ t/bin/nddiff.d/term_brief_nonref.b.data
 t/bin/nddiff.d/term_brief_nonref.exp
 t/bin/nddiff.d/term_colors.exp
 t/bin/nddiff.d/term_colors_wU.exp
-t/bin/nddiff.d/term_full_headers.exp
 t/bin/nddiff.d/term_grep_1.exp
 t/bin/nddiff.d/term_grep_2.exp
 t/bin/nddiff.d/term_grep_absent_part.exp

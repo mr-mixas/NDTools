@@ -41,11 +41,6 @@ On/Off colors for diff.
 
 Amount of lines for multiline values context. Default is 3.
 
-=item B<--full-headers>
-
-Print full headers (delta printed by default). B<Deprecated and will be removed
-soon>. C<--no-pretty> should be used instead.
-
 =item B<--grep> E<lt>pathE<gt>
 
 Grep substructures to diff. See path syntax description at
