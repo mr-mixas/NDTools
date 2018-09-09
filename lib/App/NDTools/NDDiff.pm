@@ -10,11 +10,12 @@ use App::NDTools::Slurp qw(s_dump);
 use App::NDTools::Util qw(is_number);
 use Log::Log4Cli 0.18;
 use Struct::Diff 0.96 qw();
+use Struct::Diff::MergePatch qw();
 use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.58';
+our $VERSION = '0.59';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -82,6 +83,12 @@ sub configure {
         die_fatal "Failed to parse '$_'", 4 if ($@);
         $_ = $tmp;
     }
+
+    $self->{OPTS}->{ofmt} = lc($self->{OPTS}->{ofmt});
+
+    # Use full diff (JSON Merge Patch does not provide arrays diffs)
+    map { $self->{OPTS}->{diff}->{$_} = 1 } keys %{$self->{OPTS}->{diff}},
+        if ($self->{OPTS}->{ofmt} eq 'jsonmergepatch');
 
     return $self;
 }
@@ -236,12 +243,13 @@ sub dump {
     log_debug { "Dumping results" };
 
     my %formats = (
-        BRIEF   => \&dump_brief,
-        RULES   => \&dump_rules,
-        TERM    => \&dump_term,
+        brief           => \&dump_brief,
+        jsonmergepatch  => \&dump_json_merge_patch,
+        rules           => \&dump_rules,
+        term            => \&dump_term,
     );
 
-    if (my $dump = $formats{uc($self->{OPTS}->{ofmt})}) {
+    if (my $dump = $formats{$self->{OPTS}->{ofmt}}) {
         $dump->($self, $diff);
     } else {
         s_dump(\*STDOUT, $self->{OPTS}->{ofmt},
@@ -264,6 +272,16 @@ sub dump_brief {
                 if (exists ${$dref}->{$tag});
         }
     }
+}
+
+sub dump_json_merge_patch {
+    my ($self, $diff) = @_;
+
+    s_dump(
+        \*STDOUT, 'JSON',
+        {pretty => $self->{OPTS}->{pretty}},
+        Struct::Diff::MergePatch::diff($diff)
+    );
 }
 
 sub dump_rules {

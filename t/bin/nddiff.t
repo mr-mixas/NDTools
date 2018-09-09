@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Spec::Functions qw(catfile);
 use Test::File::Contents;
-use Test::More tests => 76;
+use Test::More tests => 77;
 
 use App::NDTools::Test;
 
@@ -134,6 +134,14 @@ $test = "json_omitted_index";
 run_ok(
     name => $test,
     cmd => [ @cmd, '--json', "_omitted_index.a.json", "_omitted_index.b.json" ],
+    stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
+    exit => 8,
+);
+
+$test = "ofmt_jsonmergepatch";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--ofmt', "jsonmergepatch", "_bool.a.json", "_bool.b.json" ],
     stdout => sub { file_contents_eq_or_diff("$test.exp", shift, $test) },
     exit => 8,
 );
