@@ -6,6 +6,7 @@ lib/App/NDTools/NDPatch.pm
 lib/App/NDTools/NDProc.pm
 lib/App/NDTools/NDProc/Module.pm
 lib/App/NDTools/NDProc/Module/Insert.pm
+lib/App/NDTools/NDProc/Module/JsonMergePatch.pm
 lib/App/NDTools/NDProc/Module/Merge.pm
 lib/App/NDTools/NDProc/Module/Pipe.pm
 lib/App/NDTools/NDProc/Module/Remove.pm
@@ -175,6 +176,16 @@ t/bin/ndproc-Insert.d/string.exp
 t/bin/ndproc-Insert.d/undef_0.exp
 t/bin/ndproc-Insert.d/undef_1.exp
 t/bin/ndproc-Insert.t
+t/bin/ndproc-JsonMergePatch.d/_bool.a.json
+t/bin/ndproc-JsonMergePatch.d/_bool.b.json
+t/bin/ndproc-JsonMergePatch.d/path.exp
+t/bin/ndproc-JsonMergePatch.d/path.patch
+t/bin/ndproc-JsonMergePatch.d/path_absent.patch
+t/bin/ndproc-JsonMergePatch.d/path_empty.patch
+t/bin/ndproc-JsonMergePatch.d/preserve.exp
+t/bin/ndproc-JsonMergePatch.d/preserve.patch
+t/bin/ndproc-JsonMergePatch.d/source_broken.patch
+t/bin/ndproc-JsonMergePatch.t
 t/bin/ndproc-Merge.d/_cfg.alpha.json
 t/bin/ndproc-Merge.d/_cfg.beta.json
 t/bin/ndproc-Merge.d/_cfg.gamma.json
