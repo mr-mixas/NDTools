@@ -48,6 +48,7 @@ Available modules:
     Insert           Insert value into structure
     JsonMergePatch   Apply JSON Merge Patch (rfc7396) patches
     Merge            Merge structures according provided rules
+    Patch            Apply nested diff to the structure
     Pipe             Modify structure using external process
     Remove           Remove specified parts from structure
 

@@ -8,6 +8,7 @@ lib/App/NDTools/NDProc/Module.pm
 lib/App/NDTools/NDProc/Module/Insert.pm
 lib/App/NDTools/NDProc/Module/JsonMergePatch.pm
 lib/App/NDTools/NDProc/Module/Merge.pm
+lib/App/NDTools/NDProc/Module/Patch.pm
 lib/App/NDTools/NDProc/Module/Pipe.pm
 lib/App/NDTools/NDProc/Module/Remove.pm
 lib/App/NDTools/NDQuery.pm
@@ -215,6 +216,16 @@ t/bin/ndproc-Merge.d/source_self.rules.json
 t/bin/ndproc-Merge.d/strict_disabled.exp
 t/bin/ndproc-Merge.d/style.exp
 t/bin/ndproc-Merge.t
+t/bin/ndproc-Patch.d/_bool.a.json
+t/bin/ndproc-Patch.d/_bool.b.json
+t/bin/ndproc-Patch.d/path.exp
+t/bin/ndproc-Patch.d/path.patch
+t/bin/ndproc-Patch.d/path_absent.patch
+t/bin/ndproc-Patch.d/path_empty.patch
+t/bin/ndproc-Patch.d/preserve.exp
+t/bin/ndproc-Patch.d/preserve.patch
+t/bin/ndproc-Patch.d/source_broken.patch
+t/bin/ndproc-Patch.t
 t/bin/ndproc-Pipe.d/_cfg.alpha.json
 t/bin/ndproc-Pipe.d/path.exp
 t/bin/ndproc-Pipe.d/path_absent.exp
