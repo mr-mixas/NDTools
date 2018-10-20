@@ -53,8 +53,7 @@ run_ok(
     name => $test,
     pre => sub { copy("_bool.a.json", "$test.got") },
     cmd => [ @cmd, '--source', "$test.patch", '--preserve', '{true}', "$test.got" ],
-    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },\
-    clean => undef,
+    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
 );
 
 $test = "source_absent";
