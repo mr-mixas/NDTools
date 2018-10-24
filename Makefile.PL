@@ -53,7 +53,7 @@ WriteMakefile(
         'Pod::Usage'                => 0,
         'Scalar::Util'              => 0,
         'Storable'                  => 0,
-        'Struct::Diff'              => 0.96,
+        'Struct::Diff'              => 0.97,
         'Struct::Diff::MergePatch'  => 0.01,
         'Struct::Path'              => 0.81,
         'Struct::Path::PerlStyle'   => 0.90,

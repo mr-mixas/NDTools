@@ -4,11 +4,12 @@ use strict;
 use warnings FATAL => 'all';
 use parent 'App::NDTools::NDProc::Module';
 
+use App::NDTools::Util qw(chomp_evaled_error);
 use Log::Log4Cli;
-use Struct::Diff qw(patch);
+use Struct::Diff 0.96 qw(patch);
 use Struct::Path 0.80 qw(path);
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub MODINFO { "Apply nested diff to the structure" }
 
@@ -47,7 +48,10 @@ sub process_path {
     my @refs = eval { path(${$data}, $spath, strict => $opts->{strict}) };
     die_fatal "Failed to lookup path '$path'", 4 if ($@);
 
-    map { patch(${$_}, $source) } @refs;
+    for (@refs) {
+        eval { patch(${$_}, $source) };
+        die_fatal chomp_evaled_error($@), 8 if ($@);
+    }
 }
 
 1; # End of App::NDTools::NDProc::Module::Patch

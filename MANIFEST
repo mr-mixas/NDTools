@@ -218,6 +218,7 @@ t/bin/ndproc-Merge.d/style.exp
 t/bin/ndproc-Merge.t
 t/bin/ndproc-Patch.d/_bool.a.json
 t/bin/ndproc-Patch.d/_bool.b.json
+t/bin/ndproc-Patch.d/patch_mismatch.patch
 t/bin/ndproc-Patch.d/path.exp
 t/bin/ndproc-Patch.d/path.patch
 t/bin/ndproc-Patch.d/path_absent.patch

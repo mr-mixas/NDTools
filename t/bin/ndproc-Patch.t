@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use App::NDTools::Test;
 
@@ -72,5 +72,14 @@ run_ok(
     cmd => [ @cmd, '--source', "$test.patch", "$test.got" ],
     stderr => qr/ FATAL] Failed to decode 'JSON'/,
     exit => 4,
+);
+
+$test = "patch_mismatch";
+run_ok(
+    name => $test,
+    pre => sub { copy("_bool.a.json", "$test.got") },
+    cmd => [ @cmd, '--source', "$test.patch", '--path', '{true}', "$test.got" ],
+    stderr => qr/ FATAL] Structure does not match/,
+    exit => 8,
 );
 
