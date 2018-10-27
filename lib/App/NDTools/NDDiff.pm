@@ -6,6 +6,7 @@ use parent 'App::NDTools::NDTool';
 
 use Algorithm::Diff qw(compact_diff);
 use JSON qw();
+use JSON::Patch 0.04 qw();
 use App::NDTools::Slurp qw(s_dump);
 use App::NDTools::Util qw(is_number);
 use Log::Log4Cli 0.18;
@@ -15,7 +16,7 @@ use Struct::Path 0.80 qw(path path_delta);
 use Struct::Path::PerlStyle 0.80 qw(str2path path2str);
 use Term::ANSIColor qw(color);
 
-our $VERSION = '0.59';
+our $VERSION = '0.60';
 
 my $JSON = JSON->new->canonical->allow_nonref;
 my %COLOR;
@@ -245,6 +246,7 @@ sub dump {
     my %formats = (
         brief           => \&dump_brief,
         jsonmergepatch  => \&dump_json_merge_patch,
+        jsonpatch       => \&dump_json_patch,
         rules           => \&dump_rules,
         term            => \&dump_term,
     );
@@ -283,6 +285,17 @@ sub dump_json_merge_patch {
         Struct::Diff::MergePatch::diff($diff)
     );
 }
+
+sub dump_json_patch {
+    my ($self, $diff) = @_;
+
+    s_dump(
+        \*STDOUT, 'JSON',
+        {pretty => $self->{OPTS}->{pretty}},
+        JSON::Patch::diff($diff)
+    );
+}
+
 
 sub dump_rules {
     my ($self, $diff) = @_;

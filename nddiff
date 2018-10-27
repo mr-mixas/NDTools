@@ -66,7 +66,7 @@ Ignore substructure. May be used several times.
 
 Use JSON as output diff format. It's just a shortcut for C<--ofmt JSON>.
 
-=item B<--ofmt> E<lt>TERM|JSON|YAML|JSONMERGEPATCHE<gt>
+=item B<--ofmt> E<lt>TERM|JSON|YAML|JSONMERGEPATCH|JSONPATCHE<gt>
 
 Force specified output format usage. C<TERM> is used by default; L<YAML::XS>
 should be installed for YAML support, see L<App::NDTools/LIMITATIONS> for
