@@ -79,7 +79,7 @@ run_ok(
     name => $test,
     pre => sub { copy("_bool.a.json", "$test.got") },
     cmd => [ @cmd, '--source', "$test.patch", '--path', '{true}', "$test.got" ],
-    stderr => qr/ FATAL] HASH expected on step #0, got JSON::XS::Boolean/,
+    stderr => qr/ FATAL] HASH expected on step #0/,
     exit => 8,
 );
 
