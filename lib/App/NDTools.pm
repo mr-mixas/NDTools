@@ -17,15 +17,15 @@ App::NDTools - Command line tools for nested structures
 
 =head1 VERSION
 
-Version 0.6.1
+Version 0.6.2
 
 =cut
 
-our $VERSION = "0.6.1";
+our $VERSION = "0.6.2";
 
 =head1 DESCRIPTION
 
-Diff, patch, process and query JSON and YAML with ease.
+Diff, patch, process, query JSON and YAML with ease.
 
 =head1 TOOLS
 

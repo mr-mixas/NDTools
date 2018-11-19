@@ -1,3 +1,15 @@
+ndtools (0.6.2) unstable; urgency=low
+
+  * nddiff: --full-headers opt is no longer supported
+  * nddiff: JSON Patch output format supported
+  * nddiff: JSON Merge Patch output format supported
+  * ndproc: Patch (Nested Diff) module added
+  * ndproc: Json Patch module added
+  * ndproc: JSON Merge Patch module added
+  * cosmetics, unsignificant tweaks
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Mon, 19 Nov 2018 10:05:09 +0300
+
 ndtools (0.6.1) unstable; urgency=low
 
   * nddiff: term diff fixed for text vs number case
