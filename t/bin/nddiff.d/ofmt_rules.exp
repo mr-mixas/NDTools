@@ -1,0 +1,22 @@
+[
+   {
+      "modname" : "Insert",
+      "path" : "{true}",
+      "value" : false
+   },
+   {
+      "modname" : "Insert",
+      "path" : "{list}[3]",
+      "value" : false
+   },
+   {
+      "modname" : "Remove",
+      "path" : "{list}[1]",
+      "value" : false
+   },
+   {
+      "modname" : "Insert",
+      "path" : "{false}",
+      "value" : true
+   }
+]

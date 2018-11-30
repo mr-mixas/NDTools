@@ -67,6 +67,7 @@ t/bin/nddiff.d/json_omitted_index.exp
 t/bin/nddiff.d/json_U.exp
 t/bin/nddiff.d/ofmt_jsonmergepatch.exp
 t/bin/nddiff.d/ofmt_jsonpatch.exp
+t/bin/nddiff.d/ofmt_rules.exp
 t/bin/nddiff.d/ofmt_yaml.exp
 t/bin/nddiff.d/rules.exp
 t/bin/nddiff.d/term_array_0.exp
