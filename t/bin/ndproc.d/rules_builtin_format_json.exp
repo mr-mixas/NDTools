@@ -49,7 +49,7 @@
    },
    {
       "builtin": {
-         "rules": "[\n   {\n      \"modname\": \"Remove\",\n      \"path\": [\n         \"[1]{Edit}[5]\"\n      ]\n   },\n   {\n      \"modname\": \"Remove\",\n      \"path\": [\n         \"[1]{Edit}[3]\"\n      ]\n   },\n   {\n      \"modname\": \"Remove\",\n      \"path\": [\n         \"[1]{Edit}[1]\"\n      ]\n   }\n]\n"
+         "rules": "[{\"modname\":\"Remove\",\"path\":[\"[1]{Edit}[5]\"]},{\"modname\":\"Remove\",\"path\":[\"[1]{Edit}[3]\"]},{\"modname\":\"Remove\",\"path\":[\"[1]{Edit}[1]\"]}]"
       }
    }
 ]

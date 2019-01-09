@@ -105,7 +105,7 @@ sub embed {
 
     ${$ref} = $self->{OPTS}->{'builtin-format'} eq 'RAW'
         ? $thing
-        : s_encode($thing, $self->{OPTS}->{'builtin-format'});
+        : s_encode($thing, $self->{OPTS}->{'builtin-format'}, {pretty => 0});
 }
 
 sub exec {
