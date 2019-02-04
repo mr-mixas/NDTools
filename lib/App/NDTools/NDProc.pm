@@ -13,7 +13,7 @@ use Struct::Diff 0.94 qw(diff split_diff);
 use Struct::Path 0.80 qw(path);
 use Struct::Path::PerlStyle 0.80 qw(str2path);
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 sub arg_opts {
     my $self = shift;
@@ -66,21 +66,19 @@ sub defaults {
     };
 }
 
-sub dump_arg {
-    my ($self, $uri, $arg) = @_;
-
-    log_debug { "Dumping result to $uri" };
-    s_dump($uri, $self->{OPTS}->{ofmt}, $self->{OPTS}->{pretty}, $arg);
-}
-
 sub dump_blame {
     my ($self, $blame) = @_;
-
-    return unless (defined $self->{OPTS}->{'dump-blame'});
 
     log_debug { "Dumping blame to $self->{OPTS}->{'dump-blame'}" };
     s_dump($self->{OPTS}->{'dump-blame'}, $self->{OPTS}->{ofmt},
         $self->{OPTS}->{pretty}, $blame);
+}
+
+sub dump_result {
+    my ($self, $uri, $data) = @_;
+
+    log_debug { "Dumping result to $uri" };
+    s_dump($uri, $self->{OPTS}->{ofmt}, $self->{OPTS}->{pretty}, $data);
 }
 
 sub dump_rules {
@@ -203,11 +201,11 @@ sub list_modules {
     } sort keys %{$self->{MODS}};
 }
 
-sub load_arg {
+sub load_uri {
     shift->load_struct(@_);
 }
 
-*load_source = \&load_arg;
+*load_source = \&load_uri;
 
 sub load_builtin_rules {
     my ($self, $data, $path) = @_;
@@ -225,9 +223,9 @@ sub load_builtin_rules {
 sub process_args {
     my $self = shift;
 
-    for my $arg (@_) {
-        log_info { "Processing $arg" };
-        my $data = $self->load_arg($arg, $self->{OPTS}->{ifmt});
+    for my $uri (@_) {
+        log_info { "Processing $uri" };
+        my $data = $self->load_uri($uri, $self->{OPTS}->{ifmt});
 
         if ($self->{OPTS}->{'builtin-rules'}) {
             $self->{rules} = $self->load_builtin_rules($data, $self->{OPTS}->{'builtin-rules'});
@@ -241,7 +239,7 @@ sub process_args {
             next;
         }
 
-        my @blame = $self->resolve_rules($arg)->process_rules(\$data);
+        my @blame = $self->resolve_rules($uri)->process_rules(\$data);
 
         if ($self->{OPTS}->{'embed-blame'}) {
             log_debug { "Embedding blame to '$self->{OPTS}->{'embed-blame'}'" };
@@ -253,45 +251,51 @@ sub process_args {
             $self->embed($data, $self->{OPTS}->{'embed-rules'}, $self->{rules});
         }
 
-        $self->dump_arg($arg, $data);
-        $self->dump_blame(\@blame);
+        $self->dump_result($uri, $data);
+        $self->dump_blame(\@blame) if (defined $self->{OPTS}->{'dump-blame'});
     }
 }
 
 sub process_rules {
     my ($self, $data) = @_;
 
-    my $rcnt = 0; # rules counter
+    my $rnum = 0; # rule number
     my @blame;
 
     for my $rule (@{$self->{resolved_rules}}) {
-        if (exists $self->{OPTS}->{'disable-module'}->{$rule->{modname}}) {
-            log_debug { "Skip rule #$rcnt (module $rule->{modname} is disabled by args)" };
-            next;
-        }
-        if ($rule->{disabled}) {
-            log_debug { "Rule #$rcnt ($rule->{modname}) is disabled, skip it" };
-            next;
-        }
-        die_fatal "Unknown module specified ($rule->{modname}; rule #$rcnt)", 1
+        die_fatal "Unknown module specified ($rule->{modname}; rule #$rnum)", 1
             unless (exists $self->{MODS}->{$rule->{modname}});
 
-        log_debug { "Processing rule #$rcnt ($rule->{modname})" };
+        if (exists $self->{OPTS}->{'disable-module'}->{$rule->{modname}}) {
+            log_debug { "Skip rule #$rnum (disabled module $rule->{modname})" };
+            next;
+        }
+
+        if ($rule->{disabled}) {
+            log_debug { "Skip disabled rule #$rnum ($rule->{modname})" };
+            next;
+        }
+
+        log_debug { "Processing rule #$rnum ($rule->{modname})" };
         $self->init_module($rule->{modname});
 
         my $result = ref ${$data} ? dclone(${$data}) : ${$data};
-        my $source = exists $rule->{source} ? thaw($self->{sources}->{$rule->{source}}) : undef;
+        my $source = exists $rule->{source}
+            ? thaw($self->{sources}->{$rule->{source}})
+            : undef;
+
         $self->{MODS}->{$rule->{modname}}->new->process($data, $rule, $source);
 
-        my $changes = { rule_id => 0 + $rcnt };
+        my $changes = { rule_id => 0 + $rnum };
         if (defined $rule->{blame} ? $rule->{blame} : $self->{OPTS}->{blame}) {
             $changes->{diff} = diff($result, ${$data}, noU => 1);
         }
+
         map { $changes->{$_} = $rule->{$_} if (defined $rule->{$_}) }
             qw(blame comment source); # preserve useful info
         push @blame, dclone($changes);
     } continue {
-        $rcnt++;
+        $rnum++;
     }
 
     return @blame;
