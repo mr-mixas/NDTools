@@ -11,9 +11,9 @@ use App::NDTools::Slurp qw(s_decode s_dump s_encode);
 use Storable qw(dclone freeze thaw);
 use Struct::Diff 0.94 qw(diff split_diff);
 use Struct::Path 0.80 qw(path);
-use Struct::Path::PerlStyle 0.80 qw(str2path);
+use Struct::Path::PerlStyle 0.90 qw(str2path);
 
-our $VERSION = '0.31';
+our $VERSION = '0.32';
 
 sub arg_opts {
     my $self = shift;
@@ -262,6 +262,7 @@ sub process_rules {
     my $rnum = 0; # rule number
     my @blame;
 
+    RULE:
     for my $rule (@{$self->{resolved_rules}}) {
         die_fatal "Unknown module specified ($rule->{modname}; rule #$rnum)", 1
             unless (exists $self->{MODS}->{$rule->{modname}});
@@ -274,6 +275,20 @@ sub process_rules {
         if ($rule->{disabled}) {
             log_debug { "Skip disabled rule #$rnum ($rule->{modname})" };
             next;
+        }
+
+        for my $cond (defined $rule->{cond} ? @{$rule->{cond}} : ()) {
+            log_debug { "Evaluating condition '$cond'" };
+
+            my $spath = eval { str2path($cond) };
+            die_fatal "Unable to parse '$cond' ($@)", 4 if ($@);
+
+            unless (eval { path($data, $spath) }) {
+                die_fatal "Failed to evaluate cond '$cond' ($@)", 4 if ($@);
+
+                log_info { "Skip rule #$rnum ($rule->{modname}) cond '$cond'" };
+                next RULE;
+            }
         }
 
         log_debug { "Processing rule #$rnum ($rule->{modname})" };

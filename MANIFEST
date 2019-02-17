@@ -164,6 +164,7 @@ t/bin/ndproc-Insert.d/bool_2.exp
 t/bin/ndproc-Insert.d/bool_3.exp
 t/bin/ndproc-Insert.d/bool_4.exp
 t/bin/ndproc-Insert.d/bool_5.exp
+t/bin/ndproc-Insert.d/cond_true.exp
 t/bin/ndproc-Insert.d/file.exp
 t/bin/ndproc-Insert.d/file_fmt_raw.a.json
 t/bin/ndproc-Insert.d/file_fmt_raw.b.json
