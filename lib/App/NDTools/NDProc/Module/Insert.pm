@@ -10,7 +10,7 @@ use Struct::Path 0.80 qw(path);
 
 use App::NDTools::Util qw(chomp_evaled_error);
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 sub MODINFO { "Insert value into structure" }
 
@@ -95,6 +95,12 @@ Blame calculation toggle. Enabled by default.
 =item B<--boolean> E<lt>true|false|1|0E<gt>
 
 Boolean value to insert.
+
+=item B<--cond> E<lt>pathE<gt>
+
+Apply rule when condition met only. Condition is met when path leads to at
+least one item in the structure. May be used several times (in this case
+conditions are AND'ed).
 
 =item B<--file|-f> E<lt>fileE<gt>
 
