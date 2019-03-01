@@ -114,12 +114,13 @@ sub exec {
         die_info undef, 0;
     }
 
+    my $mod;
     if (defined $self->{OPTS}->{module}) {
         die_fatal "Unknown module specified '$self->{OPTS}->{module}'", 1
             unless (exists $self->{MODS}->{$self->{OPTS}->{module}});
         $self->init_module($self->{OPTS}->{module});
 
-        my $mod = $self->{MODS}->{$self->{OPTS}->{module}}->new();
+        $mod = $self->{MODS}->{$self->{OPTS}->{module}}->new();
         for my $rule ($mod->parse_args($self->{ARGV})->get_opts()) {
             $rule->{modname} = $self->{OPTS}->{module},
             push @{$self->{rules}}, $rule;
@@ -141,7 +142,7 @@ sub exec {
 
     Getopt::Long::Configure('nopass_through');
     unless (GetOptionsFromArray($self->{ARGV}, @rest_opts)) {
-        $self->usage;
+        defined $mod ? $mod->usage : $self->usage;
         die_fatal "Unsupported opts passed", 1;
     }
 
