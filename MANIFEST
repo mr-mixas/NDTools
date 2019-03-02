@@ -178,6 +178,7 @@ t/bin/ndproc-Insert.d/path.exp
 t/bin/ndproc-Insert.d/path_absent.exp
 t/bin/ndproc-Insert.d/path_empty.exp
 t/bin/ndproc-Insert.d/string.exp
+t/bin/ndproc-Insert.d/structure.exp
 t/bin/ndproc-Insert.d/undef_0.exp
 t/bin/ndproc-Insert.d/undef_1.exp
 t/bin/ndproc-Insert.t

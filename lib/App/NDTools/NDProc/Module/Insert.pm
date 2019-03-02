@@ -9,8 +9,9 @@ use Scalar::Util qw(looks_like_number);
 use Struct::Path 0.80 qw(path);
 
 use App::NDTools::Util qw(chomp_evaled_error);
+use App::NDTools::Slurp qw(s_decode);
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 sub MODINFO { "Insert value into structure" }
 
@@ -41,6 +42,7 @@ sub arg_opts {
             }
         },
         'string|value=s' => sub { $self->{OPTS}->{value} = $_[1] },
+        'structure=s' => \$self->{OPTS}->{structure},
     )
 }
 
@@ -60,6 +62,10 @@ sub check_rule {
 
 sub configure {
     my $self = shift;
+
+    $self->{OPTS}->{value} =
+        s_decode(delete $self->{OPTS}->{structure}, 'JSON')
+            if (defined $self->{OPTS}->{structure});
 
     $self->{OPTS}->{value} =
         $self->load_struct($self->{OPTS}->{file}, $self->{OPTS}->{'file-fmt'})
@@ -129,6 +135,10 @@ Preserve specified substructure. May be used several times.
 =item B<--string> E<lt>stringE<gt>
 
 String to insert.
+
+=item B<--structure> E<lt>JSONE<gt>
+
+JSON structure to insert.
 
 =back
 

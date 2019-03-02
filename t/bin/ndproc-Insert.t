@@ -3,7 +3,7 @@ use warnings FATAL => 'all';
 
 use File::Copy qw(copy);
 use Test::File::Contents;
-use Test::More tests => 31;
+use Test::More tests => 33;
 
 use App::NDTools::Test;
 
@@ -220,6 +220,22 @@ run_ok(
     pre => sub { copy("_empty_hash.json", "$test.got") },
     cmd => [ @cmd, '--path', '{value}', '--string', 'blah-blah', "$test.got" ],
     test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+);
+
+$test = "structure";
+run_ok(
+    name => $test,
+    pre => sub { copy("_empty_hash.json", "$test.got") },
+    cmd => [ @cmd, '--path', '{value}', '--structure', '{"a": "b"}', "$test.got" ],
+    test => sub { files_eq_or_diff("$test.exp", "$test.got", $test) },
+);
+
+$test = "structure_corrupted";
+run_ok(
+    name => $test,
+    cmd => [ @cmd, '--path', '{value}', '--structure', '{"a":}', "$test.got" ],
+    stderr => qr/ FATAL] Failed to decode 'JSON'/,
+    exit => 4,
 );
 
 $test = "undef_0";
