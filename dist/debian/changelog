@@ -1,3 +1,13 @@
+ndtools (0.6.3) unstable; urgency=low
+
+  * ndproc: show mod usage when unknown arg used in mod invocation
+  * ndproc: rules conditions implemented (--cond opt)
+  * ndproc-Insert: --structure opt added
+  * all: emitting JSON format corrected
+  * refactorings, docs improvements
+
+ -- Michael Samoglyadov <mixas@cpan.org>  Sun, 03 Mar 2019 15:20:46 +0300
+
 ndtools (0.6.2) unstable; urgency=low
 
   * nddiff: --full-headers opt is no longer supported
