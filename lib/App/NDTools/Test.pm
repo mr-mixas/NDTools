@@ -8,7 +8,7 @@ use Capture::Tiny qw(capture);
 use Cwd qw(abs_path);
 use Data::Dumper;
 use Scalar::Util qw(blessed);
-use Test::More;
+use Test::More 0.94;
 
 BEGIN {
     # relative path will be incorrect when `cd t_dir` used
