@@ -20,6 +20,7 @@ WriteMakefile(
         'Cwd'                   => 0,
         'Data::Dumper'          => 0,
         'JSON::PP'              => 0, # required by YAML::XS
+        'Pod::Usage'            => 1.60,
         'Test::File::Contents'  => 0.23,
         'Test::More'            => 0.94,  # subtest support
         'YAML::XS'              => 0, # optional (lazy loaded)
