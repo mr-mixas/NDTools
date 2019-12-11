@@ -1,7 +1,7 @@
 INC_DIR=../lib/App/NDTools/INC
 NDTOOLS=nddiff ndpatch ndproc ndquery
 
-.PHONY: deb depends man veryclean
+.PHONY: $(INC_DIR) deb depends man veryclean
 
 all:
 
@@ -25,6 +25,7 @@ veryclean:
 
 $(INC_DIR):
 	sh -c 'cd .. && . ./SOURCEME' # fetch depends
+	rm -rf $@
 	cp -al ../depends/lib/perl5/ $@
 	find $@ -path '*/.meta/*' -delete
 	find $@ -type f -name .packlist -delete
